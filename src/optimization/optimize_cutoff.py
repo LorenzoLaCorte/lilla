@@ -288,7 +288,7 @@ class CutoffOptimizer():
 
         count = 0  # Number of repetitions in total
         if self.simulator is None:
-            simulator = RepeaterChainEvaluation(state_type=WernerState)
+            self.simulator = RepeaterChainEvaluation(state_type=WernerState)
         while True:
             target_function = partial(
                 optimization_tau_wrapper,

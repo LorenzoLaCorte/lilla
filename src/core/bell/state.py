@@ -50,7 +50,7 @@ class InvalidBellParameterError(Exception):
         super().__init__(message)
 
 
-def polish_w_func(l_func: LFunc) -> LFunc:
+def polish_l_func(l_func: LFunc) -> LFunc:
     """
     Polish the state quality function by erasing unrealistic Bell parameters.
     This can happen when the probability is too small ~1.0e-20.
