@@ -2,22 +2,17 @@ import pytest
 import numpy as np
 import time
 from src.core.repeater_algorithm import repeater_sim
-from src.utils.utility_functions import get_mean_waiting_time, get_mean_werner, remove_unstable_werner, secret_key_rate, werner_to_fid
-from src.utils.logging_utilities import create_iter_kwargs
+from src.utils.utility_functions import remove_unstable_werner, secret_key_rate
 
 protocols = [
     ("s0", "s2", "s1"),
     ("d0", "d1", "d2", "d3", "s0", "s2", "s1"),
     ("s0", "s2", "d1", "d3", "s1"),
-    # ('d0', 'd1', 'd2', 'd3', 's0', 's2', 'd1', 'd3', 's1'),
-    # ('d0', 'd0', 'd1', 'd1', 'd2', 'd2', 'd3', 'd3', 's0', 's2', 's1'),
 ]
 benchmarks = [
     (0, 0),
     (1, 0, 0),
     (0, 1, 0),
-    # (1, 0, 1, 0),
-    # (1, 1, 0, 0),
 ]
 
 @pytest.mark.parametrize("protocol, benchmark", zip(protocols, benchmarks))
