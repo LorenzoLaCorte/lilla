@@ -1,7 +1,6 @@
 from copy import deepcopy
 from collections.abc import Iterable
 import logging
-from typing import Union
 
 import numpy as np
 
@@ -43,18 +42,18 @@ class HashableParameters():
     
 
 class RepeaterChainEvaluation():
-    def __init__(self, state_type = WernerState):
+    def __init__(self, state_type = WernerState, use_fft = True, 
+                 use_gpu = False, efficient = True):
         self.state_type = state_type
-        self.use_fft = True
-        self.use_gpu = False
+        self.use_fft = use_fft
+        self.use_gpu = use_gpu
         self.gpu_threshold = 1000000
-        self.efficient = True
+        self.efficient = efficient
         self.zero_padding_size = None
         self._qutip = False
 
-
     def iterative_convolution(self,
-            func, shift=0, first_func=None, p_swap=None, tiling=False):
+            func, shift=0, first_func=None, p_swap=None):
         """
         Calculate the convolution iteratively:
         first_func * func * func * ... * func
@@ -85,8 +84,8 @@ class RepeaterChainEvaluation():
         """
         if (
             first_func is None or 
-                (self.state_type == WernerState) or
-                (self.state_type == BellState)
+            self.state_type == WernerState or
+            self.state_type == BellState
         ):
             is_dm = False
         else:
@@ -94,12 +93,6 @@ class RepeaterChainEvaluation():
 
         trunc = len(func)
 
-        # Tile the PMF (becomes 1x4) in case it is necessary for computation
-        if tiling:
-            func = np.tile(func[:, np.newaxis], 4)
-            sum_func = sum([sublist[0] for sublist in func])
-        else:
-            sum_func = np.sum(func)
         # determine the required number of convolution
         if shift != 0:
             # cut-off is added here.
@@ -108,12 +101,17 @@ class RepeaterChainEvaluation():
         else:
             max_k = trunc
 
-        if p_swap is not None:
-            if isinstance(p_swap, list): p_swap = p_swap[0]
-            pf = sum_func * (1 - p_swap)
-        else:
-            pf = sum_func
+        if self.state_type == WernerState:
+            coverage = np.sum(func)
+        elif self.state_type == BellState:
+            coverage = sum([lambdas[0] for lambdas in func])
 
+        if p_swap is not None:
+            assert not isinstance(p_swap, list), "p_swap should not be a list"
+            pf = coverage * (1 - p_swap)
+        else:
+            pf = coverage
+        
         with np.errstate(divide='ignore'):
             if pf <= 0.:  # pf ~ 0 and round-off error
                 max_k = trunc
@@ -121,19 +119,17 @@ class RepeaterChainEvaluation():
                 max_k = min(max_k, (-52 - np.log(trunc))/ np.log(pf))
         max_k = int(max_k)
         
-        if first_func is None: 
-            first_func = func
-        
-        if not tiling:
-            # Transpose the array of state to the shape (1,1,trunc)
-            # if werner or shape (4,4,trunc) if density matrix
-            if not is_dm:
-                first_func = first_func.reshape((trunc, 1, 1))
+        # If first_func is not given, convolve func with itself
+        if first_func is None: first_func = func
+
+        if self.state_type == WernerState:
+            if not is_dm: # shape (4,4,trunc) if density matrix
+                first_func = first_func.reshape((trunc, 1, 1)) # shape (1,1,trunc) if Werner state
             first_func = np.transpose(first_func, (1, 2, 0))
-        else:
-            # Transpose the array of state to the shape (1, 4, trunc)
+        
+        elif self.state_type == BellState:
             if not is_dm:
-                first_func = first_func.reshape((trunc, 4, 1))
+                first_func = first_func.reshape((trunc, 4, 1)) # shape (1, 4, trunc) if Bell state
             first_func = np.transpose(first_func, (1, 2, 0))
             func = func.reshape((trunc, 4, 1))
             func = np.transpose(func, (1, 2, 0))
@@ -142,21 +138,20 @@ class RepeaterChainEvaluation():
         result = np.empty(first_func.shape, first_func.dtype)
         for i in range(first_func.shape[0]):
             for j in range(first_func.shape[1]):
-                if not tiling:
+                if self.state_type == WernerState:
                     result[i][j] = self.iterative_convolution_helper(
                         func, first_func[i][j], trunc, shift, p_swap, max_k)
-                else:
+                elif self.state_type == BellState:
                     result[i][j] = self.iterative_convolution_helper(
                         func[i][j], first_func[i][j], trunc, shift, p_swap, max_k)
                 
         # Permute the indices back
         result = np.transpose(result, (2, 0, 1))
         if not is_dm:
-            if not tiling:
+            if self.state_type == WernerState:
                 result = result.reshape(trunc)
-            else:
+            elif self.state_type == BellState:
                 result = result.reshape([trunc, 4])
-
         return result
 
 
@@ -317,6 +312,7 @@ class RepeaterChainEvaluation():
                 first_func=state_prep, p_swap=p_swap)
             del pmf_cutoff
 
+            # TODO: check this part more carefully
             with np.errstate(divide='ignore', invalid='ignore'):
                 if len(state_out.shape) == 1:
                     state_out[1:] /= pmf_swap[1:]  # 0-th element has 0 pmf
@@ -328,10 +324,14 @@ class RepeaterChainEvaluation():
 
         elif self.state_type == BellState:
             join_links = bell_join
-
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 
+            # Tile pmf for computation for Bell states
+            if self.state_type == BellState:
+                pmf1 = np.tile(pmf1[:, np.newaxis], 4)
+                pmf2 = np.tile(pmf2[:, np.newaxis], 4)
+             
             # P'_f
             pf_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2,
@@ -357,28 +357,32 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf1, 
                 ycut=True, cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="f1f2", # TODO: bad naming
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate, tiling=True)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate)
             # Wprep * Pr(Tout = t)
             state_prep = self.iterative_convolution(
-                func=pf_cutoff,
-                shift=shift, first_func=state_suc, tiling=True)
+                pf_cutoff,
+                shift=shift, first_func=state_suc)
             del pf_cutoff, state_suc
             # Wout * Pr(Tout = t)
             state_out = self.iterative_convolution(
-                func=pmf_cutoff, shift=0,
-                first_func=state_prep, p_swap=p_swap, tiling=True)
+                pmf_cutoff, shift=0,
+                first_func=state_prep, p_swap=p_swap)
             del pmf_cutoff
-        
-            # Checks whther state_out is 1D or 3D 
-            with np.errstate(divide='ignore', invalid='ignore'):
-                if len(state_out.shape) == 2 and state_out.shape[1] == 4:
-                    for i in range(1, len(state_out)):
-                        state_out[i] = state_out[i] / pmf_swap[i]
-                        for j in range(0, state_out.shape[1]):
-                            state_out[i][j] = np.where(np.isnan(state_out[i][j]), 1., state_out[i][j] ) #if nan, replace state_out with 1
-                else:
-                    raise ValueError("The state_out is not in the correct shape.")
 
+            # Checks whther state_out is 1D or 3D 
+            # TODO: check this part more carefully
+            with np.errstate(divide='ignore', invalid='ignore'):
+                for i in range(1, len(state_out)):
+                    state_out[i] = state_out[i] / pmf_swap[i]
+                    for j in range(0, state_out.shape[1]):
+                        state_out[i][j] = np.where(np.isnan(state_out[i][j]), 1., state_out[i][j] ) #if nan, replace state_out with 1
+
+            assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
+
+            # De-tile pmf for Bell states
+            if self.state_type == BellState:
+                pmf_swap = pmf_swap[:,0]
+            
         return pmf_swap, state_out
 
 
@@ -463,12 +467,12 @@ class RepeaterChainEvaluation():
                 evaluate_func="w1+w2+4w1w2", t_coh=t_coh)
             # Wprep * P_s
             state_prep = self.iterative_convolution(
-                func=pf_cutoff, shift=shift,
+                pf_cutoff, shift=shift,
                 first_func=state_suc)
             del pf_cutoff, state_suc
             # Wout * Pr(Tout = t)
             state_out = self.iterative_convolution(
-                func=pf_dist, shift=0,
+                pf_dist, shift=0,
                 first_func=state_prep)
             del pf_dist, state_prep
 
@@ -481,11 +485,17 @@ class RepeaterChainEvaluation():
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 
+            # Tile pmf for computation for Bell states
+            if self.state_type == BellState:
+                pmf1 = np.tile(pmf1[:, np.newaxis], 4)
+                pmf2 = np.tile(pmf2[:, np.newaxis], 4)
+
             # P'_f  cutoff attempt when cutoff fails
             pf_cutoff = join_links(
-                pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2,
+                pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=False,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="1", depolar_rate=depolar_rate, dephase_rate=dephase_rate)
+                evaluate_func="1", 
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate)
             # P'_ss  cutoff attempt when cutoff and dist succeed
             pss_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
@@ -507,7 +517,8 @@ class RepeaterChainEvaluation():
             psf_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="0.5-0.5f1f2", depolar_rate=depolar_rate, dephase_rate=dephase_rate) 
+                evaluate_func="0.5-0.5f1f2", 
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate) 
             # P_f  dist attempt when dist fails
             pf_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -527,31 +538,36 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="f1+f2+4f1f2", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate, tiling=True)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate)
             assert len(state_suc.shape) == 2 and state_suc.shape[1] == 4
 
             # Wprep * P_s
             state_prep = self.iterative_convolution(
                 func=pf_cutoff, shift=shift,
-                first_func=state_suc, tiling=True)
+                first_func=state_suc)
             del pf_cutoff, state_suc
             assert len(state_prep.shape) == 2 and state_prep.shape[1] == 4
 
             # Wout * Pr(Tout = t)
             state_out = self.iterative_convolution(
                 func=pf_dist, shift=0,
-                first_func=state_prep, tiling=True)
+                first_func=state_prep)
             del pf_dist, state_prep
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4
 
             with np.errstate(divide='ignore', invalid='ignore'):
-                if len(state_out.shape) == 2 and state_out.shape[1] == 4:
-                    for i in range(1, len(state_out)):    
-                        for j in range(0, state_out.shape[1]):
-                            state_out[i][j] = state_out[i][j] / pmf_dist_link[i]
-                            state_out[i][j] = np.where(np.isnan(state_out[i][j]), 1., state_out[i][j] ) #if nan, replace state_out with 1
-                else:
-                    raise ValueError("The state_out is not in the correct shape.")
+                state_out[1:] /= pmf_dist_link[1:]
+                state_out = np.where(np.isnan(state_out), 1., state_out)
+
+            # De-tile pmf for Bell states
+            if self.state_type == BellState:
+                pmf_dist = pmf_dist[:,0]
+                pmf_dist_link = pmf_dist_link[:,0]
+            
+            assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
+            pmf_dist[0], pmf_dist_link[0] = 0., 0.
+            state_out[0] = np.zeros(4, dtype=state_out.dtype)
+            
         return pmf_dist, state_out
 
 
@@ -671,11 +687,13 @@ class RepeaterChainEvaluation():
         -------
         t_pmf, sf: array-like 1-D -- TODO: here, the type can be different
             The output waiting time and state quality (e.g., Werner parameters)
+        
+        TODO: rename it as doubling_protocol, remove all_level
         """
         parameters = deepcopy(parameters)
         protocol: SymProtocol = parameters["protocol"]
 
-        # Preliminary check            
+        # Preliminary check
         if isinstance(protocol, int):
             # In case of protocol with only one operation, ensure protocol is treated as a tuple
             if protocol == 0 or protocol == 1: 
@@ -686,7 +704,8 @@ class RepeaterChainEvaluation():
 
         p_gen: int = parameters["p_gen"]
         if isinstance(p_gen, Iterable):
-            raise NotImplementedError("Heterogeneous nested protocols are not supported yet.")
+            raise NotImplementedError("Heterogeneous nested protocols are not supported, "
+                                      "Please specify the protocol as a binary tree.")
 
         if "tau" in parameters:  # backward compatibility
             parameters["mt_cut"] = parameters.pop("tau")
@@ -915,8 +934,8 @@ def repeater_sim(parameters, all_level=False, state_type=WernerState):
     """
     Functional wrapper for nested (Li et al. 2021) or asymmetric (La Corte et al. 2025) protocol evaluation.
     A first typecheck on the protocol is done to identify the evaluation to run, i.e.
-    - If the protocol is a tuple of integers, run the nested protocol
-    - Otherwise, the tuples should be of strings, so run the asymmetric protocol
+        - If the protocol is a tuple of integers, run the nested protocol
+        - Otherwise, the tuples should be of strings, so run the asymmetric protocol
     Notice that cut-offs and 'all_level' are not implemented yet for asymmetric protocols.
 
     Parameters
@@ -933,6 +952,11 @@ def repeater_sim(parameters, all_level=False, state_type=WernerState):
     -------
     t_pmf, w_func: array-like 1-D
         The output waiting time and Werner parameters
+    TODO: implement typing for simulation parameters
+    TODO: implement type for protocol types: symmetric (doubling), asymmetric (heuristic)
+    --> TODO: refactor asymmetric protocol in input to be a binary tree
+    TODO: refactor checks as functions
+    TODO: remove all_level
     """
     simulator = RepeaterChainEvaluation(state_type)
 

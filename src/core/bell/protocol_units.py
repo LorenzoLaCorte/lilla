@@ -1,84 +1,86 @@
 import numba as nb
 import numpy as np
 
+from src.core.bell.state import LFunc
 
 __all__ = [
-    "depolarizing_noise", "dephasing_noise", "amplitude_damping", "bit_phase_flip",
-    "get_swap_prob_suc", "get_swap_lambda_out",
-    "get_dist_lambda_out", "get_dist_prob_fail", "get_dist_prob_suc",
     "memory_cut_off", "fidelity_cut_off", "run_time_cut_off", "time_cut_off",
+    "depolarizing_noise", "dephasing_noise",
+    "get_one", "get_swap_lambda_out",
+    "get_dist_lambda_out", "get_dist_prob_fail", "get_dist_prob_suc"
 ]
-
 
 """
 This module contain the defined success probability and
 resulting output parameters of each protocol unit.
+TODO: refactor this as ``noise model'' and a module with swapping and distillation as ``protocol units''
 """
 ########################################################################
+
 """
 Error model functions
 """
 @nb.jit(nopython=True, error_model="numpy")
-def depolarizing_noise(lambdas, t, p):
+def depolarizing_noise(lambdas, t, depolar_rate):
     """
     Applies depolarizing noise to the Bell Diagonal state, ensuring normalization.
+    Note that this is global depolarization on the pair.
+    For a 4-dimensional system, the depolarizing channel:
+        - with prob. p, replaces the system with completely mixed state I/4
+        - with prob. (1-p), leaves the state untouched
+    i.e.
+        epsilon(rho)  = (p/4) * I + (1 - p) * rho
+    with
+        p(t) = 1 - np.exp(-t * depolar_rate)
+    
+    TODO: if at some point we think time is a better param,
+        we can substitute this with 
+            p(t) = 1 - np.exp(-t / T_coh)
+
+    Example:
+        with 
+            lamdas = [0.85, 0.05, 0.05, 0.05]
+            t = 1e05
+            depolar_rate = 2e-05
+        we get
+            depolarized_lambdas = array([0.33120117, 0.22293294, 0.22293294, 0.22293294])
     """
-    # p_t = 1 - np.exp(-p * t)
-    p_t = p[t]
-    # Apply depolarization to each lambda
-    new_lambdas = [(1 - p_t) * lambda_0 + p_t / 4 for lambda_0 in lambdas]
-    new_lambdas = np.asarray(new_lambdas)
-    return new_lambdas
+    p = 1 - np.exp(- t * depolar_rate)
+    depolarized_lambdas = (p / 4) + (1 - p) * np.asarray(lambdas)
+    return depolarized_lambdas
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def dephasing_noise(lambdas, t, gamma):
+def dephasing_noise(lambdas, t, dephase_rate):
     """
-    Applies dephasing noise (affecting lambda_2 and lambda_3) with normalization.
+    Applies phase damping noise with normalization.
+    In the BD state:
+        - with prob. p, (phi^+ and phi^-), (psi^+ and psi^-) weights are swapped,
+        - with prob. (1-p), the state is left untouched
+    with
+        p(t) = (1 - e^(-t * dephase_rate) / 2
+    
+    Example
+        with 
+            lamdas = [0.85, 0.05, 0.075, 0.025]
+            t = 100
+            gamma = 0.01
+        we get
+            array([0.59715178, 0.30284822, 0.05919699, 0.04080301])
+        with 
+            t = 1000
+        we get
+            array([0.45001816, 0.44998184, 0.05000113, 0.04999887])
     """
-    decay_factor = (1 - np.exp(-gamma * t))/2
-    new_lambdas = [
-        lambdas[0] * (1 - decay_factor) + lambdas[1] * decay_factor,  # Redistribute lost probability
-        lambdas[1] * (1 - decay_factor) + lambdas[0] * decay_factor,
-        lambdas[2] * (1 - decay_factor) + lambdas[3] * decay_factor,
-        lambdas[3] * (1 - decay_factor) + lambdas[2] * decay_factor   # Redistribute lost probability
-    ]
-    new_lambdas = np.asarray(new_lambdas)
-    return new_lambdas
+    p = (1 - np.exp(- t * dephase_rate)) / 2
+    dephased_lambdas = np.asarray([
+        lambdas[0] * (1 - p) + lambdas[1] * p,
+        lambdas[1] * (1 - p) + lambdas[0] * p,
+        lambdas[2] * (1 - p) + lambdas[3] * p,
+        lambdas[3] * (1 - p) + lambdas[2] * p
+    ])
+    return dephased_lambdas
 
-
-@nb.jit(nopython=True, error_model="numpy")
-def amplitude_damping(lambdas, t, gamma):
-    """
-    Models amplitude damping noise affecting lambda_1 and lambda_4, ensuring probability conservation.
-    """
-    p_t = 1 - np.exp(-gamma * t)
-    lost_probability = (lambdas[0] - lambdas[3]) * p_t
-    new_lambdas = [
-        lambdas[0] - lost_probability,
-        lambdas[1],
-        lambdas[2],
-        lambdas[3] + lost_probability
-    ]
-    new_lambdas = np.asarray(new_lambdas)
-    return new_lambdas
-
-
-@nb.jit(nopython=True, error_model="numpy")
-def bit_phase_flip(lambdas, t, p):
-    """
-    Applies bit-flip or phase-flip errors (affecting lambda_2 and lambda_3) with normalization.
-    """
-    factor = (1 - 2 * p * (1 - np.exp(-t)))
-    lost_probability = (1 - factor) * (lambdas[1] + lambdas[2])
-    new_lambdas = [
-        lambdas[0] + lost_probability / 2,  # Redistribute lost probability
-        lambdas[1] * factor,
-        lambdas[2] * factor,
-        lambdas[3] + lost_probability / 2   # Redistribute lost probability
-    ]
-    new_lambdas = np.asarray(new_lambdas)
-    return new_lambdas
 
 """
 Success probability p and
@@ -90,7 +92,7 @@ t1, t2: int
     The waiting time of the two input links.
 lambdas1, lambdas2 : float
     The parameters of the two input links.
-depolar_rate, dephase_rate, amplitude_damping_rate, bit_phase_flip_rate :
+depolar_rate, dephase_rate :
     Error parameters
 
 Returns
@@ -102,86 +104,10 @@ result: bool
     The result of the cut-off
 """
 @nb.jit(nopython=True, error_model="numpy")
-def get_one(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
+def apply_noise(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate):
     """
-    Get a trivial one
-    """
-    return [1., 1., 1., 1.]
-
-
-@nb.jit(nopython=True, error_model="numpy")
-def get_swap_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
-    """
-    Get w_swap
-    """
-    output =  1 / 4
-    # output =  (lambdas1[0]*lambdas2[0]+lambdas1[1]*lambdas2[1] + lambdas1[2]*lambdas2[2]+lambdas1[3]*lambdas2[3]) / 4
-
-    return [output, output, output, output]
-
-
-@nb.jit(nopython=True, error_model="numpy")
-def get_swap_lambda_out(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
-    """
-    Get w_swap
-    """
-    get_swap_prob = get_swap_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate, amplitude_damping_rate, bit_phase_flip_rate) 
-    lambdas = [0., 0., 0., 0.]  
-    lambdas[0] = (lambdas1[0] * lambdas2[0] + lambdas1[1] * lambdas2[1] + lambdas1[2] * lambdas2[2] + lambdas1[3] * lambdas2[3]) / (get_swap_prob[0] * 4)
-    lambdas[1] = (lambdas1[0] * lambdas2[1] + lambdas1[1] * lambdas2[0] + lambdas1[2] * lambdas2[3] + lambdas1[3] * lambdas2[2]) / (get_swap_prob[1] * 4)
-    lambdas[2] = (lambdas1[0] * lambdas2[2] + lambdas1[1] * lambdas2[3] + lambdas1[2] * lambdas2[0] + lambdas1[3] * lambdas2[1]) / (get_swap_prob[2] * 4)
-    lambdas[3] = (lambdas1[0] * lambdas2[3] + lambdas1[1] * lambdas2[2] + lambdas1[2] * lambdas2[1] + lambdas1[3] * lambdas2[0]) / (get_swap_prob[3] * 4)
-    lambdas = depolarizing_noise(lambdas, np.abs(t1-t2), depolar_rate)
-    lambdas = dephasing_noise(lambdas, np.abs(t1-t2), dephase_rate)
-
-    if sum(lambdas) > 1.1 or sum(lambdas) < 0.9:
-        print(lambdas)
-        print(sum(lambdas))
-        raise ValueError(f"sum(lambdas) > 1")
-    return lambdas
-
-@nb.jit(nopython=True, error_model="numpy")
-def get_dist_lambda_out(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
-    """
-    Get p_dist * w_dist
-    """
-    lambdas = np.zeros(len(lambdas1))
-    get_dist_prob = get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate, amplitude_damping_rate, bit_phase_flip_rate)
-    if t1 < t2:
-        lambdas1 = depolarizing_noise(lambdas1, np.abs(t1-t2), depolar_rate)
-        lambdas1 = dephasing_noise(lambdas1, np.abs(t1-t2), dephase_rate)
-    else:
-        lambdas2 = depolarizing_noise(lambdas2, np.abs(t1-t2), depolar_rate)
-        lambdas2 = dephasing_noise(lambdas2, np.abs(t1-t2), dephase_rate)
-        
-    
-    
-    lambdas[0] = (lambdas1[0] * lambdas2[0] + lambdas1[1] * lambdas2[1]) / get_dist_prob[0] 
-    lambdas[1] = (lambdas1[0] * lambdas2[1] + lambdas1[1] * lambdas2[0]) / get_dist_prob[1] 
-    lambdas[2] = (lambdas1[2] * lambdas2[2] + lambdas1[3] * lambdas2[3]) / get_dist_prob[2] 
-    lambdas[3] = (lambdas1[2] * lambdas2[3] + lambdas1[3] * lambdas2[2]) / get_dist_prob[3]
-
-    if sum(lambdas) > 1.1 or sum(lambdas) < 0.9:
-        print(lambdas)
-        print(sum(lambdas))
-        raise ValueError(f"sum(lambdas) > 1")
-    return lambdas
-
-@nb.jit(nopython=True, error_model="numpy")
-def get_dist_prob_fail(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
-    """
-    Get 1 - p_dist
-    """
-    get_dist_prob = get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate, amplitude_damping_rate, bit_phase_flip_rate)  
-    one = [1., 1., 1., 1.]
-    output = [x-y for x, y in zip(one, get_dist_prob)]
-    return output
-
-
-@nb.jit(nopython=True, error_model="numpy")
-def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
-    """
-    Get p_dist
+    Applies depolarizing and dephasing noise to the older link.
+    Returns updated lambdas1 and lambdas2.
     """
     if t1 > t2:
         lambdas1 = depolarizing_noise(lambdas1, np.abs(t1-t2), depolar_rate)
@@ -190,9 +116,84 @@ def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=
         lambdas2 = depolarizing_noise(lambdas2, np.abs(t1-t2), depolar_rate)
         lambdas2 = dephasing_noise(lambdas2, np.abs(t1-t2), dephase_rate)
 
-    output = ((lambdas1[0] + lambdas1[1])*(lambdas2[0] + lambdas2[1]) + (lambdas1[2] + lambdas1[3])*(lambdas2[2] + lambdas2[3])) 
-    return [output, output, output, output]
+    assert np.isclose(sum(lambdas1), 1.0, atol=1e-10), f"sum(lambdasOut)={sum(lambdas1)} not close to 1"
+    assert np.isclose(sum(lambdas2), 1.0, atol=1e-10), f"sum(lambdasOut)={sum(lambdas2)} not close to 1"
 
+    return lambdas1, lambdas2
+
+
+@nb.jit(nopython=True, error_model="numpy")
+def get_one(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0.):
+    """
+    Get a trivial one
+    """
+    return 1.
+
+
+@nb.jit(nopython=True, error_model="numpy")
+def get_swap_lambda_out(t1, t2, lambdasA, lambdasB, depolar_rate=0., dephase_rate=0.):
+    """
+    Get w_swap
+    """
+    lambdasA, lambdasB = apply_noise(t1, t2, lambdasA, lambdasB, depolar_rate, dephase_rate)
+
+    lambdasOut = np.asarray([
+        (lambdasA[0] * lambdasB[0] + lambdasA[1] * lambdasB[1] + lambdasA[2] * lambdasB[2] + lambdasA[3] * lambdasB[3]),
+        (lambdasA[0] * lambdasB[1] + lambdasA[1] * lambdasB[0] + lambdasA[2] * lambdasB[3] + lambdasA[3] * lambdasB[2]),
+        (lambdasA[0] * lambdasB[2] + lambdasA[1] * lambdasB[3] + lambdasA[2] * lambdasB[0] + lambdasA[3] * lambdasB[1]),
+        (lambdasA[0] * lambdasB[3] + lambdasA[1] * lambdasB[2] + lambdasA[2] * lambdasB[1] + lambdasA[3] * lambdasB[0])
+    ])
+
+    assert np.isclose(sum(lambdasOut), 1.0, atol=1e-10), f"sum(lambdasOut)={sum(lambdasOut)} not close to 1"
+    return lambdasOut
+
+
+@nb.jit(nopython=True, error_model="numpy")
+def get_dist_lambda_out(t1, t2, a, b, depolar_rate=0., dephase_rate=0.):
+    """
+    Get p_dist * w_dist
+    """
+    a, b = apply_noise(t1, t2, a, b, depolar_rate, dephase_rate)
+
+    fid = (a[0] * b[0] + a[1] * b[1]) / get_dist_prob_suc(t1, t2, a, b, depolar_rate, dephase_rate)
+
+    numerator = np.asarray([
+        (a[0] * b[0] + a[1] * b[1]),
+        (a[0] * b[1] + a[1] * b[0]), 
+        (a[2] * b[2] + a[3] * b[3]), 
+        (a[2] * b[3] + a[3] * b[2]),
+    ])
+    p_dist = sum(numerator) # get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate)
+    if np.isclose(p_dist, 0.0, atol=1e-10): p_dist = 1e-10  # avoid division by zero
+
+    # lambdasOut = numerator / p_dist
+    fid = numerator[0] / p_dist
+    lambdasOut = np.asarray([
+        fid,
+        (1 - fid) / 3,
+        (1 - fid) / 3,
+        (1 - fid) / 3,
+    ])    
+
+    return lambdasOut
+
+
+@nb.jit(nopython=True, error_model="numpy")
+def get_dist_prob_fail(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0.):
+    """
+    Get 1 - p_dist
+    """
+    return 1. - get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate)  
+
+
+@nb.jit(nopython=True, error_model="numpy")
+def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate=0., dephase_rate=0.):
+    """
+    Get p_dist
+    """
+    lambdas1, lambdas2 = apply_noise(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate)
+
+    return ((lambdas1[0] + lambdas1[1])*(lambdas2[0] + lambdas2[1]) + (lambdas1[2] + lambdas1[3])*(lambdas2[2] + lambdas2[3])) 
 
 ########################################################################
 """
@@ -237,29 +238,29 @@ def memory_cut_off(
 
 @nb.jit(nopython=True, error_model="numpy")
 def fidelity_cut_off(
-    t1, t2, lambdas1=[1.0, 0., 0., 0.], lambdas2=[1.0, 0., 0., 0.],
+    t1, t2, lambdas1, lambdas2,
     mt_cut=np.iinfo(int).max, f_cut=1.e-8, rt_cut=np.iinfo(int).max):
     """
     Fidelity-dependent cut-off, The two input links suvives only if
     lambdas1 <= f_cut and lambdas2 <= f_cut including decoherence.
     """
-
+    f1, f2 = lambdas1[0], lambdas2[0]
     if t1 == t2:
-        if lambdas1[0] < f_cut or lambdas2[0] < f_cut:
+        if f1 < f_cut or f2 < f_cut:
             return t1, False
         return t1, True
     if t1 > t2:  # make sure t1 < t2
         t1, t2 = t2, t1
         lambdas1, lambdas2 = lambdas2, lambdas1
     # first link has low quality
-    if lambdas1[0] < f_cut:
+    if f1 < f_cut:
         return t1, False  # waiting_time = min(t1, t2)
-    waiting = int(np.floor(np.log(lambdas1[0]/f_cut)))
+    waiting = int(np.floor(np.log(f1/f_cut))) # TODO: t_coh not here anymore, maybe apply noise
     # first link waits too long
     if t1 + waiting < t2:
         return t1 + waiting, False  # min(t1, t2) < waiting_time < max(t1, t2)
     # second link has low quality
-    elif lambdas2[0] < f_cut:
+    elif f2 < f_cut:
         return t2, False  # waiting_time = max(t1, t2)
     # both links are good
     else:
@@ -299,7 +300,7 @@ def bell_join(
         pmf1, pmf2, lambda_func1, lambda_func2, ycut=True,
         cutoff=np.iinfo(int).max, 
         cut_type="memory_time", evaluate_func=get_one, 
-        depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):
+        depolar_rate=0., dephase_rate=0.):
     """
     Calculate P_s and P_f.
     Calculate sum_(t=tA+tB) Pr(TA=tA)*Pr(TB=tB)*f(tA, tB)
@@ -360,10 +361,9 @@ def bell_join(
     else:
         raise NotImplementedError("Unknow cut-off type")
 
+    # TODO: refactor these names to be "get_swap_state_out" instead of "f1f2"
     if evaluate_func == "1":
         evaluate_func = get_one
-    elif evaluate_func == "get_swap_prob_suc":
-        evaluate_func = get_swap_prob_suc
     elif evaluate_func == "f1f2":
         evaluate_func = get_swap_lambda_out
     elif evaluate_func == "0.5+0.5f1f2":
@@ -377,18 +377,19 @@ def bell_join(
     
     result = join_links_helper(
         pmf1, pmf2, lambda_func1, lambda_func2, cutoff_func=cutoff_func, evaluate_func=evaluate_func, ycut=ycut, 
-        mt_cut=mt_cut, w_cut=w_cut, rt_cut=rt_cut, depolar_rate=depolar_rate, dephase_rate=dephase_rate, amplitude_damping_rate=amplitude_damping_rate, bit_phase_flip_rate=bit_phase_flip_rate)
+        mt_cut=mt_cut, w_cut=w_cut, rt_cut=rt_cut, depolar_rate=depolar_rate, dephase_rate=dephase_rate)
     return result
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def join_links_helper(
-        pmf1, pmf2, w_func1, w_func2,
+def join_links_iterate(
+        result, pmf1, pmf2, w_func1, w_func2,
         cutoff_func=memory_cut_off, evaluate_func=get_one, ycut=True, mt_cut=np.iinfo(int).max, w_cut=0.0, rt_cut=np.iinfo(int).max, 
-        depolar_rate=0., dephase_rate=0., amplitude_damping_rate=0., bit_phase_flip_rate=0.):   
+        depolar_rate=0., dephase_rate=0.):
+    """
+    Iterate over all possible t1 and t2
+    """
     size = len(pmf1)
-    result = np.zeros((size, 4), dtype=np.float64)  # Modify result to be a 2D array
-    depolar_rate = 1 - np.exp(- np.arange(size) / 50000)
     for t1 in range(1, size):
         for t2 in range(1, size):
             waiting_time, selection_pass = cutoff_func(
@@ -397,14 +398,21 @@ def join_links_helper(
             if not ycut:
                 selection_pass = not selection_pass
             if selection_pass:
-                output = evaluate_func(t1, t2, w_func1[t1], w_func2[t2], depolar_rate, dephase_rate, amplitude_damping_rate, bit_phase_flip_rate)
-                
-                for i in range(len(w_func1[t1])):
-                    result[waiting_time, i] += pmf1[t1, i] * pmf2[t2, i] * output[i]
-                
+                output = evaluate_func(t1, t2, w_func1[t1], w_func2[t2], depolar_rate, dephase_rate)
+                result[waiting_time] += pmf1[t1] * pmf2[t2] * output
     return result
 
 
-
-
-
+def join_links_helper(
+        pmf1, pmf2, sf1, sf2,
+        cutoff_func=memory_cut_off, evaluate_func=get_one, ycut=True, mt_cut=np.iinfo(int).max, w_cut=0.0, rt_cut=np.iinfo(int).max, 
+        depolar_rate=0., dephase_rate=0.):
+    """
+    Call the appropriate function based on if tiling is required (computing lambdas)
+    """
+    size = len(pmf1)
+    if isinstance(sf1, LFunc) and sf1.ndim == 2:
+        result = np.zeros((size, 4), dtype=np.float64)
+    else:
+        result = np.zeros(size, dtype=np.float64)
+    return join_links_iterate(result, pmf1, pmf2, sf1, sf2, cutoff_func, evaluate_func, ycut, mt_cut, w_cut, rt_cut, depolar_rate, dephase_rate)

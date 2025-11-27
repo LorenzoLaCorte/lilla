@@ -4,6 +4,8 @@ from copy import deepcopy
 import numba as nb
 import numpy as np
 from scipy.optimize import curve_fit
+from src.core.bell.state import BellState
+from src.core.werner.state import WernerState
 
 
 @nb.jit(nopython=True)
@@ -46,6 +48,10 @@ def fid_to_werner(fid):
     return (4 * fid - 1) / 3.
 
 
+def bell_to_fid(lambdas):
+    return lambdas[0]
+
+
 def entropy(x):
     if x==0.:
         return 0.
@@ -54,14 +60,18 @@ def entropy(x):
     return -x * np.log2(x) - (1-x) * np.log2(1-x)
 
 
-def distillable_entanglement(w_func):
-    f_func = werner_to_fid(w_func)
+def distillable_entanglement(state_func, state_type=WernerState):
+    if state_type == WernerState:
+        f_func = werner_to_fid(state_func)
+    elif state_type == BellState:
+        f_func = bell_to_fid(state_func)
+    
     f_func[f_func < 0.5] = 0.5
     f_func[f_func == 0.5] = 0.5 + 1.e-7  # avoid log(0)
     return entropy(0.5 + (f_func * (1-f_func))**0.5)
 
 
-def secret_fraction(w):
+def secret_fraction(aver_sf, state_type=WernerState):
     """
     Secret fraction of BB84 protocol with Werner state.
     
@@ -75,37 +85,51 @@ def secret_fraction(w):
     secret_fraction: float
         Secret fraction
     """
-    return max(1 - 2. * entropy((1.-w)/2.), 0.)
+    if state_type == BellState:
+        return max(aver_sf, 0.)
+    elif state_type == WernerState:
+        return max(1 - 2. * entropy((1.-aver_sf)/2.), 0.)
 
 
-def secret_key_rate(pmf, w_func, extrapolation=False, show_warning=False):
+
+def secret_key_rate(pmf, state_func, extrapolation=False, show_warning=False, state_type=WernerState):
     """
     Use the secret key rate as a merit function.
     It is defined by the multiplication of raw key rate and the
     secret key fraction.
     """
-    coverage = np.sum(pmf)
-    aver_w = get_mean_werner(pmf, w_func, extrapolation)
-    aver_w = min(aver_w, 1.) # avoid w > 1
+    aver_sf: np.ndarray | float = get_mean_sf(pmf, state_func, extrapolation, state_type)
     aver_t = get_mean_waiting_time(pmf, extrapolation, show_warning)
 
-    key_rate = 1/aver_t * secret_fraction(aver_w)
-    if key_rate < 0.:
-        key_rate = 0.
-    return key_rate
+    skr = 1 / aver_t * secret_fraction(aver_sf, state_type=state_type)
+    return max(skr, 0.) # avoid negative skr
 
-
-def get_mean_werner(pmf, w_func, extrapolation=False):
-    w_func = np.where(np.isnan(w_func), 0., w_func)
+# TODO: this should be get_mean_sf
+def get_mean(pmf, state_func, extrapolation=False):
+    tmp = np.where(np.isnan(state_func), 0., state_func)
     coverage = np.sum(pmf)
     if coverage <= 0:
         return 0.  # to prevent nan corrupts the optimization result
     if not extrapolation or coverage > 1 - 1.e-10 or coverage < 0.99:
-        aver_w = np.sum(pmf * w_func) / coverage
+        aver_val = np.sum(pmf * tmp) / coverage
     else:
-        aver_w = np.sum(pmf * w_func) + w_func[-1] * (1. - coverage)
-    return aver_w
+        aver_val = np.sum(pmf * tmp) + tmp[-1] * (1. - coverage)
+    return min(aver_val, 1.) # avoid w > 1
 
+
+# TODO: this should not be a function on its own, simply in the secret_key_rate 
+def get_mean_sf(pmf, state_func, extrapolation=False, state_type=WernerState) -> np.ndarray | float:
+    """
+    Get the mean state function:
+        - for Werner state, this is the average of the 1D function (a single scalar)
+        - for Bell state, this is the average of the 2D function (a 4-entry vector)
+    """
+    if state_type == BellState:
+        eX = get_mean(pmf, state_func[:,3] + state_func[:,1], extrapolation)
+        eZ = get_mean(pmf, state_func[:,0] + state_func[:,1], extrapolation)
+        return (1 - entropy(eX) - entropy(eZ))
+    elif state_type == WernerState:
+        return get_mean(pmf, state_func, extrapolation)
 
 def get_mean_waiting_time(pmf, extrapolation=False, show_warning=False):
     coverage = np.sum(pmf)
@@ -157,12 +181,6 @@ def create_cutoff_dict(cutoff_list, cut_types, parameters, ref_pmf_matrix=None):
                 if all(cutoff < 0.) or all(cutoff > 1.):
                     raise ValueError(
                         "A reference pmf is given, but cutoff is not a probability")
-                # if len(cutoff) != len(ref_pmf_matrix):
-                #     raise ValueError(
-                #         "The reference probability matrix must have "
-                #         "the same length as the input cutoff. However\n "
-                #         "len(cutoff)={}\n len(ref_pmf_matrix)={}\n".format(
-                #             len(cutoff), len(ref_pmf_matrix)))
                 cutoff_pos = cutoff
                 cutoff = np.empty(cutoff_pos.shape, dtype=int)
                 for i in range(len(cutoff)):

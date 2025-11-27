@@ -14,3 +14,6 @@
 /.ipynb_checkpoints
 
 venv
+model
+qbkat*
+*flatten*

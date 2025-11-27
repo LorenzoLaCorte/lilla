@@ -55,10 +55,6 @@ def polish_l_func(l_func: LFunc) -> LFunc:
     Polish the state quality function by erasing unrealistic Bell parameters.
     This can happen when the probability is too small ~1.0e-20.
     """
-    i = 0
-    while i < len(l_func):
-        curr: Lamdas = l_func[i]
-        curr = np.where(np.isnan(curr), 1., curr)
-        curr[curr > 1.0] = 1.0
-        curr[curr < 0.] = 0.
+    np.nan_to_num(l_func, copy=False, nan=1.0)
+    np.clip(l_func, 0.0, 1.0, out=l_func)
     return l_func
