@@ -43,12 +43,13 @@ class HashableParameters():
 
 class RepeaterChainEvaluation():
     def __init__(self, state_type = WernerState, use_fft = True, 
-                 use_gpu = False, efficient = True):
+                 use_gpu = False, efficient = True, twirling = True):
         self.state_type = state_type
         self.use_fft = use_fft
         self.use_gpu = use_gpu
         self.gpu_threshold = 1000000
         self.efficient = efficient
+        self.twirling = twirling
         self.zero_padding_size = None
         self._qutip = False
 
@@ -495,16 +496,16 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=False,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="1", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             # P'_ss  cutoff attempt when cutoff and dist succeed
             pss_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="0.5+0.5f1f2",  depolar_rate=depolar_rate, dephase_rate=dephase_rate)
+                evaluate_func="0.5+0.5f1f2",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             pss_cutoff_link = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="1",  depolar_rate=depolar_rate, dephase_rate=dephase_rate)
+                evaluate_func="1",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             # P_s  dist attempt when dist succeeds
             ps_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -517,8 +518,8 @@ class RepeaterChainEvaluation():
             psf_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="0.5-0.5f1f2", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate) 
+                evaluate_func="0.5-0.5f1f2",
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             # P_f  dist attempt when dist fails
             pf_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -538,7 +539,7 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="f1+f2+4f1f2", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             assert len(state_suc.shape) == 2 and state_suc.shape[1] == 4
 
             # Wprep * P_s
