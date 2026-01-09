@@ -173,6 +173,9 @@ class RepeaterChainEvaluation():
         convolved = first_func
         if self.use_fft: # Use geometric sum in Fourier space
             shape = 2 * trunc - 1
+            # TODO: shape = 2 * len(first_func) * len(func) - 1 , should be more accurate 
+            # but impractical for large arrays
+            
             # The following is from SciPy, they choose the size to be 2^n,
             # It increases the accuracy.
             if self.zero_padding_size is not None:
@@ -633,7 +636,7 @@ class RepeaterChainEvaluation():
                 raise TypeError("The coherence time must be a real number.")
         elif not np.isreal(t_coh):
             raise TypeError(
-                f"The coherence time must be a real number, not{t_coh}")
+                f"The coherence time must be a real number, not {t_coh}")
         if not np.isreal(p_swap):
             raise TypeError("p_swap must be a float number.")
         if cut_type in ("memory_time", "run_time") and not np.issubdtype(type(cutoff), np.integer):
@@ -867,17 +870,21 @@ class RepeaterChainEvaluation():
             The output waiting time and Werner parameters
         """
         # Preliminary check
-        validate_heterogeneous_parameters(parameters, number_of_segments)
+        validate_heterogeneous_parameters(parameters, number_of_segments, self.state_type)
         
         S = number_of_segments
         parameters = deepcopy(parameters)
 
         protocol = parameters["protocol"]
-        state: QuantumState = self.state_type
 
         p_gens = parameters["p_gen"]
         t_trunc = parameters["t_trunc"]
-        t_cohs = parameters["t_coh"]
+
+        if self.state_type == WernerState:
+            t_cohs = parameters.get("t_coh", [np.inf]*(S+1))
+        else:
+            depolarizing_rates = parameters.get("depolarizing_rate", [0.]*(S+1))
+            dephasing_rates = parameters.get("dephasing_rate", [0.]*(S+1))
 
         # In case of 1-level protocol, ensure protocol is treated as a tuple
         if isinstance(protocol, str):
@@ -895,9 +902,10 @@ class RepeaterChainEvaluation():
             pmf = p_gens[i] * (1 - p_gens[i])**(t_list - 1)
             pmf = np.concatenate((np.array([0.]), pmf))
             if self.state_type == WernerState:
+                # TODO: refactor this as below
                 sf: WFunc = WernerState(parameters["w0"]).get_generation_sf(t_trunc, i)
             elif self.state_type == BellState:
-                sf: LFunc = BellState(parameters["lambdas"]).get_generation_sf(t_trunc, i)
+                sf: LFunc = BellState(parameters["lambdas"][i]).get_generation_sf(t_trunc)
 
             # Keep track of segment endpoints
             segments.append((pmf, sf, i, i+1))
@@ -914,7 +922,13 @@ class RepeaterChainEvaluation():
                 next_idx = find_right_segment(segments, idx)
                 next_segment = segments[next_idx]
                 assert curr_segment[3] == next_segment[2], f"Segments {curr_segment[2]} and {next_segment[3]} are not compatible."
-                parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[next_segment[2]], t_cohs[next_segment[3]]] 
+
+                if self.state_type == WernerState:
+                    parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[next_segment[2]], t_cohs[next_segment[3]]] 
+                elif self.state_type == BellState:
+                    parameters["depolarizing_rate"] = [depolarizing_rates[curr_segment[2]], depolarizing_rates[next_segment[2]], depolarizing_rates[next_segment[3]]]
+                    parameters["dephasing_rate"] = [dephasing_rates[curr_segment[2]], dephasing_rates[next_segment[2]], dephasing_rates[next_segment[3]]]
+
                 pmf, w_func = self.compute_unit(
                     parameters, curr_segment[0], curr_segment[1], next_segment[0], next_segment[1], 
                     unit_kind="swap", step_size=1)
@@ -922,7 +936,12 @@ class RepeaterChainEvaluation():
                 segments[next_idx] = (pmf, w_func, curr_segment[2], next_segment[3])
             
             elif operation == 'd':
-                parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[curr_segment[3]]]
+                if self.state_type == WernerState:
+                    parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[curr_segment[3]]]
+                elif self.state_type == BellState:
+                    parameters["depolarizing_rate"] = [depolarizing_rates[curr_segment[2]], depolarizing_rates[curr_segment[3]]]
+                    parameters["dephasing_rate"] = [dephasing_rates[curr_segment[2]], dephasing_rates[curr_segment[3]]]
+
                 pmf, w_func = self.compute_unit(
                     parameters, curr_segment[0], curr_segment[1], unit_kind="dist", step_size=1)
                 segments[idx] = (pmf, w_func, curr_segment[2], curr_segment[3])
@@ -953,10 +972,9 @@ def repeater_sim(parameters, all_level=False, state_type=WernerState):
     -------
     t_pmf, w_func: array-like 1-D
         The output waiting time and Werner parameters
-    TODO: implement typing for simulation parameters
-    TODO: implement type for protocol types: symmetric (doubling), asymmetric (heuristic)
+    TODO: implement typing for simulation parameters (check repeater types)
+            and  implement type for protocol types: symmetric (doubling), asymmetric (heuristic)
     --> TODO: refactor asymmetric protocol in input to be a binary tree
-    TODO: refactor checks as functions
     TODO: remove all_level
     """
     simulator = RepeaterChainEvaluation(state_type)

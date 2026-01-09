@@ -9,6 +9,7 @@ from typing import Tuple, TypedDict, Union, Literal, List
 import numpy as np
 
 from src.core.states import QuantumState
+from src.core.werner.state import WernerState
 
 class ThresholdExceededError(Exception):
     """
@@ -100,13 +101,25 @@ def checkAsymProtocol(protocol: Tuple[str], S: int = None) -> Tuple[str]:
     return S
 
 
-def validate_heterogeneous_parameters(parameters, number_of_segments):
+def validate_heterogeneous_parameters(parameters, number_of_segments, state_type: QuantumState):
     """
     Validate the parameters of a heterogeneous protocol.
     """
-    if not isinstance(parameters["w0"], Iterable) or not isinstance(parameters["t_coh"], Iterable):
-        raise ValueError("w0 and t_coh must be iterable.")
-    if len(parameters["w0"]) != number_of_segments or len(parameters["p_gen"]) != number_of_segments:
+    if state_type == WernerState:
+        required_keys = ["w0", "p_gen", "t_coh"]
+        sf = parameters["w0"]
+        noise = parameters["t_coh"]
+    else:
+        required_keys = ["lambdas", "p_gen", "depolarizing_rate"]
+        sf = parameters["lambdas"]
+        noise = parameters["depolarizing_rate"]
+    for key in required_keys:
+        if key not in parameters:
+            raise ValueError(f"Missing required parameter: {key}")
+        if not isinstance(parameters[key], Iterable):
+            raise ValueError(f"{key} must be iterable.")
+
+    if len(sf) != number_of_segments or len(parameters["p_gen"]) != number_of_segments:
         raise ValueError("The number of segments must match the number of p_gen and w0 values.")
-    if len(parameters["t_coh"]) != number_of_segments + 1:
+    if len(noise) != number_of_segments + 1:
         raise ValueError("The number of nodes must match the number of t_coh values.")

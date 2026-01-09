@@ -1,4 +1,4 @@
-import copy
+import time
 import numpy as np
 import pytest
 
@@ -19,10 +19,11 @@ from src.tests.test_bell_sym import (
     CUT_TYPE,
 )
 
-PROTOCOL_LIST = [(0,), (1,), (0, 1), (0, 0), (1, 0, 0), (0, 1, 0)]
+PROTOCOL_LIST = [(0,), (1,), (1, 0), (0, 1), (0, 0), (1, 0, 0), (0, 1, 0)]
 PROTOCOL_MAP = {
     (0,): ("s0",),
     (1,): ("d0",),
+    (1, 0): ("d0", "d1", "s0"),
     (0, 1): ("s0", "d1"),
     (0, 0): ("s0", "s2", "s1"),
     (1, 0, 0): ("d0", "d1", "d2", "d3", "s0", "s2", "s1"),
@@ -31,6 +32,7 @@ PROTOCOL_MAP = {
 PROTOCOL_NAMES = {
     (0,): "swap",
     (1,): "dist",
+    (1, 0): "dist-swap",
     (0, 1): "swap-dist",
     (0, 0): "swap-swap",
     (1, 0, 0): "dist-dist-swap",
@@ -55,6 +57,66 @@ PARAM_IDS = [
     f"-pswap={p_swap}-pgen={p_gen}-tcoh={t_coh}-ttrunc={t_trunc}-w0={w_0}"
     for (noise, protocol, p_swap, p_gen, t_coh, t_trunc, w_0) in PARAM_GRID
 ]
+
+@pytest.mark.parametrize("homogeneous_protocol", PROTOCOL_LIST)
+@pytest.mark.parametrize("p_gen, p_swap, f0, depolarizing_rate, dephasing_rate, t_trunc", [
+    # (0.092, 0.85, 0.952, 0.1, 1000),
+    (0.0015, 0.85, 0.867, 0.05, 0.1, 1000),
+])
+def test_heterogeneus_repeater_sim(p_gen, p_swap, f0, depolarizing_rate, dephasing_rate, t_trunc, homogeneous_protocol):
+    """
+    Test the repeater_sim function calling it for a homogeneous protocol
+        both with the algorithm for symmetric (homogeneous) protocols [benchmark]
+         and the algorithm for asymmetric (and heterogeneous) protocols.
+    """
+    heterogeneous_protocol = PROTOCOL_MAP[homogeneous_protocol]
+    print(f"\nHETEROGENEOUS TEST | Protocol: {PROTOCOL_NAMES[homogeneous_protocol]}, p_swap={p_swap}, p_gen={p_gen}, f0={f0}, depolarizing_rate={depolarizing_rate}, dephasing_rate={dephasing_rate}, t_trunc={t_trunc}")
+    # Test with benchmark
+    lambdas = np.array([f0, (1 - f0) / 3, (1 - f0) / 3, (1 - f0) / 3])
+    parameters = {
+        'depolarizing_rate': depolarizing_rate,
+        'dephasing_rate': dephasing_rate,
+        'p_gen': p_gen,
+        'p_swap': p_swap,
+        'lambdas': lambdas,
+        "t_trunc": t_trunc
+    }
+    parameters["protocol"] = homogeneous_protocol
+
+    start_time = time.time()
+    pmf1, l_func1 = repeater_sim(parameters, state_type=BellState)
+    elapsed1 = time.time() - start_time
+    skr1 = secret_key_rate(pmf1, l_func1, state_type=BellState)
+
+    segments = sum([1 for step in heterogeneous_protocol if step.startswith("s")]) + 1
+
+    # Test with heterogeneous protocol
+    parameters = {
+        'depolarizing_rate': [depolarizing_rate/2]*(segments+1),
+        'dephasing_rate': [dephasing_rate/2]*(segments+1),
+        'p_gen': [p_gen]*segments,
+        'p_swap': p_swap,
+        'lambdas': [lambdas]*segments,
+        "t_trunc": t_trunc,
+    }
+    parameters["protocol"] = heterogeneous_protocol
+
+    start_time = time.time()
+    pmf2, l_func2 = repeater_sim(parameters, state_type=BellState)
+    elapsed2 = time.time() - start_time
+    skr2 = secret_key_rate(pmf2, l_func2, state_type=BellState)
+
+    print(f"\nSKR for homogeneous protocol {homogeneous_protocol}: {skr1}, "
+        f"for heterogeneous protocol {heterogeneous_protocol}: {skr2}")
+    print(f"Elapsed time for homogeneous protocol {homogeneous_protocol}: {elapsed1}, "
+        f"for heterogeneous protocol {heterogeneous_protocol}: {elapsed2}")
+    
+    for i, (p1, p2, l1, l2) in enumerate(zip(pmf1[1:], pmf2[1:], l_func1[1:], l_func2[1:]), start=1):
+        assert np.isclose(p1, p2, atol=1e-10), f"PMF mismatch at index {i} between homogeneous and heterogeneous protocols: {p1} vs {p2}"
+        if p1 < 1e-10 and p2 < 1e-10:
+            continue  # skip fidelity check for negligible probabilities
+        assert np.allclose(l1, l2, atol=1e-5), f"Lambda function mismatch at index {i} between homogeneous and heterogeneous protocols: {l1} vs {l2}"
+
 
 @pytest.mark.parametrize(
     ("noise", "sym_protocol", "p_swap", "p_gen", "t_coh", "t_trunc", "w_0"),

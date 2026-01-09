@@ -243,19 +243,22 @@ def working_example():
 
 # """
 # TODO: Bayesian optimization
-# TODO: cutoff optimization
+# TODO: cutoff optimization?
 # """
 
 # We can also evaluate asymmetric heterogenous protocols with Bell diagonal states
+# setting different generation success probabilities and lambdas for the three different links
+# and different coherence times for the four nodes
 state_type : QuantumState = BellState
 machinery = RepeaterChainEvaluation(state_type=state_type, twirling=False)
 parameters = {
     "p_gen": [0.1, 0.1, 0.05],
     "p_swap": 0.5,
-    "lambdas": [[0.85, 0.05, 0.05, 0.05], 
-                [0.85, 0.05, 0.05, 0.05], 
-                [0.85, 0.05, 0.05, 0.05]], # different lambdas for the three different links (BD states)
-    "depolarizing_rate": [1000, 1000, 1000, 1000],  # depolarizing rate for the 4 nodes
+    "lambdas": [[0.75, 0.14, 0.1, 0.01], 
+                [0.75, 0.14, 0.1, 0.01], 
+                [0.95, 0.01, 0.03, 0.01]],
+    "depolarizing_rate": [0.001, 0.001, 0.001, 0.001],
+    "dephasing_rate": [0.01, 0.01, 0.01, 0.01],
     "t_trunc": 1000,
 }
 # For example, consider the protocols
@@ -273,3 +276,10 @@ asym_het_bell_pmf_left, asym_het_bell_l_func_left = machinery.asymmetric_heterog
 print("Mean waiting time (left-swap-first, Bell):", get_mean_waiting_time(asym_het_bell_pmf_left))
 l_fid_func_left = [bell_to_fid(lambdas) for lambdas in asym_het_bell_l_func_left]
 print("Average fidelity (left-swap-first, Bell):", get_mean(asym_het_bell_pmf_left, l_fid_func_left))
+
+fig, axs = plot_algorithm(
+    pmf=asym_het_bell_pmf_left,
+    fid_func=asym_het_bell_l_func_left,
+    legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
+)
+plt.show()
