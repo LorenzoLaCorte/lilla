@@ -177,12 +177,15 @@ def objective_key_rate(
     if parameters['protocol'] in cache_results:
         logging.info("Already evaluated protocol, returning cached result")
         return -cache_results[parameters['protocol']]
-    secret_key_rate, pmf, _ = asym_protocol_runner(simulator, parameters, nodes, shot_count[0], gp_shots)
     
-    cdf_coverage = pmf_to_cdf(pmf)[-1]
-    if cdf_coverage < cdf_threshold:
-        logging.error(f"CDF coverage {cdf_coverage} below threshold {cdf_threshold}")
-        raise ThresholdExceededError(extra_info={'cdf_coverage': cdf_coverage})                
+    secret_key_rate, pmf, _ = asym_protocol_runner(
+        simulator,
+        parameters,
+        nodes,
+        cdf_threshold,
+        idx=shot_count[0],
+        space_len=gp_shots,
+    )
 
     cache_results[parameters["protocol"]] = secret_key_rate
     space.update({'protocol': parameters["protocol"]})
