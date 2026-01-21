@@ -1,10 +1,13 @@
+import logging
 from matplotlib import pyplot as plt
 import numpy as np
 from src.core.repeater_algorithm import RepeaterChainEvaluation
 from src.core.bell.state import BellState
 from src.core.werner.state import WernerState
 from src.core.states import QuantumState
+from src.optimization.gp_asymmetric import gaussian_optimization
 from src.plotting.basic_plots import plot_algorithm
+from src.types.repeater_types import SimParameters
 from src.utils.utility_functions import werner_to_fid, bell_to_fid, get_mean_waiting_time, get_mean
 
 # ------------------
@@ -63,7 +66,6 @@ def working_example():
         legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
     )
     plt.show()
-
 
     # We can compute the probability mass that is covered by this distribution
     coverage = np.sum(w_pmf)
@@ -241,45 +243,107 @@ def working_example():
     # the protocol that swaps it last performs better (less waiting time, higher fidelity)
     # as, while waiting for it, the other two links are generated and then swapped
 
-# """
-# TODO: Bayesian optimization
-# TODO: cutoff optimization?
-# """
+    # We can also evaluate asymmetric heterogenous protocols with Bell diagonal states
+    # setting different generation success probabilities and lambdas for the three different links
+    # and different coherence times for the four nodes
+    state_type : QuantumState = BellState
+    machinery = RepeaterChainEvaluation(state_type=state_type, twirling=False)
+    parameters = {
+        "p_gen": [0.1, 0.1, 0.05],
+        "p_swap": 0.5,
+        "lambdas": [[0.75, 0.14, 0.1, 0.01], 
+                    [0.75, 0.14, 0.1, 0.01], 
+                    [0.95, 0.01, 0.03, 0.01]],
+        "depolarizing_rate": [0.001, 0.001, 0.001, 0.001],
+        "dephasing_rate": [0.01, 0.01, 0.01, 0.01],
+        "t_trunc": 1000,
+    }
+    # For example, consider the protocols
+    #         0
+    #        / \
+    #       0   0
+    #      / \  
+    #     0   0 
+    asymmetric_protocol_left = ("s0", "s1")
+    parameters["protocol"] = asymmetric_protocol_left
+    asym_het_bell_pmf_left, asym_het_bell_l_func_left = machinery.asymmetric_heterogeneous_protocol(
+        parameters,
+        number_of_segments=3,
+    )
+    print("Mean waiting time (left-swap-first, Bell):", get_mean_waiting_time(asym_het_bell_pmf_left))
+    l_fid_func_left = [bell_to_fid(lambdas) for lambdas in asym_het_bell_l_func_left]
+    print("Average fidelity (left-swap-first, Bell):", get_mean(asym_het_bell_pmf_left, l_fid_func_left))
 
-# We can also evaluate asymmetric heterogenous protocols with Bell diagonal states
-# setting different generation success probabilities and lambdas for the three different links
-# and different coherence times for the four nodes
-state_type : QuantumState = BellState
-machinery = RepeaterChainEvaluation(state_type=state_type, twirling=False)
-parameters = {
-    "p_gen": [0.1, 0.1, 0.05],
-    "p_swap": 0.5,
-    "lambdas": [[0.75, 0.14, 0.1, 0.01], 
-                [0.75, 0.14, 0.1, 0.01], 
-                [0.95, 0.01, 0.03, 0.01]],
-    "depolarizing_rate": [0.001, 0.001, 0.001, 0.001],
-    "dephasing_rate": [0.01, 0.01, 0.01, 0.01],
-    "t_trunc": 1000,
-}
-# For example, consider the protocols
-#         0
-#        / \
-#       0   0
-#      / \  
-#     0   0 
-asymmetric_protocol_left = ("s0", "s1")
-parameters["protocol"] = asymmetric_protocol_left
-asym_het_bell_pmf_left, asym_het_bell_l_func_left = machinery.asymmetric_heterogeneous_protocol(
-    parameters,
-    number_of_segments=3,
-)
-print("Mean waiting time (left-swap-first, Bell):", get_mean_waiting_time(asym_het_bell_pmf_left))
-l_fid_func_left = [bell_to_fid(lambdas) for lambdas in asym_het_bell_l_func_left]
-print("Average fidelity (left-swap-first, Bell):", get_mean(asym_het_bell_pmf_left, l_fid_func_left))
+    fig, axs = plot_algorithm(
+        pmf=asym_het_bell_pmf_left,
+        fid_func=asym_het_bell_l_func_left,
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
+    )
+    plt.show()
 
-fig, axs = plot_algorithm(
-    pmf=asym_het_bell_pmf_left,
-    fid_func=asym_het_bell_l_func_left,
-    legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
-)
-plt.show()
+    # Now, we showcase Bayesian optimization
+    # First, we show it on Werner states and homogeneous hardware
+    parameters: SimParameters = {
+        "p_gen": 0.00092,
+        "p_swap": 0.85,
+        "w0": 0.952,
+        "t_coh": 1400000
+    }
+    simulator = RepeaterChainEvaluation(state_type=WernerState)
+
+    gaussian_optimization(
+        simulator=simulator,
+        parameters=parameters,
+        nodes=5,
+        max_dists=0,
+        gp_shots=20,
+        gp_initial_points=2,
+        filename=None,
+        cdf_threshold=0.99,
+        random_state=42,
+    )
+
+    logging.basicConfig(level=logging.DEBUG)
+    # Then, we switch to heterogeneous hardware
+    parameters: SimParameters = {
+        "p_gen": [0.025,0.0025,0.0025],
+        "p_swap": 0.85,
+        "w0": [0.95,0.95,0.90],
+        "t_coh": [100000,100000,10000,100000]
+    }
+    simulator = RepeaterChainEvaluation(state_type=WernerState)
+
+    gaussian_optimization(
+        simulator=simulator,
+        parameters=parameters,
+        nodes=4,
+        max_dists=0,
+        gp_shots=20,
+        gp_initial_points=2,
+        filename=None,
+        cdf_threshold=0.99
+    )
+
+    # Now, we use Bell states
+    # First, with homogeneous hardware
+    parameters: SimParameters = {
+        "p_gen": 0.92,
+        "p_swap": 0.85,
+        "lambdas": [0.95, 0.03, 0.01, 0.01],
+        "depolarizing_rate": 1e-3,
+        "dephasing_rate": 1e-3,
+    }
+    simulator = RepeaterChainEvaluation(state_type=BellState)
+
+    gaussian_optimization(
+        simulator=simulator,
+        parameters=parameters,
+        nodes=5,
+        max_dists=0,
+        gp_shots=20,
+        gp_initial_points=2,
+        filename=None,
+        cdf_threshold=0.99,
+        random_state=42,
+    )
+

@@ -49,6 +49,16 @@ def get_t_trunc(p_gen, p_swap, t_coh, nested_swaps, nested_dists, epsilon=0.01):
     return int(t_trunc)
 
 
+def set_heuristic_t_trunc(parameters, nodes, dists):
+    if parameters.get("t_coh") is not None: 
+        coherence = max(parameters["t_coh"]) if isinstance(parameters["t_coh"], list) else parameters["t_coh"]
+    if parameters.get("depolarizing_rate") is not None:
+        coherence = 1/min(parameters["depolarizing_rate"]) if isinstance(parameters["depolarizing_rate"], list) else 1/parameters["depolarizing_rate"]
+
+    parameters["t_trunc"] = get_t_trunc(min(parameters["p_gen"]) if isinstance(parameters["p_gen"], list) else parameters["p_gen"],
+                                        parameters["p_swap"], coherence,
+                                        nested_swaps=np.log2(nodes+1), nested_dists=np.log2(dists+1))
+    
 def get_ordered_results(result: OptimizeResult, space_type: SpaceType, number_of_swaps) -> List[Tuple[np.float64, Tuple[int]]]:
     """
     This function adjust the results to be positive and returns an ordered list of (key_rate, protocol)
@@ -266,8 +276,8 @@ def get_protocol_from_center_spacing_symmetricity(nodes, max_dists, gamma, kappa
     # Get and order the swap space by symmetry score (ascending)
     swap_space = get_swap_space(nodes-1)
     swap_space = sorted(swap_space, key=lambda x: x[0])
-    logging.debug(f"Most symmetric shapes: {swap_space[-1][1]}, {swap_space[-2][1]}, {swap_space[-3][1]}") 
-                 
+    logging.debug("Most symmetric shapes: %s", ", ".join(map(str, [item[1] for item in swap_space[-3:]])) or "None")
+                    
     # Sample the sequence of swaps
     selected_idx = round(gamma * (len(swap_space)-1))
     _, swap_tree, swap_sequence = swap_space[selected_idx]
