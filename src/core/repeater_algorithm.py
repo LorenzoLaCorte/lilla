@@ -18,6 +18,7 @@ except (ImportError, ModuleNotFoundError):
 from src.core.werner.protocol_units import werner_join
 from src.core.werner.protocol_units_efficient import werner_join_efficient
 from src.core.bell.protocol_units import bell_join
+from src.core.bell.protocol_units_efficient import bell_join_efficient
 
 __all__ = ["RepeaterChainEvaluation", "compute_unit", "werner_join", "repeater_sim"]
 
@@ -327,7 +328,10 @@ class RepeaterChainEvaluation():
                     state_out = np.transpose(state_out, (2, 1, 0))
 
         elif self.state_type == BellState:
-            join_links = bell_join
+            if self.efficient and cut_type == "memory_time":
+                join_links = bell_join_efficient
+            else:
+                join_links = bell_join
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 
@@ -485,7 +489,10 @@ class RepeaterChainEvaluation():
                 state_out = np.where(np.isnan(state_out), 1., state_out)
         
         elif self.state_type == BellState:
-            join_links = bell_join
+            if self.efficient and cut_type == "memory_time":
+                join_links = bell_join_efficient
+            else:
+                join_links = bell_join
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 

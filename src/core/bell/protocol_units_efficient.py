@@ -1,27 +1,19 @@
 """
 Efficient join for Bell-diagonal states subject to depolarizing noise.
 
-This module implements a speed-up for convolutions of waiting time
-distributions when swapping Bell-diagonal links.  It relies on the
-separable form of the swapped output state derived in the project
-documentation.  Only the memory-time cut-off is supported; if any
-unsupported configuration (such as dephasing or heterogeneous noise)
-is encountered the routine falls back to the baseline implementation
-in :mod:`src.core.bell.protocol_units`.
+if any unsupported configuration (such as dephasing or heterogeneous noise)
+it falls back to the baseline implementation
 """
 
 from __future__ import annotations
-
 from typing import Callable, Union
-
 import numpy as np
 
 from .protocol_units import bell_join  # fallback implementation
 from src.core.werner.protocol_units_efficient import werner_join_efficient
 
 
-# Mapping from input index to output index for each component of the Bell
-# swap update rule.  See Eq.(\ref{eq:swap_update_rule}) in the notes.
+# Mapping from input index to output index for each component of the Bell swap update rule
 _BELL_S_MAP = (
     (0, 1, 2, 3),  # c0: pairs (0,0),(1,1),(2,2),(3,3)
     (1, 0, 3, 2),  # c1: pairs (0,1),(1,0),(2,3),(3,2)
