@@ -45,15 +45,52 @@ def get_t_trunc(p_gen, p_swap, t_coh, nested_swaps, nested_dists, epsilon=0.01):
 
     # Introduce a factor to reduce the truncation time, as the previous bound is very lossy
     reduce_factor = 10
-    t_trunc = min(max(t_coh, t_trunc//reduce_factor), t_coh * 300)
+    reduced_t_trunc = max(1, t_trunc // reduce_factor)
+    if math.isfinite(t_coh):
+        t_trunc = min(max(t_coh, reduced_t_trunc), t_coh * 300)
+    else:
+        t_trunc = reduced_t_trunc
     return int(t_trunc)
 
 
+def _max_bell_link_rate(rate):
+    if rate is None:
+        return 0.0
+
+    if isinstance(rate, (list, tuple, np.ndarray)):
+        values = [float(value) for value in np.asarray(rate).flatten()]
+        if not values:
+            return 0.0
+        if len(values) == 1:
+            return max(values[0], 0.0)
+        return max(
+            max(values[idx], 0.0) + max(values[idx + 1], 0.0)
+            for idx in range(len(values) - 1)
+        )
+
+    return max(float(rate), 0.0)
+
+
 def set_heuristic_t_trunc(parameters, nodes, dists):
-    if parameters.get("t_coh") is not None: 
+    """
+    TODO: give a better heuristic 
+
+    In the Bell-diagonal model, the relevant BB84 observables decay on
+    exp(-gamma t) and exp(-(gamma + delta) t) timescales
+        
+    We need to avoid the large t_trunc values that trigger overflow in the
+    efficient Bell implementation, but give large enough t_trunc to cover the relevant part of the cdf
+    """
+    if parameters.get("lambdas") is not None:
+        depolarizing_rate = _max_bell_link_rate(parameters.get("depolarizing_rate"))
+        dephasing_rate = _max_bell_link_rate(parameters.get("dephasing_rate"))
+
+        effective_decay_rate = depolarizing_rate + dephasing_rate
+        coherence = np.inf if effective_decay_rate <= 0.0 else 1.0 / effective_decay_rate
+    elif parameters.get("t_coh") is not None:
         coherence = max(parameters["t_coh"]) if isinstance(parameters["t_coh"], list) else parameters["t_coh"]
-    if parameters.get("depolarizing_rate") is not None:
-        coherence = 1/min(parameters["depolarizing_rate"]) if isinstance(parameters["depolarizing_rate"], list) else 1/parameters["depolarizing_rate"]
+    else:
+        coherence = np.inf
 
     parameters["t_trunc"] = get_t_trunc(min(parameters["p_gen"]) if isinstance(parameters["p_gen"], list) else parameters["p_gen"],
                                         parameters["p_swap"], coherence,

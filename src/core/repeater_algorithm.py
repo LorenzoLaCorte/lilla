@@ -362,7 +362,7 @@ class RepeaterChainEvaluation():
                 pmf_cutoff, shift=0, p_swap=p_swap)
             # Wsuc * P_s
             state_suc = join_links(
-                pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf1, 
+                pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, 
                 ycut=True, cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="f1f2", # TODO: bad naming
                 depolar_rate=depolar_rate, dephase_rate=dephase_rate)
@@ -512,17 +512,10 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="0.5+0.5f1f2",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
-            pss_cutoff_link = join_links(
-                pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
-                cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="1",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
             # P_s  dist attempt when dist succeeds
             ps_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
                 first_func=pss_cutoff)
-            ps_dist_link = self.iterative_convolution(
-                pf_cutoff, shift=shift,
-                first_func=pss_cutoff_link)
             del pss_cutoff
             # P'_sf  cutoff attempt when cutoff succeeds but dist fails
             psf_cutoff = join_links(
@@ -539,9 +532,6 @@ class RepeaterChainEvaluation():
             pmf_dist = self.iterative_convolution(
                 pf_dist, shift=0,
                 first_func=ps_dist)
-            pmf_dist_link = self.iterative_convolution(
-                pf_dist, shift=0,
-                first_func=ps_dist_link)
             del ps_dist
 
             # Wsuc * P'_ss
@@ -567,16 +557,15 @@ class RepeaterChainEvaluation():
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4
 
             with np.errstate(divide='ignore', invalid='ignore'):
-                state_out[1:] /= pmf_dist_link[1:]
+                state_out[1:] /= pmf_dist[1:]
                 state_out = np.where(np.isnan(state_out), 1., state_out)
 
             # De-tile pmf for Bell states
             if self.state_type == BellState:
                 pmf_dist = pmf_dist[:,0]
-                pmf_dist_link = pmf_dist_link[:,0]
             
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
-            pmf_dist[0], pmf_dist_link[0] = 0., 0.
+            pmf_dist[0] = 0.
             state_out[0] = np.zeros(4, dtype=state_out.dtype)
             
         return pmf_dist, state_out

@@ -196,11 +196,9 @@ def get_swap_lambda_out(t1, t2, lambdasA, lambdasB, depolar_rate, dephase_rate=0
 @nb.jit(nopython=True, error_model="numpy")
 def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=True):
     """
-    Get p_dist * w_dist
+    Get p_dist * lambda_dist.
     """
     a, b = apply_noise(t1, t2, a, b, depolar_rate, dephase_rate)
-
-    fid = (a[0] * b[0] + a[1] * b[1]) / get_dist_prob_suc(t1, t2, a, b, depolar_rate, dephase_rate)
 
     numerator = np.asarray([
         (a[0] * b[0] + a[1] * b[1]),
@@ -208,19 +206,17 @@ def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=Tr
         (a[2] * b[2] + a[3] * b[3]), 
         (a[2] * b[3] + a[3] * b[2]),
     ])
-    p_dist = sum(numerator) # get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate)
-    if np.isclose(p_dist, 0.0, atol=1e-10): p_dist = 1e-10  # avoid division by zero
 
     if twirling:
-        fid = numerator[0] / p_dist
+        p_dist = sum(numerator)
         lambdasOut = np.asarray([
-            fid,
-            (1 - fid) / 3,
-            (1 - fid) / 3,
-            (1 - fid) / 3,
+            numerator[0],
+            (p_dist - numerator[0]) / 3,
+            (p_dist - numerator[0]) / 3,
+            (p_dist - numerator[0]) / 3,
         ])    
     else:
-        lambdasOut = numerator / p_dist
+        lambdasOut = numerator
     
     return lambdasOut
 
