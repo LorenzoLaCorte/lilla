@@ -1,0 +1,1623 @@
+Running gp...
+INFO:root:
+
+Number of nodes: 11, max dists: 2, seed: 41
+INFO:root:Gaussian process with 100 evaluations and 10 initial points
+
+
+INFO:root:
+
+Generating a protocol with gamma=0.32097339389336293, eta=-0.6892813139636893, tau=0.600567237410126, kappa=26
+INFO:root:Protocol generated: ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 'd7', 's4', 'd3', 'd3', 'd7', 'd7', 's3', 'd0', 'd0', 's0', 'd8', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd9', 'd9')
+INFO:root:
+(1/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 'd7', 's4', 'd3', 'd3', 'd7', 'd7', 's3', 'd0', 'd0', 's0', 'd8', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 'd7', 's4', 'd3', 'd3', 'd7', 'd7', 's3', 'd0', 'd0', 's0', 'd8', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd9', 'd9'),	 r = 1.2543370047066184e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.7878644108096561, eta=0.5276615272241196, tau=0.7029740059185613, kappa=35
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd7', 'd8', 'd8', 's7', 'd4', 'd4', 'd8', 's4', 'd2', 'd2', 'd8', 'd8', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9')
+INFO:root:
+(2/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd7', 'd8', 'd8', 's7', 'd4', 'd4', 'd8', 's4', 'd2', 'd2', 'd8', 'd8', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd7', 'd8', 'd8', 's7', 'd4', 'd4', 'd8', 's4', 'd2', 'd2', 'd8', 'd8', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9'),	 r = 1.2715295131448248e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8019778902252009, eta=-0.6419425415540692, tau=0.4603300481012633, kappa=32
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd2', 'd2', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(3/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd2', 'd2', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd2', 'd2', 'd9', 's2', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.8737266248551658, eta=0.02647562428594341, tau=0.23917082477347978, kappa=26
+INFO:root:Protocol generated: ('s0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd5', 's5', 'd9')
+INFO:root:
+(4/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('s0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd5', 's5', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('s0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd5', 's5', 'd9'),	 r = 1.9091152202050104e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.13273989219428864, eta=-0.20849786105434887, tau=0.7239741430299466, kappa=1
+INFO:root:Protocol generated: ('s1', 's2', 's5', 's4', 's3', 's6', 's7', 's0', 's8', 'd9')
+INFO:root:
+(5/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('s1', 's2', 's5', 's4', 's3', 's6', 's7', 's0', 's8', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('s1', 's2', 's5', 's4', 's3', 's6', 's7', 's0', 's8', 'd9'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.6837293313574645, eta=0.13581646075707998, tau=0.42265668684409996, kappa=19
+INFO:root:Protocol generated: ('d2', 's1', 'd0', 'd2', 's0', 'd4', 'd5', 's4', 'd8', 's7', 'd8', 'd8', 's6', 'd5', 'd8', 'd8', 's5', 'd3', 'd8', 'd8', 's3', 'd8', 'd8', 's2', 'd8', 's8', 'd9', 'd9')
+INFO:root:
+(6/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 's1', 'd0', 'd2', 's0', 'd4', 'd5', 's4', 'd8', 's7', 'd8', 'd8', 's6', 'd5', 'd8', 'd8', 's5', 'd3', 'd8', 'd8', 's3', 'd8', 'd8', 's2', 'd8', 's8', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d2', 's1', 'd0', 'd2', 's0', 'd4', 'd5', 's4', 'd8', 's7', 'd8', 'd8', 's6', 'd5', 'd8', 'd8', 's5', 'd3', 'd8', 'd8', 's3', 'd8', 'd8', 's2', 'd8', 's8', 'd9', 'd9'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.6973410053031251, eta=-0.780682346469074, tau=0.6993815906348182, kappa=9
+INFO:root:Protocol generated: ('s2', 'd1', 'd3', 's1', 'd0', 'd0', 's0', 'd3', 'd4', 's3', 's6', 'd5', 'd7', 's5', 's7', 's4', 'd8', 's8')
+INFO:root:
+(7/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('s2', 'd1', 'd3', 's1', 'd0', 'd0', 's0', 'd3', 'd4', 's3', 's6', 'd5', 'd7', 's5', 's7', 's4', 'd8', 's8'), 't_trunc': 3600000}
+INFO:root:Protocol ('s2', 'd1', 'd3', 's1', 'd0', 'd0', 's0', 'd3', 'd4', 's3', 's6', 'd5', 'd7', 's5', 's7', 's4', 'd8', 's8'),	 r = 6.39663214385242e-06
+
+INFO:root:
+
+Generating a protocol with gamma=0.6230957216262664, eta=-0.3490646313693532, tau=0.07769131155976296, kappa=36
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9')
+INFO:root:
+(8/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.4665360897740106, eta=0.5262011629492294, tau=0.19396290616858486, kappa=21
+INFO:root:Protocol generated: ('d3', 's3', 'd4', 'd4', 's2', 'd4', 'd5', 's4', 'd5', 'd5', 'd6', 's5', 'd6', 'd6', 's1', 'd6', 'd6', 's0', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(9/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d3', 's3', 'd4', 'd4', 's2', 'd4', 'd5', 's4', 'd5', 'd5', 'd6', 's5', 'd6', 'd6', 's1', 'd6', 'd6', 's0', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d3', 's3', 'd4', 'd4', 's2', 'd4', 'd5', 's4', 'd5', 'd5', 'd6', 's5', 'd6', 'd6', 's1', 'd6', 'd6', 's0', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd9', 'd9', 's6', 'd9', 'd9'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.772462083319867, eta=0.1833079787803844, tau=0.7682703014211517, kappa=18
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd3', 's3', 'd5', 's4', 'd5', 's5', 'd6', 's2', 'd0', 'd0', 'd6', 's0', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd6', 'd6', 's6', 'd9', 'd9')
+INFO:root:
+(10/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 's1', 'd3', 's3', 'd5', 's4', 'd5', 's5', 'd6', 's2', 'd0', 'd0', 'd6', 's0', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd6', 'd6', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd3', 's3', 'd5', 's4', 'd5', 's5', 'd6', 's2', 'd0', 'd0', 'd6', 's0', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd6', 'd6', 's6', 'd9', 'd9'),	 r = 1.5452942215654562e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8421480986851325, eta=0.238609929033738, tau=0.06385286272480818, kappa=32
+INFO:root:Protocol generated: ('d1', 's0', 'd3', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 'd9', 'd9', 's3', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9')
+INFO:root:
+(11/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 's0', 'd3', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 'd9', 'd9', 's3', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 's0', 'd3', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 'd9', 'd9', 's3', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9'),	 r = 1.3009967550247655e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9414040538718788, eta=-0.5225290075876582, tau=0.19295311916303254, kappa=4
+INFO:root:Protocol generated: ('d1', 's0', 's1', 's2', 'd6', 's6', 'd5', 's5', 'd4', 's4', 's8', 's7', 's3')
+INFO:root:
+(12/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 's0', 's1', 's2', 'd6', 's6', 'd5', 's5', 'd4', 's4', 's8', 's7', 's3'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 's0', 's1', 's2', 'd6', 's6', 'd5', 's5', 'd4', 's4', 's8', 's7', 's3'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.8876787255797076, eta=0.24842618703000774, tau=0.4149807304493739, kappa=21
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd1', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 's5', 'd4', 'd4', 'd6', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(13/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd1', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 's5', 'd4', 'd4', 'd6', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd1', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 's5', 'd4', 'd4', 'd6', 's4', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's2', 'd9', 'd9'),	 r = 1.4095913924492601e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.849339944130706, eta=0.001713434828051863, tau=0.8968948422626849, kappa=25
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd5', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 'd9', 'd9', 's6', 'd3', 'd9', 's3', 'd2', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(14/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd5', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 'd9', 'd9', 's6', 'd3', 'd9', 's3', 'd2', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd5', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 'd9', 'd9', 's6', 'd3', 'd9', 's3', 'd2', 'd9', 's2', 'd9', 'd9'),	 r = 2.828892789166418e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9017623085865155, eta=-0.038841920726048196, tau=0.9740696365277501, kappa=2
+INFO:root:Protocol generated: ('s1', 's2', 's0', 's5', 's6', 's8', 's7', 'd9', 's4', 's3', 'd9')
+INFO:root:
+(15/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('s1', 's2', 's0', 's5', 's6', 's8', 's7', 'd9', 's4', 's3', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('s1', 's2', 's0', 's5', 's6', 's8', 's7', 'd9', 's4', 's3', 'd9'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.8291598221976368, eta=0.13946172677437896, tau=1.0, kappa=25
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 's6', 'd0', 'd0', 'd9', 's0', 'd9', 'd9')
+INFO:root:
+(16/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 's6', 'd0', 'd0', 'd9', 's0', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 's6', 'd0', 'd0', 'd9', 's0', 'd9', 'd9'),	 r = 2.325392519570322e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8481007583462072, eta=0.9307233134290613, tau=0.9849744998717834, kappa=30
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9')
+INFO:root:
+(17/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd1', 'd1', 'd9', 'd9', 's1', 'd9', 'd9'),	 r = 1.7388814490776308e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.2629531713503404, eta=-0.1525209530869981, tau=0.10758852957165374, kappa=25
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's0', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 's6', 'd9', 'd9', 's8')
+INFO:root:
+(18/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's0', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 's6', 'd9', 'd9', 's8'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's0', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 's6', 'd9', 'd9', 's8'),	 r = 2.4698589495620036e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.04654785798471078, eta=-0.022903634194450295, tau=0.5332436114242304, kappa=24
+INFO:root:Protocol generated: ('d4', 'd5', 'd5', 's4', 'd3', 's3', 'd5', 'd6', 'd6', 's5', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 's1', 'd0', 'd0', 'd6', 's0', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 's8', 'd9', 'd9')
+INFO:root:
+(19/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d4', 'd5', 'd5', 's4', 'd3', 's3', 'd5', 'd6', 'd6', 's5', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 's1', 'd0', 'd0', 'd6', 's0', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 's8', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d4', 'd5', 'd5', 's4', 'd3', 's3', 'd5', 'd6', 'd6', 's5', 'd2', 'd2', 'd6', 'd6', 's2', 'd6', 's1', 'd0', 'd0', 'd6', 's0', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 's8', 'd9', 'd9'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.9900283553798455, eta=-0.019711689638463148, tau=0.7009914835653632, kappa=25
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 's4', 'd2', 'd5', 'd5', 's2', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 's8', 'd5', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(20/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 's4', 'd2', 'd5', 'd5', 's2', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 's8', 'd5', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 's4', 'd2', 'd5', 'd5', 's2', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 's8', 'd5', 'd9', 's5', 'd9', 'd9'),	 r = 2.8242974800739096e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.18334342704320286, eta=-0.15309394568197932, tau=0.4154301833759314, kappa=21
+INFO:root:Protocol generated: ('d2', 'd3', 'd3', 's2', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 's6', 'd7', 'd7', 's5', 'd7', 'd8', 's7', 'd9', 's8', 'd0', 'd0', 's0', 'd9', 'd9')
+INFO:root:
+(21/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd3', 'd3', 's2', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 's6', 'd7', 'd7', 's5', 'd7', 'd8', 's7', 'd9', 's8', 'd0', 'd0', 's0', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd3', 'd3', 's2', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 's6', 'd7', 'd7', 's5', 'd7', 'd8', 's7', 'd9', 's8', 'd0', 'd0', 's0', 'd9', 'd9'),	 r = 1.6113568960233005e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8261528328758955, eta=-0.019482228819213354, tau=0.7102018204982576, kappa=25
+INFO:root:Protocol generated: ('d1', 'd1', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 'd5', 's4', 'd5', 's3', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd9', 's5', 'd0', 'd0', 'd9', 'd9', 's0', 'd9', 'd9')
+INFO:root:
+(22/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 'd5', 's4', 'd5', 's3', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd9', 's5', 'd0', 'd0', 'd9', 'd9', 's0', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 'd5', 's4', 'd5', 's3', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd9', 's5', 'd0', 'd0', 'd9', 'd9', 's0', 'd9', 'd9'),	 r = 1.5692996836626124e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9912284321852175, eta=0.3739335165827662, tau=0.8450465125593745, kappa=36
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(23/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.254211891380876e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.833918123898491, tau=0.2291859874826313, kappa=31
+INFO:root:Protocol generated: ('s0', 'd2', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(24/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('s0', 'd2', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('s0', 'd2', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.9793157523541997, eta=0.08604974363371465, tau=0.7790138539097563, kappa=37
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd2', 'd2', 'd9', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(25/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd2', 'd2', 'd9', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd2', 'd2', 'd9', 'd9', 's2', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.43569015095230124, tau=0.14978994237902338, kappa=36
+INFO:root:Protocol generated: ('d0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(26/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.9868282181505451, eta=-0.8950227521942451, tau=0.9358989779645157, kappa=36
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(27/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd4', 'd4', 'd9', 's4', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.974331164507004, eta=-0.0534011479649551, tau=0.8940294450122886, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 'd5', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 's8', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(28/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 'd5', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 's8', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd3', 'd3', 'd4', 's3', 'd5', 'd5', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 's8', 'd9', 's4', 'd9', 'd9'),	 r = 3.442972381692811e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9812712378812682, eta=0.5050417188267242, tau=0.9942983080611291, kappa=36
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9')
+INFO:root:
+(29/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 'd5', 'd5', 'd6', 'd6', 's5', 'd4', 'd4', 'd6', 'd6', 's4', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.36157405715391305, eta=0.23059031501153027, tau=0.8866370367513895, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's6', 'd5', 'd5', 'd7', 's5', 'd8', 'd8', 's7', 'd8', 'd8', 's8', 'd1', 'd9', 's1', 'd9', 'd9')
+INFO:root:
+(30/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's6', 'd5', 'd5', 'd7', 's5', 'd8', 'd8', 's7', 'd8', 'd8', 's8', 'd1', 'd9', 's1', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's6', 'd5', 'd5', 'd7', 's5', 'd8', 'd8', 's7', 'd8', 'd8', 's8', 'd1', 'd9', 's1', 'd9', 'd9'),	 r = 6.064252427878023e-06
+
+INFO:root:
+
+Generating a protocol with gamma=0.9898605629473365, eta=0.0008925036637019712, tau=0.9292704631825813, kappa=25
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 's2', 'd8', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 's8', 'd5', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(31/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 's2', 'd8', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 's8', 'd5', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 's2', 'd8', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 's8', 'd5', 'd9', 's5', 'd9', 'd9'),	 r = 3.765175077590245e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.012548985885784902, tau=0.9354777751485239, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(32/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.6433821506719145e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.97976089194661, eta=-0.5355237013305864, tau=0.9203461404014404, kappa=25
+INFO:root:Protocol generated: ('d2', 'd3', 's2', 'd3', 'd3', 's1', 'd0', 'd0', 'd3', 's0', 'd5', 'd6', 'd6', 's5', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 's3', 'd9', 'd9')
+INFO:root:
+(33/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd3', 's2', 'd3', 'd3', 's1', 'd0', 'd0', 'd3', 's0', 'd5', 'd6', 'd6', 's5', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd3', 's2', 'd3', 'd3', 's1', 'd0', 'd0', 'd3', 's0', 'd5', 'd6', 'd6', 's5', 'd4', 'd6', 'd6', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 's3', 'd9', 'd9'),	 r = 3.438089446904628e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9832990668485138, eta=0.7831433269267185, tau=0.9200372000193048, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 's4', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(34/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 's4', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 's4', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9'),	 r = 2.866792915723005e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9733413613809015, eta=-0.055120891190048926, tau=0.9215540881184181, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's2', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(35/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's2', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's2', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd7', 'd8', 's7', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'),	 r = 3.077105357133899e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9981796340911998, eta=0.2962249450034038, tau=0.7746602213663443, kappa=36
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd4', 'd4', 'd9', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(36/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd4', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 'd6', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd4', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-1.0, tau=0.9263082063573439, kappa=22
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 's7', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(37/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 's7', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 's7', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 4.379827764779916e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9750039880272956, eta=-0.768771796887306, tau=0.8686838013197993, kappa=30
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 's4', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 's5', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(38/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 's4', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 's5', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 's4', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd5', 'd5', 'd9', 's5', 'd9', 's3', 'd9', 'd9'),	 r = 2.4838711190673984e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.9503267724573892, tau=0.9073595076532939, kappa=20
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 's4', 'd5', 's3', 's6', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(39/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 's4', 'd5', 's3', 's6', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd3', 's1', 's4', 'd5', 's3', 's6', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.517784094636211e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.1148996284814936, tau=0.9336760829962453, kappa=19
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd1', 's1', 'd5', 's4', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(40/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd1', 's1', 'd5', 's4', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd1', 's1', 'd5', 's4', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd9', 's5', 'd9', 'd9'),	 r = 4.0147240228463946e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9317799793747324, eta=-0.7727502521943672, tau=0.8859142298583791, kappa=19
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 's1', 'd5', 'd6', 's5', 'd4', 's4', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 's2', 'd9', 'd9')
+INFO:root:
+(41/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 's1', 'd5', 'd6', 's5', 'd4', 's4', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 's1', 'd5', 'd6', 's5', 'd4', 's4', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 's2', 'd9', 'd9'),	 r = 2.9840999622322162e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9823529053994491, eta=-0.9297690152987081, tau=0.9270702604034641, kappa=16
+INFO:root:Protocol generated: ('d2', 's1', 'd0', 'd0', 's0', 'd3', 's2', 'd5', 's5', 'd4', 'd4', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd9', 's6', 'd3', 's3', 'd9', 'd9')
+INFO:root:
+(42/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 's1', 'd0', 'd0', 's0', 'd3', 's2', 'd5', 's5', 'd4', 'd4', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd9', 's6', 'd3', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 's1', 'd0', 'd0', 's0', 'd3', 's2', 'd5', 's5', 'd4', 'd4', 's4', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd9', 's6', 'd3', 's3', 'd9', 'd9'),	 r = 3.095973110404961e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.8206616948048775, tau=0.8803883155621223, kappa=21
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 's2', 'd1', 'd3', 'd3', 's1', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd6', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(43/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 's2', 'd1', 'd3', 'd3', 's1', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd6', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 's2', 'd1', 'd3', 'd3', 's1', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd6', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'),	 r = 2.283536444406847e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9163262765873365, eta=0.23143990611323084, tau=0.8433058990690823, kappa=35
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 'd4', 's2', 'd1', 'd1', 'd4', 'd4', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(44/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 'd4', 's2', 'd1', 'd1', 'd4', 'd4', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 'd4', 's2', 'd1', 'd1', 'd4', 'd4', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd6', 'd8', 'd8', 's6', 'd8', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 1.720997711041878e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9998476166094209, eta=-1.0, tau=0.9368876421941781, kappa=21
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 's2', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(45/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 's2', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 's2', 'd7', 'd7', 's6', 'd8', 'd8', 's8', 'd7', 's7', 'd9', 's5', 'd9', 'd9'),	 r = 3.8158573576790836e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.23109413114977517, tau=0.9153148468516585, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(46/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'),	 r = 3.3461838279267924e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9850472442655873, eta=-0.8931797064213575, tau=0.9252253142900463, kappa=25
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 's2', 'd0', 'd0', 'd4', 's0', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd4', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(47/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 's2', 'd0', 'd0', 'd4', 's0', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd4', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd4', 's2', 'd0', 'd0', 'd4', 's0', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd4', 'd9', 's4', 'd9', 'd9'),	 r = 3.9460217880068444e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9951556790561584, eta=0.9396387535962267, tau=0.6772276425782469, kappa=17
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 's4', 'd5', 's5', 'd9', 's8', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(48/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 's4', 'd5', 's5', 'd9', 's8', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 'd4', 'd4', 's4', 'd5', 's5', 'd9', 's8', 'd7', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 's3', 'd9', 'd9'),	 r = 2.66604551023893e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8701782030805955, eta=-1.0, tau=0.9089684923414625, kappa=24
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 's1', 'd3', 's2', 'd3', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 's4', 'd9', 'd9')
+INFO:root:
+(49/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 's1', 'd3', 's2', 'd3', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 's1', 'd3', 's2', 'd3', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 's5', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 's4', 'd9', 'd9'),	 r = 2.641681107666342e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9952866848508869, eta=-0.5498379945457892, tau=0.6647870894147848, kappa=31
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9')
+INFO:root:
+(50/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd3', 'd3', 's3', 'd9', 'd9'),	 r = 4.47654507634037e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9922053538912972, eta=-0.5352102823444116, tau=0.645717283709999, kappa=29
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 'd5', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(51/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 'd5', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 'd5', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.41080174246544143, tau=0.6775633815367879, kappa=34
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(52/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 's5', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.9641661506090204, eta=-0.8209281257950146, tau=0.9035921594342591, kappa=22
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd4', 'd5', 'd5', 's4', 'd5', 's5', 'd3', 'd3', 's3', 's1', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(53/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd4', 'd5', 'd5', 's4', 'd5', 's5', 'd3', 'd3', 's3', 's1', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 's2', 'd4', 'd5', 'd5', 's4', 'd5', 's5', 'd3', 'd3', 's3', 's1', 'd7', 'd7', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'),	 r = 3.666292848067165e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9705756262860618, eta=-0.44829324457352726, tau=0.6640346733918742, kappa=26
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd2', 'd3', 'd3', 's2', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(54/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd2', 'd3', 'd3', 's2', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 'd2', 'd3', 'd3', 's2', 'd4', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd6', 'd6', 'd9', 's6', 'd9', 'd9'),	 r = 2.0038088667588073e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9730268547699175, eta=-0.5795894009191052, tau=0.6610043499211667, kappa=34
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 's5', 'd4', 'd4', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(55/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 's5', 'd4', 'd4', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd5', 'd5', 'd6', 's5', 'd4', 'd4', 's4', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.7520033634544276, tau=0.6828512655283161, kappa=31
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(56/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 4.528970853839533e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9550107856077227, eta=-0.21511162821906482, tau=0.6780467141994843, kappa=31
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd4', 'd4', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(57/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd4', 'd4', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 's2', 'd4', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd5', 'd7', 'd7', 's5', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd4', 'd4', 'd9', 's4', 'd9', 'd9'),	 r = 2.1950458368898743e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9715407762751639, eta=-0.682279091647379, tau=0.9430994810709634, kappa=22
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(58/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd5', 'd5', 's4', 'd6', 'd6', 's5', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 's8', 'd6', 'd6', 'd9', 'd9', 's6', 'd9', 'd9'),	 r = 3.2659810380742485e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.6503324331779514, tau=0.6748211661843617, kappa=32
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(59/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 4.1708079888234795e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9574174515242969, eta=0.5246431521454114, tau=0.9295010078338942, kappa=19
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 's3', 'd4', 'd5', 's4', 'd2', 'd2', 'd5', 's2', 'd5', 'd5', 's1', 'd8', 's7', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(60/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 's3', 'd4', 'd5', 's4', 'd2', 'd2', 'd5', 's2', 'd5', 'd5', 's1', 'd8', 's7', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 's3', 'd4', 'd5', 's4', 'd2', 'd2', 'd5', 's2', 'd5', 'd5', 's1', 'd8', 's7', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 2.3846106439996104e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.28903033132753775, tau=0.9110803450672628, kappa=25
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(61/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd7', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 's7', 'd5', 'd5', 'd9', 's5', 'd9', 'd9'),	 r = 2.42272157152278e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9482376670391652, eta=-0.6142616162698367, tau=0.869357648643388, kappa=24
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 's1', 'd7', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd5', 'd5', 'd8', 's5', 'd9', 'd9', 's8', 'd4', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(62/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 's1', 'd7', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd5', 'd5', 'd8', 's5', 'd9', 'd9', 's8', 'd4', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 's1', 'd7', 'd7', 's6', 'd7', 'd8', 'd8', 's7', 'd5', 'd5', 'd8', 's5', 'd9', 'd9', 's8', 'd4', 'd9', 's4', 'd9', 'd9'),	 r = 3.816642354606459e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9541472786602445, eta=-0.47699187395540865, tau=0.861073951124824, kappa=26
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 'd7', 's6', 'd7', 'd7', 's5', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(63/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 'd7', 's6', 'd7', 'd7', 's5', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 'd4', 's3', 'd7', 's6', 'd7', 'd7', 's5', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd9', 's4', 'd9', 'd9'),	 r = 2.2388902291556845e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9864331317440347, eta=-0.7783118707947532, tau=0.9504319666157071, kappa=24
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's5', 's7', 'd6', 'd8', 's6', 'd8', 's8', 'd4', 'd9', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(64/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's5', 's7', 'd6', 'd8', 's6', 'd8', 's8', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd3', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd6', 's5', 's7', 'd6', 'd8', 's6', 'd8', 's8', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'),	 r = 3.2836512554295016e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9224936564482914, eta=-0.5228357474469676, tau=0.878447701147519, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd3', 's3', 'd4', 'd4', 's2', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 'd9')
+INFO:root:
+(65/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd3', 's3', 'd4', 'd4', 's2', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd3', 's3', 'd4', 'd4', 's2', 'd1', 'd1', 's1', 'd6', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 'd7', 's5', 'd4', 'd7', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 'd9'),	 r = 3.420928798863654e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.07850582471407708, tau=0.6590030299361803, kappa=32
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(66/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 4.416929172718907e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.4386292640355931, tau=0.9085511628726194, kappa=18
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(67/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 's6', 'd9', 'd9', 's8', 'd7', 'd7', 's7', 'd5', 's5', 'd9', 'd9'),	 r = 2.9871426217877627e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.6991829128640836, tau=0.9620420072606013, kappa=18
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(68/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 's2', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 's5', 'd9', 'd9'),	 r = 3.1603388213651705e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9840412664904431, eta=-0.983467949228695, tau=0.9498408572555921, kappa=26
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd6', 's5', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd9', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(69/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd6', 's5', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd9', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd6', 's5', 'd8', 's8', 'd7', 'd9', 'd9', 's7', 'd6', 'd9', 'd9', 's6', 'd9', 'd9', 's3', 'd9', 'd9'),	 r = 3.014770601310138e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.932181862329515, eta=0.7573337375001064, tau=0.8367483682473464, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 's4', 'd5', 'd5', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 's6', 'd2', 'd2', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(70/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 's4', 'd5', 'd5', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 's6', 'd2', 'd2', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 's4', 'd5', 'd5', 'd6', 's5', 'd3', 'd3', 'd6', 's3', 'd7', 'd7', 's7', 'd8', 'd8', 's8', 'd6', 'd6', 's6', 'd2', 'd2', 'd9', 's2', 'd9', 'd9'),	 r = 2.6451162635375576e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9674069773756881, eta=0.8825518695463066, tau=0.8792367229587226, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd5', 'd5', 's4', 'd5', 'd5', 's5', 'd3', 'd3', 's3', 'd6', 'd6', 's2', 'd7', 's7', 'd8', 'd8', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 'd9', 'd9')
+INFO:root:
+(71/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd5', 'd5', 's4', 'd5', 'd5', 's5', 'd3', 'd3', 's3', 'd6', 'd6', 's2', 'd7', 's7', 'd8', 'd8', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd1', 'd1', 'd2', 's1', 'd5', 'd5', 's4', 'd5', 'd5', 's5', 'd3', 'd3', 's3', 'd6', 'd6', 's2', 'd7', 's7', 'd8', 'd8', 'd9', 's8', 'd6', 'd6', 'd9', 's6', 'd9', 'd9'),	 r = 1.9239404776416778e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9139041030594548, eta=0.20050271841565115, tau=0.8760792710420323, kappa=25
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 's4', 'd5', 's2', 'd0', 'd0', 'd5', 's0', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(72/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 's4', 'd5', 's2', 'd0', 'd0', 'd5', 's0', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd4', 'd5', 's4', 'd5', 's2', 'd0', 'd0', 'd5', 's0', 'd7', 'd8', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.1982593863483664e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.46115044238695013, tau=0.7153187018579178, kappa=31
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(73/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd5', 'd5', 's4', 'd3', 'd3', 's3', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.8629374580199975, eta=0.7608531426608662, tau=0.8622698414549828, kappa=23
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd2', 'd2', 's2', 'd4', 'd4', 's3', 'd0', 'd0', 'd4', 'd4', 's0', 'd6', 'd7', 'd7', 's6', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's5', 'd4', 'd9', 'd9', 's4', 'd9', 'd9')
+INFO:root:
+(74/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 's1', 'd2', 'd2', 's2', 'd4', 'd4', 's3', 'd0', 'd0', 'd4', 'd4', 's0', 'd6', 'd7', 'd7', 's6', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's5', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd2', 'd2', 's2', 'd4', 'd4', 's3', 'd0', 'd0', 'd4', 'd4', 's0', 'd6', 'd7', 'd7', 's6', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's5', 'd4', 'd9', 'd9', 's4', 'd9', 'd9'),	 r = 2.2540836739560175e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9912201888292438, eta=0.7418326283083883, tau=0.9196878463945646, kappa=21
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 's8', 'd7', 'd7', 's7', 'd9', 'd9', 's6', 's5', 'd9', 'd9')
+INFO:root:
+(75/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 's8', 'd7', 'd7', 's7', 'd9', 'd9', 's6', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 'd5', 'd5', 's4', 'd2', 'd5', 'd5', 's2', 's8', 'd7', 'd7', 's7', 'd9', 'd9', 's6', 's5', 'd9', 'd9'),	 r = 3.092459903401584e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.882310103751836, tau=0.9575048361490253, kappa=20
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 's8', 'd7', 'd9', 's7', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(76/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 's8', 'd7', 'd9', 's7', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 's8', 'd7', 'd9', 's7', 'd5', 's5', 'd9', 'd9'),	 r = 2.4318085464358633e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.997921167901449, eta=-0.7227479261914407, tau=0.9743306359248861, kappa=15
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd4', 'd4', 's3', 's2', 'd5', 'd6', 's5', 'd6', 'd7', 's6', 'd9', 's8', 's7', 'd4', 's4', 'd9', 'd9')
+INFO:root:
+(77/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd4', 'd4', 's3', 's2', 'd5', 'd6', 's5', 'd6', 'd7', 's6', 'd9', 's8', 's7', 'd4', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd4', 'd4', 's3', 's2', 'd5', 'd6', 's5', 'd6', 'd7', 's6', 'd9', 's8', 's7', 'd4', 's4', 'd9', 'd9'),	 r = 2.9807304692252726e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9810900217157222, eta=-0.9039688094963432, tau=0.9338603076545703, kappa=13
+INFO:root:Protocol generated: ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 's0', 's5', 's4', 'd8', 's8', 's7', 'd9', 's6', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(78/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 's0', 's5', 's4', 'd8', 's8', 's7', 'd9', 's6', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd2', 's1', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 'd3', 's0', 's5', 's4', 'd8', 's8', 's7', 'd9', 's6', 'd9', 's3', 'd9', 'd9'),	 r = 2.7804485176418054e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9200021959844809, eta=-0.38413877781254213, tau=0.8364953874998488, kappa=19
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd7', 's6', 'd5', 'd5', 's5', 'd4', 's4', 'd2', 'd2', 's2', 'd8', 's8', 'd9', 'd9', 's7', 'd9', 'd9')
+INFO:root:
+(79/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd7', 's6', 'd5', 'd5', 's5', 'd4', 's4', 'd2', 'd2', 's2', 'd8', 's8', 'd9', 'd9', 's7', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd1', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd7', 's6', 'd5', 'd5', 's5', 'd4', 's4', 'd2', 'd2', 's2', 'd8', 's8', 'd9', 'd9', 's7', 'd9', 'd9'),	 r = 2.7315253819267326e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.9345348540909697, tau=0.858641319804318, kappa=34
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(80/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd5', 'd5', 's4', 'd3', 'd3', 'd5', 'd5', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd9', 'd9', 's8', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.230367606008197e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9221459968117768, eta=0.34045978401425425, tau=0.9671765607856108, kappa=14
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 's2', 'd5', 's4', 'd7', 's6', 's5', 'd3', 'd3', 's3', 'd9', 's8', 's7', 'd9', 'd9')
+INFO:root:
+(81/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 's2', 'd5', 's4', 'd7', 's6', 's5', 'd3', 'd3', 's3', 'd9', 's8', 's7', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 's2', 'd5', 's4', 'd7', 's6', 's5', 'd3', 'd3', 's3', 'd9', 's8', 's7', 'd9', 'd9'),	 r = 1.2905434902190365e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9327401711740366, eta=0.367095863506143, tau=0.8703371446319135, kappa=16
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd1', 'd2', 's1', 'd4', 's3', 'd4', 'd4', 's4', 's5', 'd8', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd2', 'd9', 's2', 'd9', 'd9')
+INFO:root:
+(82/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd1', 'd2', 's1', 'd4', 's3', 'd4', 'd4', 's4', 's5', 'd8', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd2', 'd9', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd1', 'd2', 's1', 'd4', 's3', 'd4', 'd4', 's4', 's5', 'd8', 'd8', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd2', 'd9', 's2', 'd9', 'd9'),	 r = 2.409554760023434e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9931821675370865, eta=0.08028315926313545, tau=0.7097734780970185, kappa=22
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd3', 'd4', 's3', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd2', 'd2', 'd6', 's2', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd9', 'd9')
+INFO:root:
+(83/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd3', 'd4', 's3', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd2', 'd2', 'd6', 's2', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd3', 'd4', 's3', 'd5', 'd6', 'd6', 's5', 'd4', 's4', 'd2', 'd2', 'd6', 's2', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 's6', 'd9', 'd9'),	 r = 2.9793786566428893e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9893822043129527, eta=0.39012945467693916, tau=0.7497608345363084, kappa=23
+INFO:root:Protocol generated: ('d2', 's1', 'd0', 'd0', 's0', 'd5', 's4', 'd3', 's3', 'd2', 'd2', 'd5', 'd5', 's2', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(84/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 's1', 'd0', 'd0', 's0', 'd5', 's4', 'd3', 's3', 'd2', 'd2', 'd5', 'd5', 's2', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 's1', 'd0', 'd0', 's0', 'd5', 's4', 'd3', 's3', 'd2', 'd2', 'd5', 'd5', 's2', 'd6', 'd7', 'd7', 's6', 'd7', 'd7', 'd8', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd9', 'd9'),	 r = 3.210635342963897e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9261591754698972, eta=-0.37817497794062926, tau=0.7666844469858418, kappa=21
+INFO:root:Protocol generated: ('d1', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 's5', 'd2', 'd2', 's2', 'd9', 'd9')
+INFO:root:
+(85/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 's5', 'd2', 'd2', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 's1', 'd0', 'd0', 'd2', 's0', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd7', 'd7', 'd8', 's7', 'd6', 'd8', 'd8', 's6', 'd9', 's8', 'd5', 'd5', 's5', 'd2', 'd2', 's2', 'd9', 'd9'),	 r = 3.9044609132562743e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9669047690418127, eta=0.3377117154352871, tau=0.7483567052047883, kappa=20
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd5', 'd6', 'd6', 's5', 's4', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd8', 'd9', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd9', 'd9')
+INFO:root:
+(86/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd5', 'd6', 'd6', 's5', 's4', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd8', 'd9', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 's1', 'd5', 'd6', 'd6', 's5', 's4', 'd6', 'd6', 's3', 'd2', 'd2', 'd6', 'd6', 's2', 'd8', 'd9', 'd9', 's8', 'd7', 's7', 'd6', 's6', 'd9', 'd9'),	 r = 1.8079563568628275e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9157769802548236, eta=-0.2624186353756004, tau=0.7696683045889027, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's1', 'd4', 'd5', 'd5', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(87/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's1', 'd4', 'd5', 'd5', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 's0', 'd3', 'd3', 'd4', 'd4', 's3', 'd2', 'd2', 'd4', 'd4', 's2', 'd4', 's1', 'd4', 'd5', 'd5', 's4', 'd8', 'd8', 'd9', 's8', 'd9', 's7', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 2.484823115600016e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9012694035039576, eta=-0.6771001350435688, tau=0.7857181679281271, kappa=20
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd2', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd4', 'd9', 's4', 'd3', 's3', 'd9', 'd9')
+INFO:root:
+(88/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd2', 's1', 'd2', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd4', 'd9', 's4', 'd3', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd2', 's2', 'd0', 'd0', 'd3', 'd3', 's0', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd9', 'd9', 's8', 'd9', 'd9', 's6', 'd4', 'd9', 's4', 'd3', 's3', 'd9', 'd9'),	 r = 2.515878635173951e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9603851319999587, eta=-0.7717712135012048, tau=0.7851507260101528, kappa=22
+INFO:root:Protocol generated: ('d1', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 's0', 'd4', 'd5', 'd5', 's4', 'd3', 's3', 'd8', 'd8', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(89/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 's0', 'd4', 'd5', 'd5', 's4', 'd3', 's3', 'd8', 'd8', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd0', 'd0', 's0', 'd4', 'd5', 'd5', 's4', 'd3', 's3', 'd8', 'd8', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.224478408061347e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9007555508097563, eta=-0.8093055554460401, tau=0.741817110013147, kappa=21
+INFO:root:Protocol generated: ('d2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd3', 's0', 'd4', 'd5', 'd5', 's4', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 's6', 'd8', 's8', 'd9', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(90/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd3', 's0', 'd4', 'd5', 'd5', 's4', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 's6', 'd8', 's8', 'd9', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd3', 's0', 'd4', 'd5', 'd5', 's4', 'd6', 's5', 'd7', 'd7', 'd8', 'd8', 's7', 'd6', 's6', 'd8', 's8', 'd9', 'd9', 's3', 'd9', 'd9'),	 r = 2.3085362709977243e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9179181104616109, eta=-0.7473793872661467, tau=0.9116596736857042, kappa=22
+INFO:root:Protocol generated: ('d2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd4', 'd4', 's3', 's2', 'd4', 'd4', 's4', 'd7', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(91/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd4', 'd4', 's3', 's2', 'd4', 'd4', 's4', 'd7', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd2', 's1', 'd0', 'd0', 'd2', 'd2', 's0', 'd3', 'd4', 'd4', 's3', 's2', 'd4', 'd4', 's4', 'd7', 'd8', 's7', 'd6', 'd8', 's6', 'd9', 'd9', 's8', 'd5', 'd5', 'd9', 's5', 'd9', 'd9'),	 r = 1.7247891851666146e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.6170013239019705, tau=0.6692815339209492, kappa=31
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(92/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 's4', 'd3', 's3', 'd6', 'd6', 'd7', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.61030152792399e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9411627625635535, eta=-0.6844159658916413, tau=0.8890798605369126, kappa=24
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(93/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 's2', 'd4', 'd4', 'd5', 'd5', 's4', 'd6', 'd7', 's6', 'd7', 'd7', 'd8', 's7', 'd8', 'd8', 'd9', 'd9', 's8', 'd9', 's5', 'd3', 'd3', 'd9', 's3', 'd9', 'd9'),	 r = 2.308231334239966e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.187631158691139, tau=0.6476548700940552, kappa=32
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(94/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd3', 'd5', 'd5', 's3', 'd6', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.9276068996652055e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9434912375446772, eta=0.7152446643830805, tau=0.7784273087457769, kappa=21
+INFO:root:Protocol generated: ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's1', 'd0', 'd0', 's0', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 's5', 'd8', 'd8', 's8', 'd9', 's7', 'd4', 's4', 'd9', 'd9')
+INFO:root:
+(95/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's1', 'd0', 'd0', 's0', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 's5', 'd8', 'd8', 's8', 'd9', 's7', 'd4', 's4', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd4', 's3', 'd4', 'd4', 's1', 'd0', 'd0', 's0', 'd6', 'd7', 'd7', 's6', 'd5', 'd7', 's5', 'd8', 'd8', 's8', 'd9', 's7', 'd4', 's4', 'd9', 'd9'),	 r = 1.8198914510603598e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9953665768321844, eta=-0.6682052141762861, tau=0.9313102746370931, kappa=23
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd5', 'd5', 's4', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's6', 'd3', 'd9', 's3', 'd9', 'd9')
+INFO:root:
+(96/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd5', 'd5', 's4', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's6', 'd3', 'd9', 's3', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd5', 'd5', 's4', 'd5', 'd6', 'd6', 's5', 'd7', 'd7', 'd8', 's7', 'd8', 'd9', 's8', 'd9', 's6', 'd3', 'd9', 's3', 'd9', 'd9'),	 r = 4.060006685766724e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9206354016150994, eta=-0.9191777697068086, tau=0.8588662288112625, kappa=24
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd6', 'd7', 's6', 'd5', 'd7', 's5', 'd2', 'd7', 'd7', 's2', 'd8', 'd8', 'd9', 's8', 's7', 'd9', 'd9')
+INFO:root:
+(97/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd6', 'd7', 's6', 'd5', 'd7', 's5', 'd2', 'd7', 'd7', 's2', 'd8', 'd8', 'd9', 's8', 's7', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd2', 'd2', 's1', 'd3', 'd3', 'd4', 's3', 'd4', 'd5', 's4', 'd6', 'd7', 's6', 'd5', 'd7', 's5', 'd2', 'd7', 'd7', 's2', 'd8', 'd8', 'd9', 's8', 's7', 'd9', 'd9'),	 r = 2.8933834805181934e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9783777262074946, eta=-1.0, tau=0.9202064501241918, kappa=22
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 's3', 'd5', 'd5', 's5', 'd6', 's4', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd2', 's2', 'd9', 'd9')
+INFO:root:
+(98/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 's3', 'd5', 'd5', 's5', 'd6', 's4', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd2', 's2', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 'd0', 'd0', 's0', 'd3', 'd3', 's3', 'd5', 'd5', 's5', 'd6', 's4', 'd8', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd6', 'd6', 'd9', 's6', 'd2', 's2', 'd9', 'd9'),	 r = 4.053734556953042e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9912488241120907, eta=-0.8909575413547188, tau=0.7302203711860195, kappa=24
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd5', 'd5', 's4', 'd2', 'd2', 's2', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd5', 's5', 'd9', 'd9')
+INFO:root:
+(99/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd5', 'd5', 's4', 'd2', 'd2', 's2', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd5', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 'd4', 'd4', 's3', 'd4', 'd5', 'd5', 's4', 'd2', 'd2', 's2', 's8', 'd7', 'd7', 'd9', 's7', 'd6', 'd9', 's6', 'd5', 's5', 'd9', 'd9'),	 r = 2.7158832265938912e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.8880892525816595, tau=0.9375342733860217, kappa=17
+INFO:root:Protocol generated: ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 's4', 'd3', 's3', 'd7', 's6', 'd8', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9')
+INFO:root:
+(100/100) Running: {'p_gen': 0.0026, 'p_swap': 0.85, 'w0': 0.958, 't_coh': 3600000, 'protocol': ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 's4', 'd3', 's3', 'd7', 's6', 'd8', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'), 't_trunc': 3600000}
+INFO:root:Protocol ('d0', 'd0', 'd1', 's0', 'd3', 's2', 'd3', 's1', 's4', 'd3', 's3', 'd7', 's6', 'd8', 'd8', 'd9', 's8', 'd9', 'd9', 's7', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'),	 r = 3.023422832600906e-05
+
+INFO:root:
+Best results: (4.528970853839533e-05, ('d0', 'd0', 'd1', 's0', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 'd3', 's1', 'd4', 'd4', 'd5', 'd5', 's4', 'd5', 'd5', 's3', 'd6', 'd7', 's6', 'd8', 'd8', 'd9', 'd9', 's8', 'd7', 'd7', 'd9', 'd9', 's7', 'd5', 'd5', 'd9', 'd9', 's5', 'd9', 'd9'))
+
+real	412m13.517s
+user	101m18.457s
+sys	0m37.180s
+Running gp...
+INFO:root:
+
+Number of nodes: 5, max dists: 3, seed: 41
+INFO:root:Gaussian process with 100 evaluations and 10 initial points
+
+
+INFO:root:
+
+Generating a protocol with gamma=0.32097339389336293, eta=-0.6892813139636893, tau=0.600567237410126, kappa=14
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 's2', 'd0', 'd0', 'd0', 's0', 'd3', 'd3')
+INFO:root:
+(1/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 's2', 'd0', 'd0', 'd0', 's0', 'd3', 'd3'), 't_trunc': 1489032}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 's2', 'd0', 'd0', 'd0', 's0', 'd3', 'd3'),	 r = 2.5866043994125738e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.7878644108096561, eta=0.5276615272241196, tau=0.7029740059185613, kappa=19
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3')
+INFO:root:
+(2/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3'), 't_trunc': 1985376}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3'),	 r = -0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.8019778902252009, eta=-0.6419425415540692, tau=0.4603300481012633, kappa=18
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3')
+INFO:root:
+(3/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3'), 't_trunc': 1886107}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3', 'd3'),	 r = 1.83276688989898e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8737266248551658, eta=0.02647562428594341, tau=0.23917082477347978, kappa=15
+INFO:root:Protocol generated: ('d0', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3')
+INFO:root:
+(4/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3'), 't_trunc': 1588300}
+INFO:root:Protocol ('d0', 'd1', 's0', 'd1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3'),	 r = 2.7485975417187307e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.13273989219428864, eta=-0.20849786105434887, tau=0.7239741430299466, kappa=1
+INFO:root:Protocol generated: ('s1', 's2', 'd0', 's0')
+INFO:root:
+(5/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 's2', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 's2', 'd0', 's0'),	 r = 7.176746177165357e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6837293313574645, eta=0.13581646075707998, tau=0.42265668684409996, kappa=11
+INFO:root:Protocol generated: ('d0', 'd1', 's0', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3')
+INFO:root:
+(6/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd1', 's0', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd1', 's0', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd2', 'd3', 'd3', 's2', 'd3'),	 r = 4.622934428514966e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6973410053031251, eta=-0.780682346469074, tau=0.6993815906348182, kappa=5
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 's1', 's2')
+INFO:root:
+(7/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 's1', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 's1', 's2'),	 r = 6.427299585350209e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6230957216262664, eta=-0.3490646313693532, tau=0.07769131155976296, kappa=20
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3')
+INFO:root:
+(8/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3'), 't_trunc': 2084644}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.4665360897740106, eta=0.5262011629492294, tau=0.19396290616858486, kappa=11
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd3')
+INFO:root:
+(9/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd2', 's1', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd3'),	 r = 2.2771177116854887e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.772462083319867, eta=0.1833079787803844, tau=0.7682703014211517, kappa=10
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 's2', 'd3', 'd3')
+INFO:root:
+(10/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 's2', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 's0', 'd2', 'd2', 's1', 'd2', 'd3', 's2', 'd3', 'd3'),	 r = 4.2540838935161143e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.1397797384165906, eta=-0.2151856196640527, tau=1.0, kappa=0
+INFO:root:Protocol generated: ('s1', 's2', 's0')
+INFO:root:
+(11/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 's2', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 's2', 's0'),	 r = 6.527250636034609e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.992571492833931, eta=0.05234637721060187, tau=0.5020814428285514, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:
+(12/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's2', 's1'),	 r = 6.964991954151258e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9967489246485647, eta=0.5861464946546608, tau=0.7700700280175655, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.27441674401670296, eta=0.7460908996608824, tau=0.6252490258324925, kappa=0
+INFO:root:Protocol generated: ('s1', 's2', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.5724495350411266, eta=-1.0, tau=0.8371995000229834, kappa=0
+INFO:root:Protocol generated: ('s1', 's0', 's2')
+INFO:root:
+(15/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 's0', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 's0', 's2'),	 r = 6.527250636034647e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9446506884837942, eta=-0.6728362735604723, tau=0.12760257397276925, kappa=2
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 's2', 's1')
+INFO:root:
+(16/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 's0', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 's0', 's2', 's1'),	 r = 6.893772808761915e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.02327198379314379, eta=-0.831566544261355, tau=0.42350750444721386, kappa=0
+INFO:root:Protocol generated: ('s2', 's1', 's0')
+INFO:root:
+(17/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 's1', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 's1', 's0'),	 r = 6.527250636034681e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.3593991893342523, tau=0.2781144153032184, kappa=4
+INFO:root:Protocol generated: ('d2', 's2', 'd1', 's1', 'd0', 'd0', 's0')
+INFO:root:
+(18/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 's2', 'd1', 's1', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 's2', 'd1', 's1', 'd0', 'd0', 's0'),	 r = 8.074883262160539e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6724305863425473, eta=0.18874329907343346, tau=0.02690254199726468, kappa=3
+INFO:root:Protocol generated: ('s0', 's1', 'd3', 'd3', 'd3', 's2')
+INFO:root:
+(19/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's1', 'd3', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's1', 'd3', 'd3', 'd3', 's2'),	 r = 6.630286314794242e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6635993738429687, eta=-0.18890082999126434, tau=0.020119387316798246, kappa=5
+INFO:root:Protocol generated: ('d1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2')
+INFO:root:
+(20/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2'),	 r = 7.22855698931051e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9717984981613266, eta=-0.3093434392765143, tau=0.8167718942412434, kappa=3
+INFO:root:Protocol generated: ('d0', 's0', 'd2', 's2', 's1', 'd3')
+INFO:root:
+(21/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 's0', 'd2', 's2', 's1', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 's0', 'd2', 's2', 's1', 'd3'),	 r = 7.452890315076301e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.04644439311239353, eta=-0.22090862622090512, tau=0.8646415592104856, kappa=3
+INFO:root:Protocol generated: ('s2', 'd1', 'd1', 's1', 'd0', 's0')
+INFO:root:
+(22/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 'd1', 'd1', 's1', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 'd1', 'd1', 's1', 'd0', 's0'),	 r = 7.420206175810722e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.2958947661795916, eta=-0.3359438388470567, tau=0.026109101154424042, kappa=3
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 's1', 's2', 's0')
+INFO:root:
+(23/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 's1', 's2', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 's1', 's2', 's0'),	 r = 5.201838509230938e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=0.8481963855978683, tau=0.16352998404877822, kappa=12
+INFO:root:Protocol generated: ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd3', 's1', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3')
+INFO:root:
+(24/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd3', 's1', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd3', 'd3', 's2', 'd3', 'd3', 'd3', 's1', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3'),	 r = 1.1070494826829343e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=1.0, tau=0.838184764003629, kappa=6
+INFO:root:Protocol generated: ('s2', 'd1', 's1', 'd0', 'd3', 's0', 'd3', 'd3', 'd3')
+INFO:root:
+(25/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 'd1', 's1', 'd0', 'd3', 's0', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 'd1', 's1', 'd0', 'd3', 's0', 'd3', 'd3', 'd3'),	 r = 4.6299364747696e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=0.8165873882004882, tau=0.14061770757115621, kappa=0
+INFO:root:Protocol generated: ('s2', 's1', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.2508831027958859, tau=0.0, kappa=4
+INFO:root:Protocol generated: ('s0', 'd2', 'd2', 'd2', 'd3', 's2', 's1')
+INFO:root:
+(27/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 'd2', 'd2', 'd2', 'd3', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 'd2', 'd2', 'd2', 'd3', 's2', 's1'),	 r = 6.759917564335376e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=0.11657568011962538, tau=0.27437019041252936, kappa=2
+INFO:root:Protocol generated: ('s2', 'd1', 's1', 's0', 'd3')
+INFO:root:
+(28/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 'd1', 's1', 's0', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 'd1', 's1', 's0', 'd3'),	 r = 6.915437315557439e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.3298723454939325, eta=0.6456819448809126, tau=0.004757168342140994, kappa=5
+INFO:root:Protocol generated: ('s1', 'd2', 'd2', 'd2', 'd3', 's2', 'd3', 's0')
+INFO:root:
+(29/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 'd2', 'd2', 'd2', 'd3', 's2', 'd3', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 'd2', 'd2', 'd2', 'd3', 's2', 'd3', 's0'),	 r = 4.621557877258856e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.000327485607044175, eta=0.4322700771573653, tau=0.6850773694535525, kappa=21
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 'd3', 'd3', 's1', 'd0', 'd0', 'd0', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3')
+INFO:root:
+(30/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 'd3', 'd3', 's1', 'd0', 'd0', 'd0', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3'), 't_trunc': 2183913}
+/Users/lorenzolacorte/Research/lilla/src/utils/utility_functions.py:165: RuntimeWarning: overflow encountered in exp
+  rest = c_0 * np.exp(-a * d_0 * t_trunc + b) / a / d_0
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 'd3', 'd3', 's1', 'd0', 'd0', 'd0', 'd3', 'd3', 'd3', 's0', 'd3', 'd3', 'd3'),	 r = 0.0
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-1.0, tau=0.562465826795625, kappa=6
+INFO:root:Protocol generated: ('d2', 's2', 's1', 'd0', 'd0', 'd0', 's0', 'd3', 'd3')
+INFO:root:
+(31/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 's2', 's1', 'd0', 'd0', 'd0', 's0', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 's2', 's1', 'd0', 'd0', 'd0', 's0', 'd3', 'd3'),	 r = 5.805307918506246e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-1.0, tau=1.0, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.7879078188599365, eta=1.0, tau=0.8837950367975137, kappa=5
+INFO:root:Protocol generated: ('d0', 'd1', 's0', 'd1', 'd2', 's1', 's2', 'd3')
+INFO:root:
+(33/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd1', 's0', 'd1', 'd2', 's1', 's2', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd1', 's0', 'd1', 'd2', 's1', 's2', 'd3'),	 r = 6.028403101714361e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.5794854752800714, eta=0.8619694894544332, tau=0.033637818556556266, kappa=6
+INFO:root:Protocol generated: ('s1', 's0', 'd2', 'd2', 'd2', 's2', 'd3', 'd3', 'd3')
+INFO:root:
+(34/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 's0', 'd2', 'd2', 'd2', 's2', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 's0', 'd2', 'd2', 'd2', 's2', 'd3', 'd3', 'd3'),	 r = 2.925800445795802e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6936004332791158, eta=0.07076402854730945, tau=0.9190606036645412, kappa=0
+INFO:root:Protocol generated: ('s0', 's1', 's2')
+INFO:root:
+(35/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's1', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's1', 's2'),	 r = 6.527250636034614e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.9651008667122086, tau=0.9484462929956942, kappa=12
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd3', 'd3', 'd3')
+INFO:root:
+(36/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 'd3', 's2', 'd1', 'd1', 's1', 'd3', 'd3', 'd3'),	 r = 3.425311615676303e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.2664769161561097, tau=0.4343419546247217, kappa=6
+INFO:root:Protocol generated: ('d3', 'd3', 's2', 'd3', 's1', 'd0', 'd0', 's0', 'd3')
+INFO:root:
+(37/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d3', 'd3', 's2', 'd3', 's1', 'd0', 'd0', 's0', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d3', 'd3', 's2', 'd3', 's1', 'd0', 'd0', 's0', 'd3'),	 r = 5.673443188926109e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.7321240233578086, eta=0.28776020280003856, tau=0.0, kappa=4
+INFO:root:Protocol generated: ('s0', 'd2', 's1', 'd3', 'd3', 'd3', 's2')
+INFO:root:
+(38/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 'd2', 's1', 'd3', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 'd2', 's1', 'd3', 'd3', 'd3', 's2'),	 r = 7.276749194028032e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.692176608800734, eta=0.9508369656806488, tau=0.9980847977030347, kappa=2
+INFO:root:Protocol generated: ('s0', 's1', 's2', 'd3', 'd3')
+INFO:root:
+(39/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's1', 's2', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's1', 's2', 'd3', 'd3'),	 r = 6.169995378090791e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8038846840415317, eta=0.17276652712814866, tau=0.5328607431040294, kappa=4
+INFO:root:Protocol generated: ('s0', 'd2', 'd2', 's1', 'd2', 'd3', 's2')
+INFO:root:
+(40/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 'd2', 'd2', 's1', 'd2', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 'd2', 'd2', 's1', 'd2', 'd3', 's2'),	 r = 7.04056450579085e-05
+
+INFO:root:
+
+Generating a protocol with gamma=2.5370336265537005e-20, eta=-0.9148771780483972, tau=0.879614143444351, kappa=4
+INFO:root:Protocol generated: ('d2', 'd2', 'd3', 's2', 's1', 'd0', 's0')
+INFO:root:
+(41/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd3', 's2', 's1', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd3', 's2', 's1', 'd0', 's0'),	 r = 7.295290373905554e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-1.0, tau=0.0, kappa=3
+INFO:root:Protocol generated: ('s2', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(42/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 6.630286314794502e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.21442698515566783, eta=-1.0, tau=0.596466811391382, kappa=2
+INFO:root:Protocol generated: ('s1', 's2', 'd0', 's0', 'd3')
+INFO:root:
+(43/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 's2', 'd0', 's0', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 's2', 'd0', 's0', 'd3'),	 r = 7.161039040164366e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0835474972696037, eta=-0.9915074083311757, tau=0.3907079850722165, kappa=4
+INFO:root:Protocol generated: ('s2', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(44/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.276749194026647e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6500600587943265, eta=0.9712595825290093, tau=0.03214203519970436, kappa=2
+INFO:root:Protocol generated: ('s0', 's1', 'd2', 'd2', 's2')
+INFO:root:
+(45/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's1', 'd2', 'd2', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's1', 'd2', 'd2', 's2'),	 r = 5.9914898327796566e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.05185562236812624, eta=-0.9361712768893468, tau=0.022666774186284374, kappa=9
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(46/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.288455421801896e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=0.8072716703470786, tau=0.8813316745395535, kappa=4
+INFO:root:Protocol generated: ('s2', 'd1', 's1', 'd3', 's0', 'd3', 'd3')
+INFO:root:
+(47/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s2', 'd1', 's1', 'd3', 's0', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s2', 'd1', 's1', 'd3', 's0', 'd3', 'd3'),	 r = 5.2326746152355756e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.9953136248470777, tau=0.28609159267408535, kappa=3
+INFO:root:Protocol generated: ('s0', 's2', 'd1', 's1', 'd3', 'd3')
+INFO:root:
+(48/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's2', 'd1', 's1', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's2', 'd1', 's1', 'd3', 'd3'),	 r = 6.363467862454395e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.36198924008904565, eta=-1.0, tau=0.2544429347141026, kappa=9
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(49/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0'),	 r = 7.825644697078489e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.41679069932876445, eta=-1.0, tau=0.4094733817819909, kappa=7
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 's2')
+INFO:root:
+(50/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd2', 's0', 's2'),	 r = 5.8191897047534425e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.27715144853547546, eta=-1.0, tau=0.027773049451573086, kappa=10
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(51/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 's0'),	 r = 7.629445197964215e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.14880748325593435, eta=-0.9604071693596928, tau=0.994951704798142, kappa=9
+INFO:root:Protocol generated: ('d1', 'd2', 's1', 'd2', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3')
+INFO:root:
+(52/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd2', 's1', 'd2', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd2', 's1', 'd2', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3'),	 r = 5.863390091141123e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6311024375441896, eta=-0.6685126384228784, tau=0.31636294259570336, kappa=10
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2')
+INFO:root:
+(53/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2'),	 r = 8.078406044093533e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.5645173220478443, eta=-1.0, tau=0.0, kappa=1
+INFO:root:Protocol generated: ('s1', 'd0', 's0', 's2')
+INFO:root:
+(54/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s1', 'd0', 's0', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('s1', 'd0', 's0', 's2'),	 r = 6.961786957208275e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.32372692394492125, eta=-0.9975737387345235, tau=0.3877921157593505, kappa=10
+INFO:root:Protocol generated: ('d1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3')
+INFO:root:
+(55/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd2', 'd2', 'd2', 's1', 'd3', 's2', 'd0', 'd0', 'd0', 'd3', 's0', 'd3'),	 r = 5.551365670386472e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.5609844496014148, tau=0.15385978139206233, kappa=9
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's2', 's1')
+INFO:root:
+(56/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's2', 's1'),	 r = 7.521062755729719e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9761996431861224, eta=-0.38955159735936395, tau=0.32710294715232296, kappa=3
+INFO:root:Protocol generated: ('d1', 'd1', 's0', 'd2', 's2', 's1')
+INFO:root:
+(57/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 's0', 'd2', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 's0', 'd2', 's2', 's1'),	 r = 7.447259310655886e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.7655945853688786, eta=-0.508851586867986, tau=0.0, kappa=11
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2')
+INFO:root:
+(58/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 'd3', 's2'),	 r = 7.939739279585093e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8381337253496721, eta=-0.46780243700690316, tau=0.13743069595129762, kappa=10
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2')
+INFO:root:
+(59/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 'd3', 's2'),	 r = 7.475871686868136e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9548117996391933, eta=-0.4649653923873156, tau=1.0, kappa=5
+INFO:root:Protocol generated: ('d0', 's0', 'd2', 'd3', 's2', 's1', 'd3', 'd3')
+INFO:root:
+(60/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 's0', 'd2', 'd3', 's2', 's1', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 's0', 'd2', 'd3', 's2', 's1', 'd3', 'd3'),	 r = 6.676055049793445e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.912533675810411, eta=-0.9282154013512649, tau=0.14812028542153832, kappa=12
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 's1')
+INFO:root:
+(61/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 's1'),	 r = 7.755656906501817e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.06516016265815198, eta=-0.7244278964802107, tau=0.19281632927880735, kappa=11
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(62/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 8.25357448511953e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8283979087337056, eta=-0.9616013110573873, tau=0.23665987020097148, kappa=4
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 's0', 's1', 's2')
+INFO:root:
+(63/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 's0', 's1', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 's0', 's1', 's2'),	 r = 5.774661515517969e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.006156997014907175, eta=-0.645533795456009, tau=0.23089896548128674, kappa=9
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(64/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.95755168923085e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=0.029338700221717806, tau=0.20502929874655212, kappa=5
+INFO:root:Protocol generated: ('d1', 'd1', 's0', 'd3', 'd3', 'd3', 's2', 's1')
+INFO:root:
+(65/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 's0', 'd3', 'd3', 'd3', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 's0', 'd3', 'd3', 'd3', 's2', 's1'),	 r = 6.828187127559179e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.015344655103386695, eta=-0.3582872455385193, tau=0.353483384782263, kappa=2
+INFO:root:Protocol generated: ('d3', 'd3', 's2', 's1', 's0')
+INFO:root:
+(66/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d3', 'd3', 's2', 's1', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d3', 'd3', 's2', 's1', 's0'),	 r = 6.0745766974965826e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9361678242173592, eta=0.629318872238871, tau=0.3918235065223055, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.5518575195822464, eta=-0.6964107806176334, tau=0.0, kappa=13
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd3', 's2')
+INFO:root:
+(68/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 'd3', 'd3', 'd3', 's2'),	 r = 7.087229369630691e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9932282686790003, eta=-0.8816435847129561, tau=1.0, kappa=2
+INFO:root:Protocol generated: ('d0', 's0', 's2', 's1', 'd3')
+INFO:root:
+(69/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 's0', 's2', 's1', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 's0', 's2', 's1', 'd3'),	 r = 7.324618050211713e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9148290395831473, eta=-0.08820014144890642, tau=0.0, kappa=8
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 's1')
+INFO:root:
+(70/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 's2', 's1'),	 r = 7.565585783557157e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.7579006599193048, eta=-0.7926522131819846, tau=0.24477412650837654, kappa=11
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd3', 'd3', 'd3', 's2')
+INFO:root:
+(71/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd3', 'd3', 'd3', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd1', 'd2', 's1', 'd3', 'd3', 'd3', 's2'),	 r = 6.442402774618445e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-1.0, tau=0.0, kappa=12
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(72/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.364912029487223e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.4128901760145097, tau=0.0, kappa=10
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(73/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.957915031770936e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-1.0, tau=0.13612349936658688, kappa=10
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.03387554692310761, eta=-0.43819560987361883, tau=0.3127723320652823, kappa=7
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 's0')
+INFO:root:
+(75/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 's2', 'd1', 'd1', 's1', 'd0', 'd0', 's0'),	 r = 7.215754967822205e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.02529699303117927, eta=-0.7153166387975227, tau=0.1037261108299546, kappa=12
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(76/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 8.150429092767026e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9434211385535206, eta=0.47226188250689294, tau=0.538690992456395, kappa=2
+INFO:root:Protocol generated: ('s0', 's2', 'd1', 's1', 'd3')
+INFO:root:
+(77/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 's2', 'd1', 's1', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 's2', 'd1', 's1', 'd3'),	 r = 7.211225574201627e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.4374724855974551, tau=0.2656044566967985, kappa=10
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(78/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 's2', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.113655718203397e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9742628897236811, eta=-0.2602114846783784, tau=0.2182110152768147, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.9479767914921702, eta=-0.3182990710251289, tau=0.6222781358763289, kappa=0
+INFO:root:Protocol generated: ('s0', 's2', 's1')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.8963812591345068, eta=1.0, tau=0.47161298475467717, kappa=5
+INFO:root:Protocol generated: ('s0', 'd2', 'd2', 's2', 's1', 'd3', 'd3', 'd3')
+INFO:root:
+(81/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('s0', 'd2', 'd2', 's2', 's1', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('s0', 'd2', 'd2', 's2', 's1', 'd3', 'd3', 'd3'),	 r = 5.060173700773094e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.49294851523640304, eta=-0.5234149649096256, tau=0.0, kappa=9
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 's0', 's2')
+INFO:root:
+(82/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 's0', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 's0', 's2'),	 r = 6.759152401119008e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.6654013209961853, tau=0.0, kappa=11
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.9870816367043821, eta=-0.46491466570529627, tau=0.3528170328854113, kappa=8
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 'd3', 's1')
+INFO:root:
+(84/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 'd3', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 'd3', 's1'),	 r = 8.256551137128465e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.5179828661050704, eta=-0.5862281455543614, tau=0.2808478269797416, kappa=9
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 's2')
+INFO:root:
+(85/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 's0', 's2'),	 r = 6.0187631277029895e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.6365964894699001, eta=-1.0, tau=0.0, kappa=9
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 's2')
+INFO:root:
+(86/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 's2'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 's1', 's2'),	 r = 6.759152401118931e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.8716789886815304, eta=0.7962788005725672, tau=0.0, kappa=0
+INFO:root:Protocol generated: ('s0', 's1', 's2')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.413331996629388, eta=0.8745535057792269, tau=0.9889211604061389, kappa=20
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd0', 'd0', 'd0', 'd2', 'd2', 'd2', 's0', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd3', 'd3', 'd3')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-1.0, tau=0.0, kappa=14
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 's1')
+INFO:root:
+(89/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 's1'), 't_trunc': 1489032}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 's1'),	 r = 6.855538475355872e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-1.0, tau=0.5017928938913838, kappa=7
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 's1')
+INFO:root:
+(90/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 's0', 'd3', 's2', 'd1', 's1'),	 r = 6.539011678864554e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.004764193231441061, tau=0.9555682525818139, kappa=7
+INFO:root:Protocol generated: ('d0', 'd0', 's0', 's2', 'd1', 'd3', 's1', 'd3', 'd3', 'd3')
+INFO:root:
+(91/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 's0', 's2', 'd1', 'd3', 's1', 'd3', 'd3', 'd3'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 's0', 's2', 'd1', 'd3', 's1', 'd3', 'd3', 'd3'),	 r = 4.725266513716486e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.10169551947711593, eta=-1.0, tau=0.8146122100968369, kappa=0
+INFO:root:Protocol generated: ('s2', 's1', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-0.23169686064297323, tau=0.09033073699359226, kappa=4
+INFO:root:Protocol generated: ('d2', 'd2', 'd3', 'd3', 's2', 's1', 's0')
+INFO:root:
+(93/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd3', 'd3', 's2', 's1', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd3', 'd3', 's2', 's1', 's0'),	 r = 6.473439039277667e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.21711158433704522, eta=-1.0, tau=0.19821211574405717, kappa=7
+INFO:root:Protocol generated: ('d1', 'd1', 'd2', 'd2', 's1', 's2', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(94/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd2', 'd2', 's1', 's2', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd2', 'd2', 's1', 's2', 'd0', 'd0', 'd0', 's0'),	 r = 7.520210911100639e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.0, eta=-1.0, tau=0.2884777019011203, kappa=13
+INFO:root:Protocol generated: ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(95/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d2', 'd2', 'd2', 'd3', 'd3', 'd3', 's2', 'd1', 'd1', 'd1', 'd3', 's1', 'd0', 'd0', 'd0', 's0'),	 r = 7.087229369630376e-05
+
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.5718635109701207, tau=0.0, kappa=7
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 's1')
+INFO:root:
+(96/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 's2', 's1'),	 r = 7.424453658013767e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.2420998421056073, eta=-0.9925170682154494, tau=0.12215047795520804, kappa=13
+INFO:root:Protocol generated: ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 'd3', 's2', 'd0', 'd0', 'd0', 's0')
+INFO:root:
+(97/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 'd3', 's2', 'd0', 'd0', 'd0', 's0'), 't_trunc': 1400000}
+INFO:root:Protocol ('d1', 'd1', 'd1', 'd2', 'd2', 'd2', 's1', 'd2', 'd3', 'd3', 'd3', 's2', 'd0', 'd0', 'd0', 's0'),	 r = 7.087229369630426e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.30546234198806194, eta=-0.9309667179774025, tau=0.3231327232244856, kappa=0
+INFO:root:Protocol generated: ('s1', 's2', 's0')
+INFO:root:Already evaluated protocol, returning cached result
+INFO:root:
+
+Generating a protocol with gamma=1.0, eta=-0.8089308070303438, tau=0.07565291953138176, kappa=10
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 's1')
+INFO:root:
+(99/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 's1'),	 r = 8.716153173881021e-05
+
+INFO:root:
+
+Generating a protocol with gamma=0.9200371839646115, eta=-1.0, tau=0.0, kappa=10
+INFO:root:Protocol generated: ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 's2', 's1')
+INFO:root:
+(100/100) Running: {'p_gen': 0.00092, 'p_swap': 0.85, 'w0': 0.96, 't_coh': 1400000, 'protocol': ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 's2', 's1'), 't_trunc': 1400000}
+INFO:root:Protocol ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd2', 'd3', 's2', 's1'),	 r = 8.253493694806656e-05
+
+INFO:root:
+Best results: (8.716153173881021e-05, ('d0', 'd0', 'd0', 'd1', 'd1', 'd1', 's0', 'd2', 'd2', 'd3', 'd3', 's2', 's1'))
+
+real	140m22.982s
+user	13m0.362s
+sys	0m2.064s
