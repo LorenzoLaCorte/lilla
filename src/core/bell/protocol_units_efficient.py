@@ -12,8 +12,9 @@ __all__ = ["bell_join_efficient"]
 
 
 # Involution indexes, useful for dephasing
-# the noise swaps weights 0 <-> 1 and 2 <-> 3
-HAT = (1, 0, 3, 2)
+# Bell order: (phi+, psi+, psi-, phi-) = Pauli errors (I, X, Y, Z).
+# Dephasing applies a Z error, so it swaps weights 0 <-> 3 and 1 <-> 2.
+HAT = (3, 2, 1, 0)
 
 # Index s_k(i)
 # based on the k, decide the affected weights
@@ -29,12 +30,12 @@ SWAP_HAT_PERMUTATIONS = tuple(tuple(HAT[index] for index in permutation) for per
 # indeces of the form ((indeces of a), (indeces of b)) = ((i, j), (m, n)) 
 # correspond to terms (a_i b'_m + a_j b'_n) in the numerator of H_k
 DIST_PAIRS = (
-    ((0, 1), (0, 1)), # k = 0
-    ((0, 1), (1, 0)), # k = 1
-    ((2, 3), (2, 3)), # k = 2
-    ((2, 3), (3, 2)), # k = 3
+    ((0, 3), (0, 3)), # k = 0
+    ((1, 2), (1, 2)), # k = 1
+    ((1, 2), (2, 1)), # k = 2
+    ((0, 3), (3, 0)), # k = 3
 )
-SECTOR_INDICES = ((0, 1), (2, 3))
+SECTOR_INDICES = ((0, 3), (1, 2))
 
 def _extract_probability_column(pmf):
     if pmf.ndim == 1:
@@ -176,12 +177,14 @@ def get_swap_pair_average_term(pmf1, pmf2, lambda_func1, lambda_func2, depolar_r
     lambdas_a_hat = lambda_func1[:, HAT[lambda_index]]
     lambdas_b = lambda_func2[:, SWAP_PERMUTATIONS[lambda_index]]
     lambdas_b_hat = lambda_func2[:, SWAP_HAT_PERMUTATIONS[lambda_index]]
+    lambdas_a_average = (lambdas_a + lambdas_a_hat) / 2.0 - 0.25
+    lambdas_b_average = (lambdas_b + lambdas_b_hat) / 2.0 - 0.25
 
     return (
-        pmf1[:, np.newaxis] * lambdas_a[:, np.newaxis] * link2_decay[:, np.newaxis],
-        pmf1[:, np.newaxis] * ((lambdas_a + lambdas_a_hat) / 2.0 - 0.25)[:, np.newaxis] / link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * lambdas_b * link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * ((lambdas_b + lambdas_b_hat) / 2.0 - 0.25) / link2_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * lambdas_a_average[:, np.newaxis] * link1_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * lambdas_a[:, np.newaxis] / link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * lambdas_b_average * link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * lambdas_b / link1_decay[:, np.newaxis],
     )
 
 
@@ -205,12 +208,14 @@ def get_swap_pair_difference_term(pmf1, pmf2, lambda_func1, lambda_func2, depola
     lambdas_a_hat = lambda_func1[:, HAT[lambda_index]]
     lambdas_b = lambda_func2[:, SWAP_PERMUTATIONS[lambda_index]]
     lambdas_b_hat = lambda_func2[:, SWAP_HAT_PERMUTATIONS[lambda_index]]
+    lambdas_a_difference = (lambdas_a - lambdas_a_hat) / 2.0
+    lambdas_b_difference = (lambdas_b - lambdas_b_hat) / 2.0
 
     return (
-        pmf1[:, np.newaxis] * lambdas_a[:, np.newaxis] * link2_decay[:, np.newaxis],
-        pmf1[:, np.newaxis] * ((lambdas_a - lambdas_a_hat) / 2.0)[:, np.newaxis] / link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * lambdas_b * link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * ((lambdas_b - lambdas_b_hat) / 2.0) / link2_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * lambdas_a_difference[:, np.newaxis] * link1_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * lambdas_a[:, np.newaxis] / link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * lambdas_b_difference * link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * lambdas_b / link1_decay[:, np.newaxis],
     )
 
 
@@ -230,10 +235,10 @@ def get_dist_success_dynamic_term(pmf1, pmf2, lambda_func1, lambda_func2, depola
     b_sum = lambda_func2[:, i] + lambda_func2[:, j]
 
     return (
-        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] * link2_decay[:, np.newaxis],
-        pmf1[:, np.newaxis] * (a_sum - 0.5)[:, np.newaxis] / link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] * link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * (b_sum - 0.5)[:, np.newaxis] / link2_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * (a_sum - 0.5)[:, np.newaxis] * link1_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] / link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * (b_sum - 0.5)[:, np.newaxis] * link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] / link1_decay[:, np.newaxis],
     )
 
 
@@ -251,10 +256,10 @@ def get_dist_numerator_constant_term(pmf1, pmf2, lambda_func1, lambda_func2, dep
     b_sum = lambda_func2[:, m] + lambda_func2[:, n]
 
     return (
-        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] * ones,
-        pmf1[:, np.newaxis] * 0.25 * basis,
-        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] * ones,
-        pmf2[:, np.newaxis] * 0.25 * basis,
+        pmf1[:, np.newaxis] * 0.25 * ones,
+        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] * basis,
+        pmf2[:, np.newaxis] * 0.25 * ones,
+        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] * basis,
     )
 
 
@@ -277,10 +282,10 @@ def get_dist_numerator_gamma_term(pmf1, pmf2, lambda_func1, lambda_func2, depola
     b_sum = lambda_func2[:, m] + lambda_func2[:, n]
 
     return (
-        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] * link2_decay[:, np.newaxis] * ones,
-        pmf1[:, np.newaxis] * ((2.0 * a_sum - 1.0) / 4.0)[:, np.newaxis] * basis / link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] * link1_decay[:, np.newaxis] * ones,
-        pmf2[:, np.newaxis] * ((2.0 * b_sum - 1.0) / 4.0)[:, np.newaxis] * basis / link2_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * ((2.0 * a_sum - 1.0) / 4.0)[:, np.newaxis] * link1_decay[:, np.newaxis] * ones,
+        pmf1[:, np.newaxis] * a_sum[:, np.newaxis] * basis / link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * ((2.0 * b_sum - 1.0) / 4.0)[:, np.newaxis] * link2_decay[:, np.newaxis] * ones,
+        pmf2[:, np.newaxis] * b_sum[:, np.newaxis] * basis / link1_decay[:, np.newaxis],
     )
 
 
@@ -303,10 +308,10 @@ def get_dist_numerator_gamma_delta_term(pmf1, pmf2, lambda_func1, lambda_func2, 
     b_diff = lambda_func2[:, m] - lambda_func2[:, n]
 
     return (
-        pmf1[:, np.newaxis] * (a_diff / 2.0)[:, np.newaxis] * link2_decay[:, np.newaxis] * ones,
-        pmf1[:, np.newaxis] * a_diff[:, np.newaxis] * basis / link1_decay[:, np.newaxis],
-        pmf2[:, np.newaxis] * (b_diff / 2.0)[:, np.newaxis] * link1_decay[:, np.newaxis] * ones,
-        pmf2[:, np.newaxis] * b_diff[:, np.newaxis] * basis / link2_decay[:, np.newaxis],
+        pmf1[:, np.newaxis] * (a_diff / 2.0)[:, np.newaxis] * link1_decay[:, np.newaxis] * ones,
+        pmf1[:, np.newaxis] * a_diff[:, np.newaxis] * basis / link2_decay[:, np.newaxis],
+        pmf2[:, np.newaxis] * (b_diff / 2.0)[:, np.newaxis] * link2_decay[:, np.newaxis] * ones,
+        pmf2[:, np.newaxis] * b_diff[:, np.newaxis] * basis / link1_decay[:, np.newaxis],
     )
 
 
@@ -347,7 +352,7 @@ def _dist_success_term_specs(pmf1, pmf2, lambda_func1, lambda_func2, depolar_rat
     TOVERIFY, WRITEMORE
     Here, we assemble ...
     One term is constant 1/2 
-    The other two terms depend on the two index sectors (psi- and phi-)
+    The other two terms depend on the no-bit-flip and bit-flip Bell sectors
     '''
     term_specs = [
         (

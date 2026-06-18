@@ -106,7 +106,13 @@ def secret_key_rate(pmf, state_func, extrapolation=False, show_warning=False, st
 
 # TODO: this should be get_mean_sf
 def get_mean(pmf, state_func, extrapolation=False):
+    pmf = np.asarray(pmf, dtype=float)
     tmp = np.where(np.isnan(state_func), 0., state_func)
+    # Protocol waiting-time support starts at t=1. The t=0 bin can contain
+    # circular-convolution residue and its state row is not normalized.
+    if len(pmf) > 0:
+        pmf = pmf.copy()
+        pmf[0] = 0.0
     coverage = np.sum(pmf)
     if coverage <= 0:
         return 0.  # to prevent nan corrupts the optimization result
@@ -125,8 +131,9 @@ def get_mean_sf(pmf, state_func, extrapolation=False, state_type=WernerState) ->
         - for Bell state, this is the average of the 2D function (a 4-entry vector)
     """
     if state_type == BellState:
-        eX = get_mean(pmf, state_func[:,3] + state_func[:,1], extrapolation)
-        eZ = get_mean(pmf, state_func[:,0] + state_func[:,1], extrapolation)
+        # Bell order: (phi+, psi+, psi-, phi-) = Pauli errors (I, X, Y, Z).
+        eX = get_mean(pmf, state_func[:,2] + state_func[:,3], extrapolation)
+        eZ = get_mean(pmf, state_func[:,1] + state_func[:,2], extrapolation)
         return (1 - entropy(eX) - entropy(eZ))
     elif state_type == WernerState:
         return get_mean(pmf, state_func, extrapolation)

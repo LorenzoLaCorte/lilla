@@ -334,7 +334,7 @@ if __name__ == "__main__":
         nargs=4,
         action="append",
         default=None,
-        help="Bell-diagonal weights (lambda_phi+, lambda_phi-, lambda_psi+, lambda_psi-). "
+        help="Bell-diagonal weights (lambda_phi+, lambda_psi+, lambda_psi-, lambda_phi-). "
              "Repeat flag to provide one 4-tuple per segment.",
     )
     parser.add_argument(

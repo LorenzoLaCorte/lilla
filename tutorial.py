@@ -63,7 +63,7 @@ def working_example():
     fig, axs = plot_algorithm(
         pmf=b_pmf,
         fid_func=l_func,
-        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$", "$\\lambda_{\\phi^-}$"],
     )
     plt.show()
 
@@ -120,7 +120,7 @@ def working_example():
     fig, axs = plot_algorithm(
         pmf=dist_pmf,
         fid_func=dist_sf,
-        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"]
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$", "$\\lambda_{\\phi^-}$"]
     )
     plt.show()
 
@@ -132,7 +132,7 @@ def working_example():
     fig, axs = plot_algorithm(
         pmf=dist_pmf,
         fid_func=dist_sf,
-        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"]
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$", "$\\lambda_{\\phi^-}$"]
     )
     plt.show()
 
@@ -190,7 +190,7 @@ def working_example():
     fig, axs = plot_algorithm(
         pmf=asym_bell_pmf,
         fid_func=asym_l_func,
-        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$", "$\\lambda_{\\phi^-}$"],
     )
     plt.show()
 
@@ -277,7 +277,7 @@ def working_example():
     fig, axs = plot_algorithm(
         pmf=asym_het_bell_pmf_left,
         fid_func=asym_het_bell_l_func_left,
-        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\phi^-}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$"],
+        legend_fid=["$\\lambda_{\\phi^+}$", "$\\lambda_{\\psi^+}$", "$\\lambda_{\\psi^-}$", "$\\lambda_{\\phi^-}$"],
     )
     plt.show()
 
@@ -346,4 +346,3 @@ def working_example():
         cdf_threshold=0.99,
         random_state=42,
     )
-

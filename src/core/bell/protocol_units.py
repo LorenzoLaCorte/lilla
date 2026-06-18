@@ -69,26 +69,32 @@ result: bool
 def apply_noise(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate):
     """
     Applies depolarizing and dephasing noise to the older link.
+    Here t1 and t2 are preparation/completion times, so the older stored link
+    is the one with the smaller time.
     Returns updated lambdas1 and lambdas2.
     """
+    dt = np.abs(t1-t2)
+    if dt == 0:
+        return lambdas1, lambdas2
+
     if isinstance(depolar_rate, list) or isinstance(dephase_rate, list):
         assert isinstance(depolar_rate, list) and isinstance(dephase_rate, list), \
             "Both depolar_rate and dephase_rate must be lists"
         depolar_rate1, depolar_rate2 = get_links_rate(depolar_rate)
         dephase_rate1, dephase_rate2 = get_links_rate(dephase_rate)
-        if t1 > t2:
-            lambdas1 = depolarizing_noise(lambdas1, np.abs(t1-t2), depolar_rate1)
-            lambdas1 = dephasing_noise(lambdas1, np.abs(t1-t2), dephase_rate1)
+        if t1 < t2:
+            lambdas1 = depolarizing_noise(lambdas1, dt, depolar_rate1)
+            lambdas1 = dephasing_noise(lambdas1, dt, dephase_rate1)
         else:
-            lambdas2 = depolarizing_noise(lambdas2, np.abs(t1-t2), depolar_rate2)
-            lambdas2 = dephasing_noise(lambdas2, np.abs(t1-t2), dephase_rate2)
+            lambdas2 = depolarizing_noise(lambdas2, dt, depolar_rate2)
+            lambdas2 = dephasing_noise(lambdas2, dt, dephase_rate2)
     else:
-        if t1 > t2:
-            lambdas1 = depolarizing_noise(lambdas1, np.abs(t1-t2), depolar_rate)
-            lambdas1 = dephasing_noise(lambdas1, np.abs(t1-t2), dephase_rate)
+        if t1 < t2:
+            lambdas1 = depolarizing_noise(lambdas1, dt, depolar_rate)
+            lambdas1 = dephasing_noise(lambdas1, dt, dephase_rate)
         else:
-            lambdas2 = depolarizing_noise(lambdas2, np.abs(t1-t2), depolar_rate)
-            lambdas2 = dephasing_noise(lambdas2, np.abs(t1-t2), dephase_rate)
+            lambdas2 = depolarizing_noise(lambdas2, dt, depolar_rate)
+            lambdas2 = dephasing_noise(lambdas2, dt, dephase_rate)
         
     if not np.isclose(sum(lambdas1), 1.0, atol=1e-1):
         pass # print("[WARNING] after noise sum(lambdasOut)=", t1, t2, sum(lambdas1), lambdas1, "normalizing...")
@@ -149,18 +155,18 @@ def dephasing_noise(lambdas, t, dephase_rate):
             t = 100
             gamma = 0.01
         we get
-            array([0.59715178, 0.30284822, 0.05919699, 0.04080301])
+            array([0.58925027, 0.05790151, 0.06709849, 0.28574973])
         with 
             t = 1000
         we get
-            array([0.45001816, 0.44998184, 0.05000113, 0.04999887])
+            array([0.43751873, 0.06249943, 0.06250057, 0.43748127])
     """
     p = (1 - np.exp(- t * dephase_rate)) / 2
     dephased_lambdas = np.asarray([
-        lambdas[0] * (1 - p) + lambdas[1] * p,
-        lambdas[1] * (1 - p) + lambdas[0] * p,
-        lambdas[2] * (1 - p) + lambdas[3] * p,
-        lambdas[3] * (1 - p) + lambdas[2] * p
+        lambdas[0] * (1 - p) + lambdas[3] * p,
+        lambdas[1] * (1 - p) + lambdas[2] * p,
+        lambdas[2] * (1 - p) + lambdas[1] * p,
+        lambdas[3] * (1 - p) + lambdas[0] * p
     ])
     return dephased_lambdas
 
@@ -201,10 +207,10 @@ def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=Tr
     a, b = apply_noise(t1, t2, a, b, depolar_rate, dephase_rate)
 
     numerator = np.asarray([
-        (a[0] * b[0] + a[1] * b[1]),
-        (a[0] * b[1] + a[1] * b[0]), 
-        (a[2] * b[2] + a[3] * b[3]), 
-        (a[2] * b[3] + a[3] * b[2]),
+        (a[0] * b[0] + a[3] * b[3]),
+        (a[1] * b[1] + a[2] * b[2]),
+        (a[1] * b[2] + a[2] * b[1]),
+        (a[0] * b[3] + a[3] * b[0]),
     ])
 
     if twirling:
@@ -236,7 +242,7 @@ def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0.,
     """
     lambdas1, lambdas2 = apply_noise(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate)
 
-    return ((lambdas1[0] + lambdas1[1])*(lambdas2[0] + lambdas2[1]) + (lambdas1[2] + lambdas1[3])*(lambdas2[2] + lambdas2[3])) 
+    return ((lambdas1[0] + lambdas1[3])*(lambdas2[0] + lambdas2[3]) + (lambdas1[1] + lambdas1[2])*(lambdas2[1] + lambdas2[2])) 
 
 ########################################################################
 """
@@ -295,6 +301,7 @@ def fidelity_cut_off(
     if t1 > t2:  # make sure t1 < t2
         t1, t2 = t2, t1
         lambdas1, lambdas2 = lambdas2, lambdas1
+        f1, f2 = lambdas1[0], lambdas2[0]
     # first link has low quality
     if f1 < f_cut:
         return t1, False  # waiting_time = min(t1, t2)
