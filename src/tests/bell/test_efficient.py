@@ -41,7 +41,7 @@ def _assert_direct_matches_efficient(
     depolar_rate=0.0,
     dephase_rate=0.0,
     ycut=True,
-    twirling=False,
+    w_twirling=False,
 ):
     pmf1, pmf2, lambda_func1, lambda_func2 = _build_bell_test_inputs()
     cutoff = 2
@@ -58,7 +58,7 @@ def _assert_direct_matches_efficient(
         evaluate_func=evaluate_func,
         depolar_rate=depolar_rate,
         dephase_rate=dephase_rate,
-        twirling=twirling,
+        w_twirling=w_twirling,
     )
     actual = bell_join_efficient(
         pmf1,
@@ -71,7 +71,7 @@ def _assert_direct_matches_efficient(
         evaluate_func=evaluate_func,
         depolar_rate=depolar_rate,
         dephase_rate=dephase_rate,
-        twirling=twirling,
+        w_twirling=w_twirling,
     )
 
     assert_allclose(actual, expected, rtol=1.0e-12, atol=1.0e-12)
@@ -95,7 +95,7 @@ def test_bell_distillation_depolarizing_matches_direct():
         evaluate_func="f1+f2+4f1f2",
         depolar_rate=0.04,
         ycut=True,
-        twirling=False,
+        w_twirling=False,
     )
 
 
@@ -105,7 +105,7 @@ def test_bell_distillation_dephasing_matches_direct():
         evaluate_func="f1+f2+4f1f2",
         dephase_rate=0.07,
         ycut=True,
-        twirling=False,
+        w_twirling=False,
     )
 
 

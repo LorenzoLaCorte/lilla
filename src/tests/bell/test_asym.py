@@ -8,7 +8,7 @@ from src.utils.utility_functions import bell_to_fid, secret_key_rate, werner_to_
 from src.core.states import QuantumState
 from src.core.bell.state import BellState
 from src.core.werner.state import WernerState
-from src.tests.test_bell_sym import (
+from src.tests.bell.test_sym import (
     P_SWAP_LIST,
     P_GEN_LIST,
     PROTOCOL_NAMES,
