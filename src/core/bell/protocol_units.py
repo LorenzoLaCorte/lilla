@@ -172,7 +172,7 @@ def dephasing_noise(lambdas, t, dephase_rate):
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def get_one(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., twirling=True):
+def get_one(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., w_twirling=True):
     """
     Get a trivial one
     """
@@ -180,7 +180,7 @@ def get_one(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., twirling=
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def get_swap_lambda_out(t1, t2, lambdasA, lambdasB, depolar_rate, dephase_rate=0., twirling=True):
+def get_swap_lambda_out(t1, t2, lambdasA, lambdasB, depolar_rate, dephase_rate=0., w_twirling=True):
     """
     Get w_swap
     """
@@ -200,7 +200,7 @@ def get_swap_lambda_out(t1, t2, lambdasA, lambdasB, depolar_rate, dephase_rate=0
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=True):
+def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., w_twirling=True):
     """
     Get p_dist * lambda_dist.
     """
@@ -213,7 +213,7 @@ def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=Tr
         (a[0] * b[3] + a[3] * b[0]),
     ])
 
-    if twirling:
+    if w_twirling:
         p_dist = sum(numerator)
         lambdasOut = np.asarray([
             numerator[0],
@@ -228,15 +228,15 @@ def get_dist_lambda_out(t1, t2, a, b, depolar_rate, dephase_rate=0., twirling=Tr
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def get_dist_prob_fail(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., twirling=True):
+def get_dist_prob_fail(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., w_twirling=True):
     """
     Get 1 - p_dist
     """
-    return 1. - get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate, twirling=twirling)
+    return 1. - get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate, w_twirling=w_twirling)
 
 
 @nb.jit(nopython=True, error_model="numpy")
-def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., twirling=True):
+def get_dist_prob_suc(t1, t2, lambdas1, lambdas2, depolar_rate, dephase_rate=0., w_twirling=True):
     """
     Get p_dist
     """
@@ -350,7 +350,7 @@ def bell_join(
         pmf1, pmf2, lambda_func1, lambda_func2, ycut=True,
         cutoff=np.iinfo(int).max, 
         cut_type="memory_time", evaluate_func=get_one, 
-        depolar_rate=0., dephase_rate=0., twirling=True):
+        depolar_rate=0., dephase_rate=0., w_twirling=True):
     """
     Calculate P_s and P_f.
     Calculate sum_(t=tA+tB) Pr(TA=tA)*Pr(TB=tB)*f(tA, tB)
@@ -427,7 +427,7 @@ def bell_join(
     
     result = join_links_helper(
         pmf1, pmf2, lambda_func1, lambda_func2, cutoff_func=cutoff_func, evaluate_func=evaluate_func, ycut=ycut, 
-        mt_cut=mt_cut, w_cut=w_cut, rt_cut=rt_cut, depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=twirling)
+        mt_cut=mt_cut, w_cut=w_cut, rt_cut=rt_cut, depolar_rate=depolar_rate, dephase_rate=dephase_rate, w_twirling=w_twirling)
     return result
 
 
@@ -435,7 +435,7 @@ def bell_join(
 def join_links_iterate(
         result, pmf1, pmf2, w_func1, w_func2,
         cutoff_func=memory_cut_off, evaluate_func=get_one, ycut=True, mt_cut=np.iinfo(int).max, w_cut=0.0, rt_cut=np.iinfo(int).max, 
-        depolar_rate=0., dephase_rate=0., twirling=True):
+        depolar_rate=0., dephase_rate=0., w_twirling=True):
     """
     Iterate over all possible t1 and t2
     """
@@ -448,7 +448,7 @@ def join_links_iterate(
             if not ycut:
                 selection_pass = not selection_pass
             if selection_pass:
-                output = evaluate_func(t1, t2, w_func1[t1], w_func2[t2], depolar_rate, dephase_rate, twirling=twirling)
+                output = evaluate_func(t1, t2, w_func1[t1], w_func2[t2], depolar_rate, dephase_rate, w_twirling=w_twirling)
                 result[waiting_time] += pmf1[t1] * pmf2[t2] * output
     return result
 
@@ -456,7 +456,7 @@ def join_links_iterate(
 def join_links_helper(
         pmf1, pmf2, sf1, sf2,
         cutoff_func=memory_cut_off, evaluate_func=get_one, ycut=True, mt_cut=np.iinfo(int).max, w_cut=0.0, rt_cut=np.iinfo(int).max, 
-        depolar_rate=0., dephase_rate=0., twirling=True):
+        depolar_rate=0., dephase_rate=0., w_twirling=True):
     """
     Call the appropriate function based on if tiling is required (computing lambdas)
     """
@@ -466,4 +466,4 @@ def join_links_helper(
     else:
         result = np.zeros(size, dtype=np.float64)
     return join_links_iterate(result, pmf1, pmf2, sf1, sf2, cutoff_func, evaluate_func, 
-                              ycut, mt_cut, w_cut, rt_cut, depolar_rate, dephase_rate, twirling=twirling)
+                              ycut, mt_cut, w_cut, rt_cut, depolar_rate, dephase_rate, w_twirling=w_twirling)

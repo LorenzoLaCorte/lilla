@@ -414,7 +414,7 @@ def bell_join_efficient(
     evaluate_func=None,
     depolar_rate=0.0,
     dephase_rate=0.0,
-    twirling=True,
+    w_twirling=True,
 ):
     """
     Efficient Bell-diagonal join for memory-time cutoffs.
@@ -474,7 +474,7 @@ def bell_join_efficient(
             lambda_func1.shape,
             _dist_numerator_term_specs(pmf1, pmf2, lambda_func1, lambda_func2, depolar_rate, dephase_rate),
         )
-        if not twirling:
+        if not w_twirling:
             return numerators
         success_probability = np.sum(numerators, axis=1, keepdims=True)
         result = np.empty_like(numerators)

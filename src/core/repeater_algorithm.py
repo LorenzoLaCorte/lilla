@@ -43,8 +43,8 @@ class HashableParameters():
     
 
 class RepeaterChainEvaluation():
-    def __init__(self, state_type = WernerState, use_fft = True, 
-                 use_gpu = False, efficient = True, twirling = True):
+    def __init__(self, state_type = None, use_fft = True,
+                 use_gpu = False, efficient = True, w_twirling = True):
         self.state_type = state_type
         self.use_fft = use_fft
         self.use_gpu = use_gpu
