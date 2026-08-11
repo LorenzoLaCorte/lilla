@@ -32,69 +32,62 @@ def load_config(config_file):
     return config
 
 
-def get_t_trunc(p_gen, p_swap, t_coh, nested_swaps, nested_dists, epsilon=0.01):
+def get_t_trunc(
+    p_gen,
+    p_swap,
+    t_coh,
+    nested_swaps,
+    nested_dists,
+    epsilon=0.01,
+    safety_factor=1.25,
+):
     """
-    This function is derived from Brand et. al, with an adjustment for distillation.
-    TODO: it is a very lossy bound, it should be improved, to get the simulation going faster (mantaining cdf coverage).
-    Returns the truncation time based on a lower bound of what is sufficient to reach (1-epsilon) of the simulation cdf.
+    Estimate a truncation time for the waiting-time distribution.
+
+    Brand et al. give a conservative Markov bound of E[T] / epsilon.
+    That is safe but often very large. Here we keep the same upper estimate
+    for E[T], add the existing worst-case distillation factor, and convert
+    the mean scale to a high-tail quantile with log(1 / epsilon). This is
+    much closer to the geometric/exponential tails appearing in repeater
+    waiting times. The caller still checks CDF coverage and can retry with a
+    larger truncation time if this first guess is too small.
+
+    The t_coh argument is kept for backwards-compatible callers. Memory/noise
+    timescales affect state quality, not the probability mass of the waiting
+    time distribution, so they must not cap t_trunc.
     """
-    t_trunc = int((2/p_swap)**(nested_swaps) * (1/p_gen) * (1/epsilon)) # not considering distillation
+    del t_coh
 
-    p_dist = 0.5 # in the worst case, p_dist will never go below 0.5
-    t_trunc *= (1/p_dist)**(nested_dists) # considering distillation, but very unprecise
+    epsilon = max(float(epsilon), np.finfo(float).tiny)
+    safety_factor = max(float(safety_factor), 1.0)
 
-    # Introduce a factor to reduce the truncation time, as the previous bound is very lossy
-    reduce_factor = 10
-    reduced_t_trunc = max(1, t_trunc // reduce_factor)
-    if math.isfinite(t_coh):
-        t_trunc = min(max(t_coh, reduced_t_trunc), t_coh * 300)
-    else:
-        t_trunc = reduced_t_trunc
-    return int(t_trunc)
+    mean_upper = (2 / p_swap) ** nested_swaps * (1 / p_gen)
 
+    p_dist = 0.5  # in the worst case, p_dist will never go below 0.5
+    mean_upper *= (1 / p_dist) ** nested_dists
 
-def _max_bell_link_rate(rate):
-    if rate is None:
-        return 0.0
-
-    if isinstance(rate, (list, tuple, np.ndarray)):
-        values = [float(value) for value in np.asarray(rate).flatten()]
-        if not values:
-            return 0.0
-        if len(values) == 1:
-            return max(values[0], 0.0)
-        return max(
-            max(values[idx], 0.0) + max(values[idx + 1], 0.0)
-            for idx in range(len(values) - 1)
-        )
-
-    return max(float(rate), 0.0)
+    tail_factor = max(1.0, math.log(1 / epsilon))
+    return max(1, int(math.ceil(mean_upper * tail_factor * safety_factor)))
 
 
-def set_heuristic_t_trunc(parameters, nodes, dists):
+def set_heuristic_t_trunc(parameters, nodes, dists, *, cdf_threshold=0.99):
     """
-    TODO: give a better heuristic 
+    Set a first truncation guess from waiting-time coverage only.
 
-    In the Bell-diagonal model, the relevant BB84 observables decay on
-    exp(-gamma t) and exp(-(gamma + delta) t) timescales
-        
-    We need to avoid the large t_trunc values that trigger overflow in the
-    efficient Bell implementation, but give large enough t_trunc to cover the relevant part of the cdf
+    The simulator verifies the CDF after evaluation and the caller may retry
+    with a larger truncation time. Memory/dephasing/depolarizing parameters are
+    intentionally not used here because they affect state quality, not the PMF
+    support needed to cover the waiting-time distribution.
     """
-    if parameters.get("lambdas") is not None:
-        depolarizing_rate = _max_bell_link_rate(parameters.get("depolarizing_rate"))
-        dephasing_rate = _max_bell_link_rate(parameters.get("dephasing_rate"))
-
-        effective_decay_rate = depolarizing_rate + dephasing_rate
-        coherence = np.inf if effective_decay_rate <= 0.0 else 1.0 / effective_decay_rate
-    elif parameters.get("t_coh") is not None:
-        coherence = max(parameters["t_coh"]) if isinstance(parameters["t_coh"], list) else parameters["t_coh"]
-    else:
-        coherence = np.inf
-
-    parameters["t_trunc"] = get_t_trunc(min(parameters["p_gen"]) if isinstance(parameters["p_gen"], list) else parameters["p_gen"],
-                                        parameters["p_swap"], coherence,
-                                        nested_swaps=np.log2(nodes+1), nested_dists=np.log2(dists+1))
+    p_gen = min(parameters["p_gen"]) if isinstance(parameters["p_gen"], list) else parameters["p_gen"]
+    parameters["t_trunc"] = get_t_trunc(
+        p_gen,
+        parameters["p_swap"],
+        None,
+        nested_swaps=np.log2(nodes + 1),
+        nested_dists=np.log2(dists + 1),
+        epsilon=1 - cdf_threshold,
+    )
     
 def get_ordered_results(result: OptimizeResult, space_type: SpaceType, number_of_swaps) -> List[Tuple[np.float64, Tuple[int]]]:
     """
