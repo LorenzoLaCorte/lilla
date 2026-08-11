@@ -5,6 +5,8 @@ import numba as nb
 import numpy as np
 from scipy.optimize import curve_fit
 from src.core.bell.state import BellState
+from src.core.pauli_fourier.state import PauliFourierState, mu_func_to_lambda_func, mu_to_fid
+from src.core.pauli_adc.state import RealXState, phi_plus_fidelity_func
 from src.core.werner.state import WernerState
 
 
@@ -49,7 +51,15 @@ def fid_to_werner(fid):
 
 
 def bell_to_fid(lambdas):
-    return lambdas[0]
+    return np.asarray(lambdas)[..., 0]
+
+
+def pauli_fourier_to_fid(mu):
+    return mu_to_fid(mu)
+
+
+def real_x_to_fid(coordinates):
+    return phi_plus_fidelity_func(coordinates)
 
 
 def entropy(x):
@@ -65,6 +75,13 @@ def distillable_entanglement(state_func, state_type=WernerState):
         f_func = werner_to_fid(state_func)
     elif state_type == BellState:
         f_func = bell_to_fid(state_func)
+    elif state_type == PauliFourierState:
+        f_func = pauli_fourier_to_fid(state_func)
+    elif state_type == RealXState:
+        raise NotImplementedError(
+            "the Bell-fidelity distillable-entanglement surrogate is not "
+            "justified for locally biased real-X states"
+        )
     
     f_func[f_func < 0.5] = 0.5
     f_func[f_func == 0.5] = 0.5 + 1.e-7  # avoid log(0)
@@ -85,7 +102,7 @@ def secret_fraction(aver_sf, state_type=WernerState):
     secret_fraction: float
         Secret fraction
     """
-    if state_type == BellState:
+    if state_type in (BellState, PauliFourierState, RealXState):
         return max(aver_sf, 0.)
     elif state_type == WernerState:
         return max(1 - 2. * entropy((1.-aver_sf)/2.), 0.)
@@ -135,6 +152,19 @@ def get_mean_sf(pmf, state_func, extrapolation=False, state_type=WernerState) ->
         eX = get_mean(pmf, state_func[:,2] + state_func[:,3], extrapolation)
         eZ = get_mean(pmf, state_func[:,1] + state_func[:,2], extrapolation)
         return (1 - entropy(eX) - entropy(eZ))
+    elif state_type == PauliFourierState:
+        lambda_func = mu_func_to_lambda_func(state_func)
+        eX = get_mean(pmf, lambda_func[:,2] + lambda_func[:,3], extrapolation)
+        eZ = get_mean(pmf, lambda_func[:,1] + lambda_func[:,2], extrapolation)
+        return (1 - entropy(eX) - entropy(eZ))
+    elif state_type == RealXState:
+        # Entanglement-based BB84: c_zz and c_xx directly determine the
+        # bit-error rates.  Local IZ/ZI biases are retained by the simulator,
+        # even though this particular asymptotic security expression does not
+        # use them.
+        eX = get_mean(pmf, (1.0 - state_func[:, 4]) / 2.0, extrapolation)
+        eZ = get_mean(pmf, (1.0 - state_func[:, 3]) / 2.0, extrapolation)
+        return 1 - entropy(eX) - entropy(eZ)
     elif state_type == WernerState:
         return get_mean(pmf, state_func, extrapolation)
 

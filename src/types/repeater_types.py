@@ -10,6 +10,7 @@ import numpy as np
 
 from src.core.states import QuantumState
 from src.core.werner.state import WernerState
+from src.core.pauli_adc.state import RealXState
 
 class ThresholdExceededError(Exception):
     """
@@ -35,6 +36,13 @@ class SimParameters(TypedDict):
     t_trunc: int
     w0: Union[float, List[float]]
     lambdas: list[float]
+    real_x_coordinates: list[float]
+    pauli_mode_decay_rates: Union[float, list[float], list[list[float]]]
+    amplitude_damping_rate: Union[float, list[float]]
+    bell_outcomes: str
+    pauli_adc_noise_model: str
+    p_distillation: float
+    swap_hardware_efficiency: float
 
 PMF = np.ndarray
 
@@ -105,6 +113,85 @@ def validate_heterogeneous_parameters(parameters, number_of_segments, state_type
     """
     Validate the parameters of a heterogeneous protocol.
     """
+    if state_type == RealXState:
+        for key in (
+            "p_gen",
+            "pauli_mode_decay_rates",
+            "amplitude_damping_rate",
+        ):
+            if key not in parameters:
+                raise ValueError(f"Missing required parameter: {key}")
+
+        if "real_x_coordinates" in parameters:
+            initial_states = np.asarray(parameters["real_x_coordinates"], dtype=float)
+            if initial_states.shape != (number_of_segments, 6):
+                raise ValueError(
+                    "real_x_coordinates must have shape "
+                    f"({number_of_segments}, 6)"
+                )
+            for coordinates in initial_states:
+                RealXState(coordinates=coordinates)
+        elif "lambdas" in parameters:
+            initial_states = np.asarray(parameters["lambdas"], dtype=float)
+            if initial_states.shape != (number_of_segments, 4):
+                raise ValueError(
+                    f"lambdas must have shape ({number_of_segments}, 4)"
+                )
+            for lambdas in initial_states:
+                RealXState(lambdas=lambdas)
+        elif "state" in parameters:
+            states = parameters["state"]
+            if not isinstance(states, Iterable) or len(states) != number_of_segments:
+                raise ValueError(
+                    "heterogeneous RealXState input must contain one state per segment"
+                )
+            if not all(isinstance(state, RealXState) for state in states):
+                raise ValueError("every elementary state must be a RealXState")
+        else:
+            raise ValueError(
+                "Missing elementary state: provide real_x_coordinates, lambdas, or state"
+            )
+
+        p_gen = np.asarray(parameters["p_gen"], dtype=float)
+        if p_gen.shape != (number_of_segments,):
+            raise ValueError("p_gen must contain one value per segment")
+        if np.any(p_gen < 0.0) or np.any(p_gen > 1.0):
+            raise ValueError("p_gen values must lie in [0,1]")
+
+        node_count = number_of_segments + 1
+        pauli_rates = np.asarray(parameters["pauli_mode_decay_rates"], dtype=float)
+        adc_rates = np.asarray(parameters["amplitude_damping_rate"], dtype=float)
+        if pauli_rates.shape != (node_count, 3):
+            raise ValueError(
+                "heterogeneous pauli_mode_decay_rates must have shape "
+                f"({node_count}, 3)"
+            )
+        if adc_rates.shape != (node_count,):
+            raise ValueError(
+                "heterogeneous amplitude_damping_rate must have shape "
+                f"({node_count},)"
+            )
+        if (
+            not np.all(np.isfinite(pauli_rates))
+            or not np.all(np.isfinite(adc_rates))
+            or np.any(pauli_rates < 0.0)
+            or np.any(adc_rates < 0.0)
+        ):
+            raise ValueError("memory-noise rates must be finite and nonnegative")
+        jump_rates = np.stack(
+            (
+                pauli_rates[:, 1] + pauli_rates[:, 2] - pauli_rates[:, 0],
+                pauli_rates[:, 0] + pauli_rates[:, 2] - pauli_rates[:, 1],
+                pauli_rates[:, 0] + pauli_rates[:, 1] - pauli_rates[:, 2],
+            ),
+            axis=1,
+        ) / 4.0
+        if np.any(jump_rates < -1.0e-14):
+            raise ValueError(
+                "Pauli mode-decay rates violate the CP triangle constraints"
+            )
+        return
+
     if state_type == WernerState:
         required_keys = ["w0", "p_gen", "t_coh"]
         sf = parameters["w0"]

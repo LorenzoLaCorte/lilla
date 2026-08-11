@@ -7,6 +7,18 @@ import numpy as np
 from src.core.states import QuantumState
 from src.core.werner.state import WFunc, WernerState, polish_w_func
 from src.core.bell.state import BellState, LFunc, polish_l_func
+from src.core.pauli_fourier.state import MuFunc, PauliFourierState, polish_mu_func
+from src.core.pauli_adc.state import (
+    RealXState,
+    XFunc,
+    normalize_weighted_x_func,
+)
+from src.core.pauli_adc.swap_join import real_x_attempt_join, renewal_sum
+from src.core.pauli_adc.swap_join_efficient import (
+    real_x_attempt_join_efficient,
+    renewal_sum_efficient_weighted,
+)
+
 from src.types.protocol_types import find_right_segment
 from src.types.repeater_types import PMF, AsymProtocol, QuantumProtocol, SimParameters, SymProtocol, checkAsymProtocol, validate_heterogeneous_parameters
 try:
@@ -19,8 +31,16 @@ from src.core.werner.protocol_units import werner_join
 from src.core.werner.protocol_units_efficient import werner_join_efficient
 from src.core.bell.protocol_units import bell_join
 from src.core.bell.protocol_units_efficient import bell_join_efficient
+from src.core.pauli_fourier.protocol_units import pauli_fourier_join
+from src.core.pauli_fourier.protocol_units_efficient import pauli_fourier_join_efficient
 
-__all__ = ["RepeaterChainEvaluation", "compute_unit", "werner_join", "repeater_sim"]
+__all__ = [
+    "RepeaterChainEvaluation",
+    "compute_unit",
+    "werner_join",
+    "pauli_fourier_join",
+    "repeater_sim",
+]
 
 
 class HashableParameters():
@@ -45,14 +65,199 @@ class HashableParameters():
 class RepeaterChainEvaluation():
     def __init__(self, state_type = None, use_fft = True,
                  use_gpu = False, efficient = True, w_twirling = True):
+        self.requested_state_type = state_type
         self.state_type = state_type
         self.use_fft = use_fft
         self.use_gpu = use_gpu
         self.gpu_threshold = 1000000
         self.efficient = efficient
-        self.twirling = twirling
+        self.w_twirling = w_twirling
         self.zero_padding_size = None
         self._qutip = False
+
+    def _resolve_state_type(self, parameters):
+        if self.requested_state_type is not None:
+            self.state_type = self.requested_state_type
+        elif "lambdas" in parameters:
+            self.state_type = PauliFourierState
+        elif "w0" in parameters:
+            self.state_type = WernerState
+        else:
+            self.state_type = WernerState
+        return self.state_type
+
+    def _real_x_generation_state(self, parameters, index=None):
+        """Resolve an explicitly selected RealXState elementary-link state."""
+        supplied_state = parameters.get("state")
+        if isinstance(supplied_state, RealXState):
+            return supplied_state
+        if isinstance(supplied_state, (list, tuple)):
+            if index is None:
+                raise ValueError("a list of RealXState objects requires a segment index")
+            candidate = supplied_state[index]
+            if not isinstance(candidate, RealXState):
+                raise ValueError("every elementary 'state' must be a RealXState")
+            return candidate
+
+        if "real_x_coordinates" in parameters:
+            coordinates = np.asarray(parameters["real_x_coordinates"], dtype=float)
+            if index is not None and coordinates.ndim == 2:
+                coordinates = coordinates[index]
+            return RealXState(coordinates=coordinates)
+        if "lambdas" in parameters:
+            lambdas = np.asarray(parameters["lambdas"], dtype=float)
+            if index is not None and lambdas.ndim == 2:
+                lambdas = lambdas[index]
+            return RealXState(lambdas=lambdas)
+        raise ValueError(
+            "RealXState requires 'real_x_coordinates', 'lambdas', or a "
+            "RealXState in 'state'"
+        )
+
+    def _normalize_weighted_mu_func(self, weighted_mu_func, pmf):
+        pmf = np.asarray(pmf, dtype=float)
+        weighted_mu_func = np.asarray(weighted_mu_func, dtype=float)
+        mu_func = np.zeros_like(weighted_mu_func)
+        mu_func[:] = np.array([1.0, 0.0, 0.0, 0.0], dtype=weighted_mu_func.dtype)
+        valid = pmf > 1.0e-10
+        mu_func[valid] = weighted_mu_func[valid] / pmf[valid, np.newaxis]
+        mu_func[valid, 0] = 1.0
+        return polish_mu_func(mu_func)
+
+    def _normalize_weighted_l_func(self, weighted_l_func, pmf):
+        pmf = np.asarray(pmf, dtype=float)
+        weighted_l_func = np.asarray(weighted_l_func, dtype=float)
+        l_func = np.zeros_like(weighted_l_func)
+        l_func[:] = np.array([0.25, 0.25, 0.25, 0.25], dtype=weighted_l_func.dtype)
+        valid = pmf > 1.0e-10
+        l_func[valid] = weighted_l_func[valid] / pmf[valid, np.newaxis]
+        return polish_l_func(l_func)
+
+    def _real_x_protocol_unit(
+        self,
+        parameters,
+        pmf1,
+        sf1,
+        pmf2,
+        sf2,
+        *,
+        operation,
+        cutoff,
+        cut_type,
+        hardware_success,
+    ):
+        """Evaluate a real-X swap/distillation with full-reset retries."""
+        noise_model = parameters.get("pauli_adc_noise_model", "joint")
+        use_efficient_join = (
+            self.efficient
+            and cut_type == "memory_time"
+            and noise_model == "joint"
+        )
+        if self.efficient and not use_efficient_join:
+            logging.info(
+                "RealXState is falling back to the direct O(T^2) join: the "
+                "efficient backend currently requires a memory_time cutoff "
+                "and the joint Pauli+ADC semigroup."
+            )
+        shift = cutoff if cut_type == "memory_time" else 0
+        attempt_join = (
+            real_x_attempt_join_efficient
+            if use_efficient_join
+            else real_x_attempt_join
+        )
+        attempt = attempt_join(
+            pmf1,
+            pmf2,
+            sf1,
+            sf2,
+            operation=operation,
+            cutoff=cutoff,
+            cut_type=cut_type,
+            hardware_success=hardware_success,
+            bell_outcomes=parameters.get("bell_outcomes", "all_corrected"),
+            node_pauli_rates=parameters.get(
+                "_real_x_node_pauli_rates",
+                parameters.get("pauli_mode_decay_rates", 0.0),
+            ),
+            node_adc_rates=parameters.get(
+                "_real_x_node_adc_rates",
+                parameters.get("amplitude_damping_rate", 0.0),
+            ),
+            noise_model=noise_model,
+            sequential_order=parameters.get(
+                "pauli_adc_sequential_order", "pauli_after_adc"
+            ),
+            werner_twirl=(
+                parameters.get("real_x_werner_twirling", False)
+                if operation == "dist"
+                else False
+            ),
+        )
+
+        if not np.any(attempt.valid_success > 0.0):
+            empty_pmf = np.zeros_like(np.asarray(pmf1, dtype=float))
+            empty_states = np.tile(
+                np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+                (len(empty_pmf), 1),
+            )
+            return empty_pmf, empty_states
+
+        if use_efficient_join:
+            # A cutoff rejection and a destructive operation failure both
+            # restart the complete attempt.  Collapsing the two nested
+            # renewals gives S/(1-K-F) and W/(1-K-F), where the cutoff kernel
+            # K is shifted by the charged memory-cutoff duration.
+            retry_failure = np.array(attempt.valid_failure, copy=True)
+            if shift < len(retry_failure):
+                retry_failure[shift:] += attempt.cutoff_failure[
+                    : len(retry_failure) - shift
+                ]
+            if self.use_fft:
+                # Renew all six coordinates with one shared formal-series
+                # resolvent.  Its II column is the completion-time PMF.
+                pmf_out, weighted_out = renewal_sum_efficient_weighted(
+                    retry_failure,
+                    weighted_first=attempt.weighted_success,
+                )
+            else:
+                pmf_out = renewal_sum(
+                    retry_failure,
+                    first_success=attempt.valid_success,
+                )
+                weighted_out = renewal_sum(
+                    retry_failure,
+                    first_success=attempt.weighted_success,
+                )
+            state_out = normalize_weighted_x_func(weighted_out, pmf_out)
+            return pmf_out, state_out
+
+        # Reference path: first renew cutoff failures until a pair reaches the
+        # operation, then renew destructive quantum/hardware failures.
+        success_attempt = renewal_sum(
+            attempt.cutoff_failure,
+            shift=shift,
+            first_success=attempt.valid_success,
+        )
+        failure_attempt = renewal_sum(
+            attempt.cutoff_failure,
+            shift=shift,
+            first_success=attempt.valid_failure,
+        )
+        weighted_attempt = renewal_sum(
+            attempt.cutoff_failure,
+            shift=shift,
+            first_success=attempt.weighted_success,
+        )
+        pmf_out = renewal_sum(
+            failure_attempt,
+            first_success=success_attempt,
+        )
+        weighted_out = renewal_sum(
+            failure_attempt,
+            first_success=weighted_attempt,
+        )
+        state_out = normalize_weighted_x_func(weighted_out, pmf_out)
+        return pmf_out, state_out
 
     def iterative_convolution(self,
             func, shift=0, first_func=None, p_swap=None):
@@ -87,7 +292,9 @@ class RepeaterChainEvaluation():
         if (
             first_func is None or 
             self.state_type == WernerState or
-            self.state_type == BellState
+            self.state_type == BellState or
+            self.state_type == PauliFourierState or
+            self.state_type == RealXState
         ):
             is_dm = False
         else:
@@ -107,6 +314,12 @@ class RepeaterChainEvaluation():
             coverage = np.sum(func)
         elif self.state_type == BellState:
             coverage = sum([lambdas[0] for lambdas in func])
+        elif self.state_type in (PauliFourierState, RealXState):
+            func_array = np.asarray(func)
+            if func_array.ndim == 1:
+                coverage = np.sum(func_array)
+            else:
+                coverage = np.sum(func_array[:, 0])
 
         if p_swap is not None:
             assert not isinstance(p_swap, list), "p_swap should not be a list"
@@ -128,13 +341,26 @@ class RepeaterChainEvaluation():
             if not is_dm: # shape (4,4,trunc) if density matrix
                 first_func = first_func.reshape((trunc, 1, 1)) # shape (1,1,trunc) if Werner state
             first_func = np.transpose(first_func, (1, 2, 0))
-        
+
         elif self.state_type == BellState:
             if not is_dm:
                 first_func = first_func.reshape((trunc, 4, 1)) # shape (1, 4, trunc) if Bell state
             first_func = np.transpose(first_func, (1, 2, 0))
             func = func.reshape((trunc, 4, 1))
             func = np.transpose(func, (1, 2, 0))
+
+        elif self.state_type in (PauliFourierState, RealXState):
+            first_func = np.asarray(first_func)
+            func = np.asarray(func)
+            pf_first_ndim = first_func.ndim
+            pf_width = 1 if pf_first_ndim == 1 else first_func.shape[1]
+            pf_scalar_func = func.ndim == 1
+            if not is_dm:
+                first_func = first_func.reshape((trunc, pf_width, 1))
+            first_func = np.transpose(first_func, (1, 2, 0))
+            if not pf_scalar_func:
+                func = func.reshape((trunc, func.shape[1], 1))
+                func = np.transpose(func, (1, 2, 0))
 
         # Convolution
         result = np.empty(first_func.shape, first_func.dtype)
@@ -146,6 +372,13 @@ class RepeaterChainEvaluation():
                 elif self.state_type == BellState:
                     result[i][j] = self.iterative_convolution_helper(
                         func[i][j], first_func[i][j], trunc, shift, p_swap, max_k)
+                elif self.state_type in (PauliFourierState, RealXState):
+                    if pf_scalar_func:
+                        result[i][j] = self.iterative_convolution_helper(
+                            func, first_func[i][j], trunc, shift, p_swap, max_k)
+                    else:
+                        result[i][j] = self.iterative_convolution_helper(
+                            func[i][j], first_func[i][j], trunc, shift, p_swap, max_k)
                 
         # Permute the indices back
         result = np.transpose(result, (2, 0, 1))
@@ -154,6 +387,11 @@ class RepeaterChainEvaluation():
                 result = result.reshape(trunc)
             elif self.state_type == BellState:
                 result = result.reshape([trunc, 4])
+            elif self.state_type in (PauliFourierState, RealXState):
+                if pf_first_ndim == 1:
+                    result = result.reshape(trunc)
+                else:
+                    result = result.reshape([trunc, pf_width])
         return result
 
 
@@ -377,20 +615,98 @@ class RepeaterChainEvaluation():
                 first_func=state_prep, p_swap=p_swap)
             del pmf_cutoff
 
-            # Checks whther state_out is 1D or 3D 
-            # TODO: check this part more carefully
-            with np.errstate(divide='ignore', invalid='ignore'):
-                for i in range(1, len(state_out)):
-                    state_out[i] = state_out[i] / pmf_swap[i]
-                    for j in range(0, state_out.shape[1]):
-                        state_out[i][j] = np.where(np.isnan(state_out[i][j]), 1., state_out[i][j] ) #if nan, replace state_out with 1
-
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
 
-            # De-tile pmf for Bell states
-            if self.state_type == BellState:
-                pmf_swap = pmf_swap[:,0]
-            
+            pmf_swap = pmf_swap[:, 0]
+            state_out = self._normalize_weighted_l_func(state_out, pmf_swap)
+
+        elif self.state_type == PauliFourierState:
+            if self.efficient and cut_type == "memory_time":
+                join_links = pauli_fourier_join_efficient
+            else:
+                join_links = pauli_fourier_join
+            depolar_rate = parameters.get("depolarizing_rate", 0.0)
+            dephase_rate = parameters.get("dephasing_rate", 0.0)
+
+            pf_cutoff = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=False,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="one_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+            )
+            ps_cutoff = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=True,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="one_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+            )
+            pmf_cutoff = self.iterative_convolution(
+                pf_cutoff,
+                shift=shift,
+                first_func=ps_cutoff,
+            )
+            del ps_cutoff
+            pmf_swap = self.iterative_convolution(
+                pmf_cutoff,
+                shift=0,
+                p_swap=p_swap,
+            )
+            state_suc = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=True,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="swap_sf_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+            )
+            state_prep = self.iterative_convolution(
+                pf_cutoff,
+                shift=shift,
+                first_func=state_suc,
+            )
+            del pf_cutoff, state_suc
+            state_out = self.iterative_convolution(
+                pmf_cutoff,
+                shift=0,
+                first_func=state_prep,
+                p_swap=p_swap,
+            )
+            del pmf_cutoff, state_prep
+
+            if np.asarray(pmf_swap).ndim == 2:
+                pmf_swap = pmf_swap[:, 0]
+            state_out = self._normalize_weighted_mu_func(state_out, pmf_swap)
+            assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
+
+        elif self.state_type == RealXState:
+            pmf_swap, state_out = self._real_x_protocol_unit(
+                parameters,
+                pmf1,
+                sf1,
+                pmf2,
+                sf2,
+                operation="swap",
+                cutoff=cutoff,
+                cut_type=cut_type,
+                hardware_success=p_swap,
+            )
+
         return pmf_swap, state_out
 
 
@@ -506,12 +822,12 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=False,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="1", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, w_twirling=self.w_twirling)
             # P'_ss  cutoff attempt when cutoff and dist succeed
             pss_cutoff = join_links(
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
-                evaluate_func="0.5+0.5f1f2",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
+                evaluate_func="0.5+0.5f1f2",  depolar_rate=depolar_rate, dephase_rate=dephase_rate, w_twirling=self.w_twirling)
             # P_s  dist attempt when dist succeeds
             ps_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -522,7 +838,7 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="0.5-0.5f1f2",
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, w_twirling=self.w_twirling)
             # P_f  dist attempt when dist fails
             pf_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -539,7 +855,7 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, lambda_func1=sf1, lambda_func2=sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="f1+f2+4f1f2", 
-                depolar_rate=depolar_rate, dephase_rate=dephase_rate, twirling=self.twirling)
+                depolar_rate=depolar_rate, dephase_rate=dephase_rate, w_twirling=self.w_twirling)
             assert len(state_suc.shape) == 2 and state_suc.shape[1] == 4
 
             # Wprep * P_s
@@ -556,18 +872,125 @@ class RepeaterChainEvaluation():
             del pf_dist, state_prep
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4
 
-            with np.errstate(divide='ignore', invalid='ignore'):
-                state_out[1:] /= pmf_dist[1:]
-                state_out = np.where(np.isnan(state_out), 1., state_out)
-
-            # De-tile pmf for Bell states
-            if self.state_type == BellState:
-                pmf_dist = pmf_dist[:,0]
+            pmf_dist = pmf_dist[:, 0]
+            state_out = self._normalize_weighted_l_func(state_out, pmf_dist)
             
             assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
             pmf_dist[0] = 0.
             state_out[0] = np.zeros(4, dtype=state_out.dtype)
-            
+
+        elif self.state_type == PauliFourierState:
+            if self.efficient and cut_type == "memory_time":
+                join_links = pauli_fourier_join_efficient
+            else:
+                join_links = pauli_fourier_join
+            depolar_rate = parameters.get("depolarizing_rate", 0.0)
+            dephase_rate = parameters.get("dephasing_rate", 0.0)
+
+            pf_cutoff = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=False,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="one_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+                w_twirling=self.w_twirling,
+            )
+            pss_cutoff = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=True,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="dist_ps_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+                w_twirling=self.w_twirling,
+            )
+            ps_dist = self.iterative_convolution(
+                pf_cutoff,
+                shift=shift,
+                first_func=pss_cutoff,
+            )
+            del pss_cutoff
+            psf_cutoff = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=True,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="dist_pf_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+                w_twirling=self.w_twirling,
+            )
+            pf_dist = self.iterative_convolution(
+                pf_cutoff,
+                shift=shift,
+                first_func=psf_cutoff,
+            )
+            del psf_cutoff
+            pmf_dist = self.iterative_convolution(
+                pf_dist,
+                shift=0,
+                first_func=ps_dist,
+            )
+            del ps_dist
+
+            state_suc = join_links(
+                pmf1,
+                pmf2,
+                mu_func1=sf1,
+                mu_func2=sf2,
+                ycut=True,
+                cutoff=cutoff,
+                cut_type=cut_type,
+                evaluate_func="dist_sf_rule",
+                depolar_rate=depolar_rate,
+                dephase_rate=dephase_rate,
+                w_twirling=self.w_twirling,
+            )
+            state_prep = self.iterative_convolution(
+                func=pf_cutoff,
+                shift=shift,
+                first_func=state_suc,
+            )
+            del pf_cutoff, state_suc
+            state_out = self.iterative_convolution(
+                func=pf_dist,
+                shift=0,
+                first_func=state_prep,
+            )
+            del pf_dist, state_prep
+
+            if np.asarray(pmf_dist).ndim == 2:
+                pmf_dist = pmf_dist[:, 0]
+            state_out = self._normalize_weighted_mu_func(state_out, pmf_dist)
+            pmf_dist[0] = 0.0
+            state_out[0] = np.array([1.0, 0.0, 0.0, 0.0], dtype=state_out.dtype)
+            assert len(state_out.shape) == 2 and state_out.shape[1] == 4, "The state_out is not in the correct shape."
+
+        elif self.state_type == RealXState:
+            pmf_dist, state_out = self._real_x_protocol_unit(
+                parameters,
+                pmf1,
+                sf1,
+                pmf2,
+                sf2,
+                operation="dist",
+                cutoff=cutoff,
+                cut_type=cut_type,
+                hardware_success=parameters.get("p_distillation", 1.0),
+            )
+
         return pmf_dist, state_out
 
 
@@ -603,7 +1026,19 @@ class RepeaterChainEvaluation():
             sf2 = sf1
         
         p_gen = parameters["p_gen"]
-        p_swap = parameters["p_swap"]
+        p_swap = None
+        if unit_kind == "swap":
+            if self.state_type == RealXState:
+                p_swap = parameters.get(
+                    "swap_hardware_efficiency", parameters.get("p_swap")
+                )
+                if p_swap is None:
+                    raise ValueError(
+                        "RealXState swapping requires swap_hardware_efficiency "
+                        "(or the backward-compatible p_swap alias)"
+                    )
+            else:
+                p_swap = parameters["p_swap"]
         t_coh = parameters.get("t_coh", np.inf)
 
         cut_type = parameters.get("cut_type", "memory_time")
@@ -623,21 +1058,43 @@ class RepeaterChainEvaluation():
         # TODO: refactor to type check in the appropriate place
         # type check (allow for list of p_gen)
         if isinstance(p_gen, Iterable):
-            if not all(np.isreal(p) for p in p_gen):
-                raise TypeError("p_gen must be a float number.")
-        elif not np.isreal(p_gen):
-            raise TypeError("p_gen must be a float number.")
+            if not all(np.isreal(p) and 0.0 <= p <= 1.0 for p in p_gen):
+                raise TypeError("p_gen values must be real numbers in [0,1].")
+        elif not np.isreal(p_gen) or not 0.0 <= p_gen <= 1.0:
+            raise TypeError("p_gen must be a real number in [0,1].")
         if isinstance(t_coh, Iterable):
             if not all(np.isreal(t) for t in t_coh):
                 raise TypeError("The coherence time must be a real number.")
         elif not np.isreal(t_coh):
             raise TypeError(
                 f"The coherence time must be a real number, not {t_coh}")
-        if not np.isreal(p_swap):
-            raise TypeError("p_swap must be a float number.")
+        if unit_kind == "swap":
+            p_swap_array = np.asarray(p_swap)
+            if (
+                p_swap_array.ndim != 0
+                or not np.isreal(p_swap_array)
+                or not np.isfinite(p_swap_array)
+            ):
+                raise TypeError("p_swap must be a float number.")
+            p_swap = float(p_swap_array)
+            if not 0.0 <= p_swap <= 1.0:
+                raise ValueError("p_swap must lie in [0,1].")
+        if self.state_type == RealXState:
+            p_distillation_array = np.asarray(
+                parameters.get("p_distillation", 1.0)
+            )
+            if (
+                p_distillation_array.ndim != 0
+                or not np.isreal(p_distillation_array)
+                or not np.isfinite(p_distillation_array)
+            ):
+                raise ValueError("p_distillation must be a finite scalar in [0,1].")
+            p_distillation = float(p_distillation_array)
+            if not 0.0 <= p_distillation <= 1.0:
+                raise ValueError("p_distillation must lie in [0,1].")
         if cut_type in ("memory_time", "run_time") and not np.issubdtype(type(cutoff), np.integer):
             raise TypeError(f"Time cut-off must be an integer. not {cutoff}")
-        if cut_type == "fidelity" and not (cutoff >= 0. or cutoff < 1.):
+        if cut_type == "fidelity" and not (0.0 <= cutoff < 1.0):
             raise TypeError(f"Fidelity cut-off must be a real number between 0 and 1.")
 
         # Perform swap or distillation
@@ -651,12 +1108,21 @@ class RepeaterChainEvaluation():
                 parameters,
                 pmf1, sf1, pmf2, sf2,
                 cutoff=cutoff, t_coh=t_coh, cut_type=cut_type)
+        else:
+            raise ValueError("unit_kind must be 'swap' or 'dist'")
 
         # Polish the state quality function from non-sensical values
-        if isinstance(sf, WFunc):
+        if self.state_type == WernerState:
             sf = polish_w_func(sf)
-        elif isinstance(sf, LFunc):
+        elif self.state_type == BellState:
             sf = polish_l_func(sf)
+        elif self.state_type == PauliFourierState:
+            sf = polish_mu_func(sf)
+        elif self.state_type == RealXState:
+            # The real-X protocol unit normalizes and polishes the weighted
+            # state once.  Repeating the PSD projection here used to double
+            # the dominant cost without changing the result.
+            pass
 
         # Check probability coverage
         coverage = np.sum(pmf)
@@ -690,6 +1156,7 @@ class RepeaterChainEvaluation():
         
         TODO: rename it as doubling_protocol, remove all_level
         """
+        self._resolve_state_type(parameters)
         parameters = deepcopy(parameters)
         protocol: SymProtocol = parameters["protocol"]
 
@@ -745,6 +1212,12 @@ class RepeaterChainEvaluation():
             sf: WFunc = WernerState(parameters["w0"]).get_generation_sf(t_trunc)
         elif self.state_type == BellState:
             sf: LFunc = BellState(parameters["lambdas"]).get_generation_sf(t_trunc)
+        elif self.state_type == PauliFourierState:
+            sf: MuFunc = PauliFourierState(parameters["lambdas"]).get_generation_sf(t_trunc)
+        elif self.state_type == RealXState:
+            sf: XFunc = self._real_x_generation_state(parameters).get_generation_sf(
+                t_trunc
+            )
 
         if all_level:
             full_result = [(pmf, sf)]
@@ -795,6 +1268,7 @@ class RepeaterChainEvaluation():
         t_pmf, w_func: array-like 1-D
             The output waiting time and Werner parameters
         """
+        self._resolve_state_type(parameters)
         S = number_of_segments
         parameters = deepcopy(parameters)
 
@@ -806,6 +1280,7 @@ class RepeaterChainEvaluation():
         # In case of 1-level protocol, ensure protocol is treated as a tuple
         if isinstance(protocol, str): 
             protocol = (protocol,)
+        cutoffs = parameters.get("cutoff")
 
         # Each segment will keep a distribution for waiting time and Werner parameter
         segments = []
@@ -819,6 +1294,12 @@ class RepeaterChainEvaluation():
             sf: WFunc = WernerState(parameters["w0"]).get_generation_sf(t_trunc)
         elif self.state_type == BellState:
             sf: LFunc = BellState(parameters["lambdas"]).get_generation_sf(t_trunc)
+        elif self.state_type == PauliFourierState:
+            sf: MuFunc = PauliFourierState(parameters["lambdas"]).get_generation_sf(t_trunc)
+        elif self.state_type == RealXState:
+            sf: XFunc = self._real_x_generation_state(parameters).get_generation_sf(
+                t_trunc
+            )
     
         # For each segment, generate its distribution
         for _ in range(S):
@@ -828,6 +1309,8 @@ class RepeaterChainEvaluation():
         # Given idx as the index of the segment (or left segment in case of swap)
         for i in range(len(protocol)):
             step: str = protocol[i]
+            if cutoffs is not None and isinstance(cutoffs, Iterable):
+                parameters["cutoff"] = cutoffs[i]
             operation = step[0]
             idx = int(step[1:]) 
             curr_segment = segments[idx] 
@@ -865,6 +1348,7 @@ class RepeaterChainEvaluation():
         t_pmf, w_func: array-like 1-D
             The output waiting time and Werner parameters
         """
+        self._resolve_state_type(parameters)
         # Preliminary check
         validate_heterogeneous_parameters(parameters, number_of_segments, self.state_type)
         
@@ -878,13 +1362,21 @@ class RepeaterChainEvaluation():
 
         if self.state_type == WernerState:
             t_cohs = parameters.get("t_coh", [np.inf]*(S+1))
-        else:
+        elif self.state_type in (BellState, PauliFourierState):
             depolarizing_rates = parameters.get("depolarizing_rate", [0.]*(S+1))
             dephasing_rates = parameters.get("dephasing_rate", [0.]*(S+1))
+        elif self.state_type == RealXState:
+            pauli_mode_decay_rates = np.asarray(
+                parameters["pauli_mode_decay_rates"], dtype=float
+            )
+            amplitude_damping_rates = np.asarray(
+                parameters["amplitude_damping_rate"], dtype=float
+            )
 
         # In case of 1-level protocol, ensure protocol is treated as a tuple
         if isinstance(protocol, str):
             protocol = (protocol,)
+        cutoffs = parameters.get("cutoff")
 
         # Each segment will keep
         # - an integer for the segment length
@@ -902,6 +1394,12 @@ class RepeaterChainEvaluation():
                 sf: WFunc = WernerState(parameters["w0"]).get_generation_sf(t_trunc, i)
             elif self.state_type == BellState:
                 sf: LFunc = BellState(parameters["lambdas"][i]).get_generation_sf(t_trunc)
+            elif self.state_type == PauliFourierState:
+                sf: MuFunc = PauliFourierState(parameters["lambdas"][i]).get_generation_sf(t_trunc)
+            elif self.state_type == RealXState:
+                sf: XFunc = self._real_x_generation_state(
+                    parameters, index=i
+                ).get_generation_sf(t_trunc)
 
             # Keep track of segment endpoints
             segments.append((pmf, sf, i, i+1))
@@ -910,6 +1408,8 @@ class RepeaterChainEvaluation():
         # Given idx as the index of the segment (or left segment in case of swap)
         for i in range(len(protocol)):
             step: str = protocol[i]
+            if cutoffs is not None and isinstance(cutoffs, Iterable):
+                parameters["cutoff"] = cutoffs[i]
             operation = step[0]
             idx = int(step[1:])
             curr_segment = segments[idx]
@@ -921,9 +1421,21 @@ class RepeaterChainEvaluation():
 
                 if self.state_type == WernerState:
                     parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[next_segment[2]], t_cohs[next_segment[3]]] 
-                elif self.state_type == BellState:
+                elif self.state_type in (BellState, PauliFourierState):
                     parameters["depolarizing_rate"] = [depolarizing_rates[curr_segment[2]], depolarizing_rates[next_segment[2]], depolarizing_rates[next_segment[3]]]
                     parameters["dephasing_rate"] = [dephasing_rates[curr_segment[2]], dephasing_rates[next_segment[2]], dephasing_rates[next_segment[3]]]
+                elif self.state_type == RealXState:
+                    node_indices = (
+                        curr_segment[2],
+                        next_segment[2],
+                        next_segment[3],
+                    )
+                    parameters["_real_x_node_pauli_rates"] = (
+                        pauli_mode_decay_rates[list(node_indices)]
+                    )
+                    parameters["_real_x_node_adc_rates"] = (
+                        amplitude_damping_rates[list(node_indices)]
+                    )
 
                 pmf, w_func = self.compute_unit(
                     parameters, curr_segment[0], curr_segment[1], next_segment[0], next_segment[1], 
@@ -934,9 +1446,17 @@ class RepeaterChainEvaluation():
             elif operation == 'd':
                 if self.state_type == WernerState:
                     parameters["t_coh"] = [t_cohs[curr_segment[2]], t_cohs[curr_segment[3]]]
-                elif self.state_type == BellState:
+                elif self.state_type in (BellState, PauliFourierState):
                     parameters["depolarizing_rate"] = [depolarizing_rates[curr_segment[2]], depolarizing_rates[curr_segment[3]]]
                     parameters["dephasing_rate"] = [dephasing_rates[curr_segment[2]], dephasing_rates[curr_segment[3]]]
+                elif self.state_type == RealXState:
+                    node_indices = (curr_segment[2], curr_segment[3])
+                    parameters["_real_x_node_pauli_rates"] = (
+                        pauli_mode_decay_rates[list(node_indices)]
+                    )
+                    parameters["_real_x_node_adc_rates"] = (
+                        amplitude_damping_rates[list(node_indices)]
+                    )
 
                 pmf, w_func = self.compute_unit(
                     parameters, curr_segment[0], curr_segment[1], unit_kind="dist", step_size=1)
@@ -946,7 +1466,7 @@ class RepeaterChainEvaluation():
         return (final_segment[0], final_segment[1])
 
 
-def repeater_sim(parameters, all_level=False, state_type=WernerState):
+def repeater_sim(parameters, all_level=False, state_type=None, w_twirling=True):
     """
     Functional wrapper for nested (Li et al. 2021) or asymmetric (La Corte et al. 2025) protocol evaluation.
     A first typecheck on the protocol is done to identify the evaluation to run, i.e.
@@ -973,7 +1493,7 @@ def repeater_sim(parameters, all_level=False, state_type=WernerState):
     --> TODO: refactor asymmetric protocol in input to be a binary tree
     TODO: remove all_level
     """
-    simulator = RepeaterChainEvaluation(state_type)
+    simulator = RepeaterChainEvaluation(state_type=state_type, w_twirling=w_twirling)
 
     # Redirect to symmetric (nested) or asymmetric protocol
     if isinstance(parameters["protocol"], Iterable) and all(isinstance(i, int) for i in parameters["protocol"]):
@@ -982,7 +1502,7 @@ def repeater_sim(parameters, all_level=False, state_type=WernerState):
     elif isinstance(parameters["protocol"], Iterable) and all(isinstance(i, str) for i in parameters["protocol"]):
         # Preliminary check for asymmetric protocols
         number_of_segments = checkAsymProtocol(parameters["protocol"])
-        if "cutoff" in parameters:
+        if "cutoff" in parameters and state_type != RealXState:
             raise NotImplementedError("Cut-offs are not implemented for heterogeneous protocols.")
         if "all_level" in parameters:
             raise NotImplementedError("All levels are not implemented for heterogeneous protocols.")
