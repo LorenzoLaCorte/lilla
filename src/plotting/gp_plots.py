@@ -1624,13 +1624,21 @@ def plot_optimization_process(min_dists, max_dists, parameters,
     maximum: Tuple[np.float64, Tuple[int]]  = (ordered_results[0][0], ordered_results[0][1])
     maxima: List[Tuple[np.float64, Tuple[int]]] = get_all_maxima(ordered_results, min_dists, max_dists)
 
+    if "w0" in parameters:
+        state_info = f"w_0 = {parameters['w0']}, t_{{coh}} = {parameters['t_coh']}"
+    else:
+        state_info = (
+            f"lambdas = {parameters.get('lambdas')}, "
+            f"depol = {parameters.get('depolarizing_rate')}, "
+            f"deph = {parameters.get('dephasing_rate')}"
+        )
+
     title = (
         f"$p_{{gen}} = {parameters['p_gen']}, "
         f"p_{{swap}} = {parameters['p_swap']}, "
-        f"w_0 = {parameters['w0']}, "
-        f"t_{{coh}} = {parameters['t_coh']}$"
+        f"{state_info}$"
         f"\nBest secret-key-rate: {maximum[0]:.6f}, Protocol: {maximum[1]}"
-    )   
+    )
 
     if is_gp:
         fig = plt.figure(figsize=(config['figsize_skopt_2D']['width'], config['figsize_skopt_2D']['height']))

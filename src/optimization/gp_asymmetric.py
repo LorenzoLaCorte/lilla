@@ -21,6 +21,7 @@ from skopt.utils import use_named_args
 
 from src.core.werner.state import WernerState
 from src.core.bell.state import BellState  # Bell-diagonal state class
+from src.core.pauli_fourier.state import PauliFourierState
 
 from src.plotting.gp_plots import plot_optimization_process
 from src.utils.gp_utils import (
@@ -41,7 +42,15 @@ from src.core.repeater_algorithm import RepeaterChainEvaluation
 from src.utils.utility_functions import pmf_to_cdf, secret_key_rate
 
 logging.basicConfig(level=logging.INFO)
-StateName = str  # {"werner", "bell"}
+StateName = str  # {"werner", "bell", "pf"}
+
+
+@dataclass(frozen=True)
+class TruncationPolicy:
+    fixed_t_trunc: Optional[int] = None
+    adaptive_attempts: int = 3
+    growth: float = 2.0
+    max_t_trunc: Optional[int] = None
 
 
 def write_results(filename: str, ordered_results: Sequence[Tuple[np.float64, Tuple[str, ...]]]) -> None:
@@ -49,7 +58,7 @@ def write_results(filename: str, ordered_results: Sequence[Tuple[np.float64, Tup
     serializable: Dict[str, float] = {str(protocol): float(skr) for skr, protocol in ordered_results}
 
     with path.open("w", encoding="utf-8") as f:
-        json.dump(serializable, f, indent=2, sort_keys=True)
+        json.dump(serializable, f, indent=2, sort_keys=False)
         f.write("\n\n")
         f.write(f"Unique values: {len(set(float(skr) for skr, _ in ordered_results))}\n")
 
@@ -59,6 +68,7 @@ def asym_protocol_runner(
     parameters: SimParameters,
     nodes: int,
     cdf_threshold: float,
+    truncation_policy: TruncationPolicy,
     idx: Optional[int] = None,
     space_len: Optional[int] = None,
 ) -> Tuple[float, np.ndarray, np.ndarray]:
@@ -69,20 +79,59 @@ def asym_protocol_runner(
     """
     protocol = parameters["protocol"]
     dists = sum(1 for item in protocol if 'd' in item)
-    
-    set_heuristic_t_trunc(parameters, nodes, dists)
-    
-    if (idx is None) or (space_len is None):
-        logging.info(f"\nRunning: {parameters}")
-    else:
-        logging.info(f"\n({idx + 1}/{space_len}) Running: {parameters}")
 
-    if isinstance(parameters["p_gen"], Iterable):
-        pmf, state_func = simulator.asymmetric_heterogeneous_protocol(parameters, nodes - 1)
+    if truncation_policy.fixed_t_trunc is not None:
+        parameters["t_trunc"] = truncation_policy.fixed_t_trunc
     else:
-        pmf, state_func = simulator.asymmetric_homogeneous_protocol(parameters, nodes - 1)
+        set_heuristic_t_trunc(
+            parameters,
+            nodes,
+            dists,
+            cdf_threshold=cdf_threshold,
+        )
+        if truncation_policy.max_t_trunc is not None:
+            parameters["t_trunc"] = min(int(parameters["t_trunc"]), truncation_policy.max_t_trunc)
 
-    coverage = float(pmf_to_cdf(pmf)[-1])
+    attempts = 1 if truncation_policy.fixed_t_trunc is not None else max(1, truncation_policy.adaptive_attempts)
+    pmf: np.ndarray
+    state_func: np.ndarray
+    coverage = 0.0
+
+    for attempt in range(attempts):
+        if (idx is None) or (space_len is None):
+            logging.info(f"\nRunning: {parameters}")
+        else:
+            logging.info(f"\n({idx + 1}/{space_len}) Running: {parameters}")
+
+        if isinstance(parameters["p_gen"], Iterable):
+            pmf, state_func = simulator.asymmetric_heterogeneous_protocol(parameters, nodes - 1)
+        else:
+            pmf, state_func = simulator.asymmetric_homogeneous_protocol(parameters, nodes - 1)
+
+        coverage = float(pmf_to_cdf(pmf)[-1])
+        if coverage >= cdf_threshold:
+            break
+
+        if attempt == attempts - 1:
+            break
+
+        old_t_trunc = int(parameters["t_trunc"])
+        new_t_trunc = max(old_t_trunc + 1, int(np.ceil(old_t_trunc * truncation_policy.growth)))
+        if truncation_policy.max_t_trunc is not None:
+            new_t_trunc = min(new_t_trunc, truncation_policy.max_t_trunc)
+        if new_t_trunc <= old_t_trunc:
+            break
+
+        logging.warning(
+            "CDF coverage %.6f below threshold %.6f for %s; increasing t_trunc from %s to %s",
+            coverage,
+            cdf_threshold,
+            parameters["protocol"],
+            old_t_trunc,
+            new_t_trunc,
+        )
+        parameters["t_trunc"] = new_t_trunc
+
     if coverage < cdf_threshold:
         logging.error(f"CDF coverage {coverage} below threshold {cdf_threshold}")
         raise ThresholdExceededError(extra_info={"cdf_coverage": coverage})
@@ -107,6 +156,7 @@ def brute_force_optimization(
     max_dists: int,
     filename: str,
     cdf_threshold: float,
+    truncation_policy: TruncationPolicy,
 ) -> None:
     """
     Brute-force all asymmetric protocols in the space and report the best one.
@@ -119,7 +169,15 @@ def brute_force_optimization(
     for idx, protocol in enumerate(space):
         try:
             parameters["protocol"] = protocol
-            skr, _, _ = asym_protocol_runner(simulator, parameters, nodes, cdf_threshold, idx, len(space))
+            skr, _, _ = asym_protocol_runner(
+                simulator,
+                parameters,
+                nodes,
+                cdf_threshold,
+                truncation_policy,
+                idx,
+                len(space),
+            )
             results.append((np.float64(skr), protocol))
 
         except ThresholdExceededError:
@@ -154,6 +212,7 @@ def objective_key_rate(
     parameters: SimParameters,
     simulator: RepeaterChainEvaluation,
     cdf_threshold: float,
+    truncation_policy: TruncationPolicy,
 ) -> float:
     """
     Objective function, consider the whole space of actions,
@@ -178,14 +237,24 @@ def objective_key_rate(
         logging.info("Already evaluated protocol, returning cached result")
         return -cache_results[parameters['protocol']]
     
-    secret_key_rate, pmf, _ = asym_protocol_runner(
-        simulator,
-        parameters,
-        nodes,
-        cdf_threshold,
-        idx=shot_count[0],
-        space_len=gp_shots,
-    )
+    try:
+        secret_key_rate, pmf, _ = asym_protocol_runner(
+            simulator,
+            parameters,
+            nodes,
+            cdf_threshold,
+            truncation_policy,
+            idx=shot_count[0],
+            space_len=gp_shots,
+        )
+    except ThresholdExceededError:
+        logging.warning(
+            "Simulation under coverage for %s after t_trunc attempts; penalizing GP sample.",
+            parameters["protocol"],
+        )
+        cache_results[parameters["protocol"]] = 0.0
+        space.update({'protocol': parameters["protocol"]})
+        return 0.0
 
     cache_results[parameters["protocol"]] = secret_key_rate
     space.update({'protocol': parameters["protocol"]})
@@ -212,6 +281,7 @@ def gaussian_optimization(
     gp_initial_points: Optional[int],
     filename: str,
     cdf_threshold: float,
+    truncation_policy: TruncationPolicy,
     random_state: Optional[int] = None,
 ) -> None:
     """
@@ -243,6 +313,7 @@ def gaussian_optimization(
             parameters=parameters,
             simulator=simulator,
             cdf_threshold=cdf_threshold,
+            truncation_policy=truncation_policy,
         )
 
     ordered_results: List[Tuple[np.float64, Tuple[int, ...]]] = []
@@ -274,9 +345,6 @@ def gaussian_optimization(
                 results=ordered_results,
                 gp_result=result,
             )
-
-    except ThresholdExceededError:
-        logging.warning(f"Simulation under coverage for {parameters.get('protocol')}")
 
     finally:
         cache_results.clear()
@@ -310,16 +378,47 @@ if __name__ == "__main__":
         default=0.99,
         help="Discard simulations whose pmf CDF coverage is below this threshold",
     )
-
+    parser.add_argument(
+        "--t_trunc",
+        "--t-trunc",
+        dest="t_trunc",
+        type=int,
+        default=None,
+        help="Use a fixed truncation time instead of the heuristic estimate.",
+    )
+    parser.add_argument(
+        "--adaptive_t_trunc_attempts",
+        "--adaptive-t-trunc-attempts",
+        dest="adaptive_t_trunc_attempts",
+        type=int,
+        default=3,
+        help="Number of heuristic t_trunc retries when CDF coverage is below threshold.",
+    )
+    parser.add_argument(
+        "--t_trunc_growth",
+        "--t-trunc-growth",
+        dest="t_trunc_growth",
+        type=float,
+        default=2.0,
+        help="Multiplicative growth factor for adaptive t_trunc retries.",
+    )
+    parser.add_argument(
+        "--max_t_trunc",
+        "--max-t-trunc",
+        dest="max_t_trunc",
+        type=int,
+        default=None,
+        help="Optional upper bound for the heuristic and adaptive t_trunc retries.",
+    )
     parser.add_argument("--p_swap", type=float, default=0.85, help="Swapping success probability")
     parser.add_argument("--p_gen", type=float, nargs="+", default=[0.0009082], help="Generation success probability")
 
     parser.add_argument(
         "--state",
         type=str,
-        choices=["werner", "bell"],
+        choices=["werner", "bell", "pf"],
         default="werner",
-        help="Quantum state model: werner or bell (Bell-diagonal)",
+        help="Quantum state model: werner, bell (legacy Bell weights), or pf (Pauli-Fourier Bell-diagonal)",
     )
 
     # Werner parameters
@@ -362,13 +461,31 @@ if __name__ == "__main__":
 
     parser.add_argument("--seed", type=int, default=None, help="Random seed for GP optimization")
     parser.add_argument(
-        "--twirling",
+        "--w-twirling",
+        dest="w_twirling",
         action="store_true",
         default=True,
-        help="(Bell) Use twirling after swap/distillation (default True).",
+        help="Use Werner twirling after swap/distillation (default True).",
+    )
+    parser.add_argument(
+        "--no-w-twirling",
+        dest="w_twirling",
+        action="store_false",
+        help="Disable Werner twirling after swap/distillation.",
     )
 
     args = parser.parse_args()
+
+    if args.t_trunc is not None and args.t_trunc < 1:
+        raise ValueError("--t_trunc must be positive")
+    if args.adaptive_t_trunc_attempts < 1:
+        raise ValueError("--adaptive_t_trunc_attempts must be at least 1")
+    if args.t_trunc_growth <= 1.0:
+        raise ValueError("--t_trunc_growth must be larger than 1")
+    if args.max_t_trunc is not None and args.max_t_trunc < 1:
+        raise ValueError("--max_t_trunc must be positive")
+    if not 0.0 < args.cdf_threshold < 1.0:
+        raise ValueError("--cdf_threshold must be between 0 and 1")
 
     nodes: int = args.nodes
     max_dists: int = args.max_dists
@@ -383,6 +500,12 @@ if __name__ == "__main__":
     p_swap: float = float(args.p_swap)
     p_gen: Union[float, List[float]] = args.p_gen if len(args.p_gen) > 1 else float(args.p_gen[0])
     random_state: Optional[int] = args.seed
+    truncation_policy = TruncationPolicy(
+        fixed_t_trunc=args.t_trunc,
+        adaptive_attempts=args.adaptive_t_trunc_attempts,
+        growth=args.t_trunc_growth,
+        max_t_trunc=args.max_t_trunc,
+    )
 
     def infer_state_type(state: StateName):
         state_l = state.lower().strip()
@@ -390,7 +513,9 @@ if __name__ == "__main__":
             return WernerState
         if state_l in {"bell", "bell_diagonal", "belldiagonal"}:
             return BellState
-        raise ValueError(f"Unknown state '{state}'. Use 'werner' or 'bell'.")
+        if state_l in {"pf", "pauli_fourier", "paulifourier"}:
+            return PauliFourierState
+        raise ValueError(f"Unknown state '{state}'. Use 'werner', 'bell', or 'pf'.")
 
     state_type = infer_state_type(args.state)
 
@@ -409,7 +534,8 @@ if __name__ == "__main__":
         # - If user provided --lambdas once: use that (and replicate if needed downstream).
         # - If provided multiple times: treat as per-segment lambdas.
         if args.lambdas is None:
-            raise ValueError("For --state bell you must provide --lambdas (4-value list).")
+            raise ValueError("For Bell-diagonal states you must provide --lambdas (4-value list).")
+        parameters["lambdas"] = args.lambdas if len(args.lambdas) > 1 else args.lambdas[0]
 
         dep = args.depolarizing_rate
         depolarizing_rate: Union[float, List[float]] = dep if len(dep) > 1 else float(dep[0])
@@ -419,7 +545,7 @@ if __name__ == "__main__":
         dephasing_rate: Union[float, List[float]] = deph if len(deph) > 1 else float(deph[0])
         parameters["dephasing_rate"] = dephasing_rate
 
-    simulator = RepeaterChainEvaluation(state_type=state_type, twirling=bool(args.twirling))
+    simulator = RepeaterChainEvaluation(state_type=state_type, w_twirling=bool(args.w_twirling))
 
     # Run
     if optimizer == "gp":
@@ -432,6 +558,7 @@ if __name__ == "__main__":
             gp_initial_points=gp_initial_points,
             filename=filename,
             cdf_threshold=cdf_threshold,
+            truncation_policy=truncation_policy,
             random_state=random_state,
         )
     elif optimizer == "bf":
@@ -442,4 +569,5 @@ if __name__ == "__main__":
             max_dists=max_dists,
             filename=filename,
             cdf_threshold=cdf_threshold,
+            truncation_policy=truncation_policy,
         )
