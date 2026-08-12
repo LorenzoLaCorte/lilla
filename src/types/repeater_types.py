@@ -40,7 +40,6 @@ class SimParameters(TypedDict):
     pauli_mode_decay_rates: Union[float, list[float], list[list[float]]]
     amplitude_damping_rate: Union[float, list[float]]
     bell_outcomes: str
-    pauli_adc_noise_model: str
     p_distillation: float
 
 PMF = np.ndarray

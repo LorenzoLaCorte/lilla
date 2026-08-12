@@ -17,10 +17,6 @@ from src.core.pauli_adc.state import (
     normalize_weighted_x_func,
 )
 from src.core.pauli_adc.swap_join import real_x_attempt_join, renewal_sum
-from src.core.pauli_adc.swap_join_efficient import (
-    real_x_attempt_join_efficient,
-    renewal_sum_efficient_weighted,
-)
 from src.core.pauli_adc.swap_join_sequential_efficient import (
     real_x_attempt_join_sequential_efficient,
     renewal_sum_sequential_efficient_weighted,
@@ -159,23 +155,14 @@ class RepeaterChainEvaluation():
         hardware_success,
     ):
         """Evaluate a real-X swap/distillation with full-reset retries."""
-        noise_model = parameters.get("pauli_adc_noise_model", "sequential")
-        use_efficient_join = (
-            self.efficient
-            and cut_type == "memory_time"
-            and noise_model in ("joint", "sequential")
-        )
+        use_efficient_join = self.efficient and cut_type == "memory_time"
         if self.efficient and not use_efficient_join:
             logging.info(
                 "RealXState is falling back to the direct O(T^2) join: the "
-                "efficient backend currently requires a memory_time cutoff "
-                "and a supported Pauli+ADC model."
+                "efficient backend currently requires a memory_time cutoff."
             )
         shift = cutoff if cut_type == "memory_time" else 0
-        if use_efficient_join and noise_model == "joint":
-            attempt_join = real_x_attempt_join_efficient
-            renewal_weighted = renewal_sum_efficient_weighted
-        elif use_efficient_join and noise_model == "sequential":
+        if use_efficient_join:
             attempt_join = real_x_attempt_join_sequential_efficient
             renewal_weighted = renewal_sum_sequential_efficient_weighted
         else:
@@ -198,10 +185,6 @@ class RepeaterChainEvaluation():
             node_adc_rates=parameters.get(
                 "_real_x_node_adc_rates",
                 parameters.get("amplitude_damping_rate", 0.0),
-            ),
-            noise_model=noise_model,
-            sequential_order=parameters.get(
-                "pauli_adc_sequential_order", "pauli_after_adc"
             ),
             werner_twirl=(
                 parameters.get("real_x_werner_twirling", False)

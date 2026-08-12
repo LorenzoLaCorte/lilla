@@ -65,17 +65,16 @@ def _assert_terms_close(actual, expected):
         )
 
 
-@pytest.mark.parametrize("order", ["pauli_after_adc", "adc_after_pauli"])
 @pytest.mark.parametrize("operation", ["swap", "dist"])
 @pytest.mark.parametrize("cutoff", [0, 3, 1000])
 @pytest.mark.parametrize(
     "bell_outcomes", ["all_corrected", "phi_plus", "phi_pair", "psi_pair"]
 )
 def test_sequential_efficient_attempt_matches_direct(
-    order, operation, cutoff, bell_outcomes
+    operation, cutoff, bell_outcomes
 ):
     pmf1, pmf2, states1, states2 = _inputs(
-        7000 + cutoff + 100 * (operation == "dist") + len(order), 13
+        7000 + cutoff + 100 * (operation == "dist"), 13
     )
     kwargs = dict(
         operation=operation,
@@ -85,8 +84,6 @@ def test_sequential_efficient_attempt_matches_direct(
         bell_outcomes=bell_outcomes,
         node_pauli_rates=_PAULI_RATES[: 3 if operation == "swap" else 2],
         node_adc_rates=_ADC_RATES[: 3 if operation == "swap" else 2],
-        noise_model="sequential",
-        sequential_order=order,
         werner_twirl=operation == "dist",
     )
     expected = real_x_attempt_join(
@@ -98,12 +95,9 @@ def test_sequential_efficient_attempt_matches_direct(
     _assert_terms_close(actual, expected)
 
 
-@pytest.mark.parametrize("order", ["pauli_after_adc", "adc_after_pauli"])
 @pytest.mark.parametrize("use_fft", [False, True])
 @pytest.mark.parametrize("operation", ["swap", "dist"])
-def test_sequential_dispatch_matches_direct_weighted_output(
-    order, use_fft, operation
-):
+def test_sequential_dispatch_matches_direct_weighted_output(use_fft, operation):
     pmf1, pmf2, states1, states2 = _inputs(8120 + int(use_fft), 34)
     parameters = {
         "p_gen": 0.5,
@@ -114,8 +108,6 @@ def test_sequential_dispatch_matches_direct_weighted_output(
         "bell_outcomes": "phi_pair",
         "pauli_mode_decay_rates": _PAULI_RATES[: 3 if operation == "swap" else 2],
         "amplitude_damping_rate": _ADC_RATES[: 3 if operation == "swap" else 2],
-        "pauli_adc_noise_model": "sequential",
-        "pauli_adc_sequential_order": order,
         "real_x_werner_twirling": True,
     }
     direct = RepeaterChainEvaluation(
@@ -149,16 +141,11 @@ def test_real_x_dispatch_defaults_to_sequential_pauli_after_adc():
         "bell_outcomes": "all_corrected",
         "pauli_mode_decay_rates": _PAULI_RATES,
         "amplitude_damping_rate": _ADC_RATES,
-        "pauli_adc_sequential_order": "pauli_after_adc",
     }
-    explicit_sequential = dict(
-        parameters,
-        pauli_adc_noise_model="sequential",
-    )
     expected = RepeaterChainEvaluation(
         state_type=RealXState, efficient=False, use_fft=False
     ).compute_unit(
-        explicit_sequential,
+        parameters,
         pmf1,
         states1,
         pmf2,
@@ -207,8 +194,6 @@ def test_sequential_factorization_edge_rates(pauli_rates, adc_rates):
         hardware_success=0.83,
         node_pauli_rates=pauli_rates,
         node_adc_rates=adc_rates,
-        noise_model="sequential",
-        sequential_order="adc_after_pauli",
     )
     expected = real_x_attempt_join(pmf1, pmf2, state, state, **kwargs)
     actual = real_x_attempt_join_sequential_efficient(
@@ -226,8 +211,6 @@ def test_unsupported_cutoff_falls_back_to_direct(monkeypatch):
         "cut_type": "run_time",
         "pauli_mode_decay_rates": _PAULI_RATES,
         "amplitude_damping_rate": _ADC_RATES,
-        "pauli_adc_noise_model": "sequential",
-        "pauli_adc_sequential_order": "pauli_after_adc",
     }
     called = {"direct": 0}
     original = direct_join_module.real_x_attempt_join
@@ -246,8 +229,7 @@ def test_unsupported_cutoff_falls_back_to_direct(monkeypatch):
     assert np.all(result[0] >= 0.0)
 
 
-@pytest.mark.parametrize("order", ["pauli_after_adc", "adc_after_pauli"])
-def test_sequential_fft_retry_preserves_tiny_hardware_success(order):
+def test_sequential_fft_retry_preserves_tiny_hardware_success():
     size = 16
     pmf = np.zeros(size)
     pmf[1] = 1.0
@@ -259,8 +241,6 @@ def test_sequential_fft_retry_preserves_tiny_hardware_success(order):
         "cut_type": "memory_time",
         "pauli_mode_decay_rates": _PAULI_RATES,
         "amplitude_damping_rate": _ADC_RATES,
-        "pauli_adc_noise_model": "sequential",
-        "pauli_adc_sequential_order": order,
     }
     expected = RepeaterChainEvaluation(
         state_type=RealXState, efficient=False, use_fft=False
@@ -289,8 +269,6 @@ def test_sequential_efficient_avoids_quadratic_pair_enumeration():
         hardware_success=0.8,
         node_pauli_rates=_PAULI_RATES,
         node_adc_rates=_ADC_RATES,
-        noise_model="sequential",
-        sequential_order="pauli_after_adc",
     )
     calls = {"count": 0}
     original = direct_join_module._apply_waiting_noise

@@ -4,7 +4,6 @@ from src.core.pauli_adc.protocol_units import (
     LocalAffineChannel,
     apply_local_channels,
     compose_channels,
-    joint_pauli_adc_channel,
     pauli_eigenvalues,
     accepted_bell_swap,
     phi_plus_swap,
@@ -30,11 +29,6 @@ from src.core.pauli_adc.state import (
     state_trace,
 )
 from src.core.pauli_adc.swap_join import AttemptTerms, real_x_attempt_join, renewal_sum
-from src.core.pauli_adc.swap_join_efficient import (
-    real_x_attempt_join_efficient,
-    renewal_sum_efficient,
-    renewal_sum_efficient_weighted,
-)
 from src.core.pauli_adc.swap_join_sequential_efficient import (
     real_x_attempt_join_sequential_efficient,
     renewal_sum_sequential_efficient,
@@ -52,7 +46,6 @@ __all__ = [
     "compose_channels",
     "coordinates_to_matrix",
     "is_physical",
-    "joint_pauli_adc_channel",
     "matrix_to_coordinates",
     "normalize_weighted_x_func",
     "pauli_eigenvalues",
@@ -62,11 +55,8 @@ __all__ = [
     "polish_x_func",
     "psi_corrected_swap",
     "real_x_attempt_join",
-    "real_x_attempt_join_efficient",
     "real_x_attempt_join_sequential_efficient",
     "renewal_sum",
-    "renewal_sum_efficient",
-    "renewal_sum_efficient_weighted",
     "renewal_sum_sequential_efficient",
     "renewal_sum_sequential_efficient_weighted",
     "recurrence_distillation",

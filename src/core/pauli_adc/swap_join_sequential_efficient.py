@@ -6,8 +6,8 @@ expanded into exponential kernels, those kernels are filtered over the
 memory-time window, and the fixed six correlators are reconstructed before the
 swap or distillation map is applied.
 
-Unlike the joint backend, this channel family is not treated as a semigroup.
-The endpoint translation is retained as a duration-dependent finite sum.
+This finite channel family is not treated as a semigroup.  The endpoint
+translation is retained as a duration-dependent finite sum.
 """
 
 import numpy as np
@@ -17,24 +17,158 @@ from src.core.pauli_adc.swap_join import (
     AttemptTerms,
     _validate_attempt_inputs,
 )
-from src.core.pauli_adc.swap_join_efficient import (
-    renewal_sum_efficient as _renewal_sum_efficient,
-    renewal_sum_efficient_weighted as _renewal_sum_efficient_weighted,
-)
+
+
+def _next_power_of_two(value):
+    return 1 << max(0, int(value - 1).bit_length())
+
+
+def _fft_convolve_truncated(left, right, length):
+    left = np.asarray(left, dtype=float)
+    right = np.asarray(right, dtype=float)
+    if length <= 0:
+        return np.empty(0, dtype=float)
+    if left.ndim != 1 or right.ndim != 1:
+        raise ValueError("FFT convolution inputs must be one-dimensional")
+    if len(left) == 0 or len(right) == 0:
+        return np.zeros(length, dtype=float)
+    transform_length = _next_power_of_two(len(left) + len(right) - 1)
+    product = np.fft.rfft(left, transform_length) * np.fft.rfft(
+        right, transform_length
+    )
+    convolution = np.fft.irfft(product, transform_length)
+    result = np.zeros(length, dtype=float)
+    result[: min(length, len(convolution))] = convolution[:length]
+    return result
+
+
+def _power_series_inverse(coefficients, length):
+    coefficients = np.asarray(coefficients, dtype=float)
+    if coefficients.ndim != 1 or len(coefficients) < length:
+        raise ValueError("power-series coefficients have an invalid shape")
+    if coefficients[0] <= 1.0e-15:
+        raise ValueError("renewal has a unit-probability zero-duration failure loop")
+    inverse = np.array([1.0 / coefficients[0]], dtype=float)
+    order = 1
+    while order < length:
+        next_order = min(2 * order, length)
+        product = _fft_convolve_truncated(
+            coefficients[:next_order], inverse, next_order
+        )
+        correction = -product
+        correction[0] += 2.0
+        inverse = _fft_convolve_truncated(inverse, correction, next_order)
+        order = next_order
+    return inverse[:length]
+
+
+def _prepare_renewal(failure_kernel, first_success, shift):
+    failure = np.asarray(failure_kernel, dtype=float)
+    first = np.asarray(first_success, dtype=float)
+    if (
+        failure.ndim != 1
+        or first.ndim not in (1, 2)
+        or len(first) != len(failure)
+    ):
+        raise ValueError("renewal kernels must have the same leading dimension")
+    if (
+        not np.all(np.isfinite(failure))
+        or np.any(failure < -1.0e-12)
+        or np.sum(failure) > 1.0 + 1.0e-10
+        or not np.all(np.isfinite(first))
+    ):
+        raise ValueError("renewal kernels contain invalid probability data")
+    if not isinstance(shift, (int, np.integer)) or shift < 0:
+        raise ValueError("renewal shift must be a nonnegative integer")
+    failure = np.maximum(failure, 0.0)
+    size = len(failure)
+    shifted = np.zeros(size, dtype=float)
+    if shift < size:
+        shifted[shift:] = failure[: size - shift]
+    denominator = np.zeros(size, dtype=float)
+    denominator[0] = 1.0
+    denominator -= shifted
+    inverse = _power_series_inverse(denominator, size)
+    return first, inverse
+
+
+def _convolve_with_resolvent(first, inverse):
+    size = len(inverse)
+    transform_length = _next_power_of_two(len(first) + len(inverse) - 1)
+    inverse_spectrum = np.fft.rfft(inverse, transform_length)
+    if first.ndim == 1:
+        result = np.fft.irfft(
+            np.fft.rfft(first, transform_length) * inverse_spectrum,
+            transform_length,
+        )[:size]
+    else:
+        result = np.fft.irfft(
+            np.fft.rfft(first, transform_length, axis=0)
+            * inverse_spectrum[:, np.newaxis],
+            transform_length,
+            axis=0,
+        )[:size]
+    leading_nonzero = np.flatnonzero(
+        np.any(first != 0.0, axis=1) if first.ndim == 2 else first != 0.0
+    )
+    if len(leading_nonzero) == 0:
+        result[...] = 0.0
+    else:
+        result[: leading_nonzero[0]] = 0.0
+    return np.real_if_close(result, tol=1000).astype(float, copy=False)
 
 
 def renewal_sum_sequential_efficient(failure_kernel, first_success, *, shift=0):
-    """Solve the causal retry equation with the shared FFT resolver."""
-    return _renewal_sum_efficient(failure_kernel, first_success, shift=shift)
+    first, inverse = _prepare_renewal(failure_kernel, first_success, shift)
+    result = _convolve_with_resolvent(first, inverse)
+    columns = (
+        [result]
+        if result.ndim == 1
+        else [result[:, index] for index in range(result.shape[1])]
+    )
+    first_columns = (
+        [first]
+        if first.ndim == 1
+        else [first[:, index] for index in range(first.shape[1])]
+    )
+    factor = 64.0 * np.finfo(float).eps * (
+        1.0 + np.ceil(np.log2(max(2, len(inverse))))
+    )
+    for values, initial in zip(columns, first_columns):
+        if np.all(initial >= 0.0):
+            tolerance = factor * np.max(np.abs(values), initial=0.0)
+            tiny_negative = (values < 0.0) & (values >= -tolerance)
+            values[tiny_negative] = 0.0
+    return result
 
 
 def renewal_sum_sequential_efficient_weighted(
     failure_kernel, weighted_first, *, shift=0
 ):
-    """Renew a probability-weighted six-coordinate output."""
-    return _renewal_sum_efficient_weighted(
-        failure_kernel, weighted_first, shift=shift
+    first, inverse = _prepare_renewal(failure_kernel, weighted_first, shift)
+    if first.ndim != 2 or first.shape[1] != 6:
+        raise ValueError("weighted real-X renewal inputs must have shape (T, 6)")
+    if np.any(first[:, 0] < -1.0e-12):
+        raise ValueError("weighted real-X traces must be nonnegative")
+    weighted = _convolve_with_resolvent(first, inverse)
+    pmf = np.array(weighted[:, 0], copy=True)
+    scale = np.max(np.abs(pmf), initial=0.0)
+    roundoff_floor = (
+        64.0
+        * np.finfo(float).eps
+        * (1.0 + np.ceil(np.log2(max(2, len(pmf)))))
+        * scale
     )
+    if np.any(pmf < -roundoff_floor):
+        minimum = float(np.min(pmf))
+        raise ValueError(
+            f"FFT renewal produced a material negative probability ({minimum:.3e})"
+        )
+    unreliable = pmf <= roundoff_floor
+    pmf[unreliable] = 0.0
+    weighted[unreliable] = 0.0
+    weighted[:, 0] = pmf
+    return pmf, weighted
 
 
 def _rolling_sum(values, cutoff):
@@ -46,7 +180,7 @@ def _rolling_sum(values, cutoff):
     return result
 
 
-def _endpoint_exponential_terms(pauli_rates, adc_rate, order):
+def _endpoint_exponential_terms(pauli_rates, adc_rate):
     """Return finite exponential terms for one endpoint affine channel.
 
     For duration ``t`` the endpoint coefficients are
@@ -59,12 +193,7 @@ def _endpoint_exponential_terms(pauli_rates, adc_rate, order):
     gamma_x, gamma_y, gamma_z = np.asarray(pauli_rates, dtype=float)
     gamma_adc = float(adc_rate)
     beta = gamma_z + gamma_adc
-    if order == "pauli_after_adc":
-        h_terms = ((gamma_z, 1.0), (beta, -1.0))
-    elif order == "adc_after_pauli":
-        h_terms = ((0.0, 1.0), (gamma_adc, -1.0))
-    else:
-        raise ValueError("unknown concatenation order")
+    h_terms = ((gamma_z, 1.0), (beta, -1.0))
     return {
         "ax": ((gamma_x + 0.5 * gamma_adc, 1.0),),
         "ay": ((gamma_y + 0.5 * gamma_adc, 1.0),),
@@ -73,14 +202,14 @@ def _endpoint_exponential_terms(pauli_rates, adc_rate, order):
     }
 
 
-def _link_exponential_matrices(pauli_rates, adc_rates, endpoints, order):
+def _link_exponential_matrices(pauli_rates, adc_rates, endpoints):
     """Expand a two-endpoint sequential channel as ``sum exp(-lambda*t) M``."""
     left_node, right_node = endpoints
     left = _endpoint_exponential_terms(
-        pauli_rates[left_node], adc_rates[left_node], order
+        pauli_rates[left_node], adc_rates[left_node]
     )
     right = _endpoint_exponential_terms(
-        pauli_rates[right_node], adc_rates[right_node], order
+        pauli_rates[right_node], adc_rates[right_node]
     )
 
     matrices = {}
@@ -130,7 +259,6 @@ def _aggregate_sequential_state_sum(
     endpoints,
     pauli_rates,
     adc_rates,
-    sequential_order,
 ):
     """Compute ``sum_u p[u] N(t-u) x[u]`` over one finite age window.
 
@@ -145,7 +273,7 @@ def _aggregate_sequential_state_sum(
     age = int(cutoff) + 1
     result = np.zeros_like(weighted)
     for decay_rate, matrix in _link_exponential_matrices(
-        pauli_rates, adc_rates, endpoints, sequential_order
+        pauli_rates, adc_rates, endpoints
     ):
         q = float(np.exp(-decay_rate))
         if decay_rate == 0.0 or q == 1.0:
@@ -255,8 +383,6 @@ def real_x_attempt_join_sequential_efficient(
     bell_outcomes="all_corrected",
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
-    noise_model="sequential",
-    sequential_order="pauli_after_adc",
     werner_twirl=False,
 ):
     """Evaluate one sequential-noise attempt without readiness-pair enumeration."""
@@ -265,11 +391,6 @@ def real_x_attempt_join_sequential_efficient(
             "the sequential efficient real-X join currently supports "
             "memory_time cutoffs"
         )
-    if noise_model != "sequential":
-        raise NotImplementedError(
-            "the sequential efficient real-X join requires sequential noise"
-        )
-
     (
         pmf1,
         pmf2,
@@ -289,8 +410,6 @@ def real_x_attempt_join_sequential_efficient(
         hardware_success=hardware_success,
         node_pauli_rates=node_pauli_rates,
         node_adc_rates=node_adc_rates,
-        noise_model=noise_model,
-        sequential_order=sequential_order,
     )
     cutoff = int(cutoff)
     if operation == "swap":
@@ -306,7 +425,6 @@ def real_x_attempt_join_sequential_efficient(
         endpoints=endpoints1,
         pauli_rates=pauli_rates,
         adc_rates=adc_rates,
-        sequential_order=sequential_order,
     )
     early2 = _aggregate_sequential_state_sum(
         pmf2,
@@ -315,7 +433,6 @@ def real_x_attempt_join_sequential_efficient(
         endpoints=endpoints2,
         pauli_rates=pauli_rates,
         adc_rates=adc_rates,
-        sequential_order=sequential_order,
     )
 
     weighted1 = pmf1[:, np.newaxis] * state_func1

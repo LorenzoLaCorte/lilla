@@ -129,30 +129,21 @@ def _validate_pauli_eigenvalues(mu):
         raise ValueError("mu does not define a completely positive Pauli channel")
 
 
-def sequential_pauli_adc_channel(mu, eta, *, order="pauli_after_adc"):
- # PATCH GUIDE — finite sequential model
- # The two orders differ only in affine translation, but that difference matters.
- # With mu_Z=0.6 and eta=0.81, Pauli-after-ADC gives b_Z=0.6*(1-0.81)=0.114;
- # ADC-after-Pauli gives b_Z=0.19.  Both have a_Z=0.486.  This is the concrete
- # reason main.tex treats order as an explicit modeling choice.
-    """Build one ordered Pauli/ADC layer from its PTM parameters."""
+def sequential_pauli_adc_channel(mu, eta):
+ # PATCH GUIDE — fixed finite sequential model
+ # This branch fixes channel order: amplitude damping first, Pauli afterward.
+    """Build the fixed ``pauli_after_adc`` Pauli/ADC layer."""
     mu = _as_finite_real_array(mu, name="Pauli eigenvalues")
     _validate_pauli_eigenvalues(mu)
     eta = float(_as_finite_real_array([eta], name="eta")[0])
     if not 0.0 <= eta <= 1.0:
         raise ValueError("eta must lie in [0,1]")
 
-    if order == "pauli_after_adc":
-        shift_z = mu[3] * (1.0 - eta)
-    elif order == "adc_after_pauli":
-        shift_z = 1.0 - eta
-    else:
-        raise ValueError("unknown concatenation order")
     return LocalAffineChannel(
         scale_x=mu[1] * np.sqrt(eta),
         scale_y=mu[2] * np.sqrt(eta),
         scale_z=mu[3] * eta,
-        shift_z=shift_z,
+        shift_z=mu[3] * (1.0 - eta),
     )
 
 
@@ -167,50 +158,6 @@ def _validate_pauli_lindblad_rates(rates, *, atol=1.0e-14):
     ) / 4.0
     if np.any(jump_rates < -atol):
         raise ValueError("Pauli decay rates do not define a CP Pauli semigroup")
-
-
-def joint_pauli_adc_channel(pauli_decay_rates, adc_rate, time):
- # PATCH GUIDE — simultaneous generator
- # Joint means exponentiate one Pauli-Lindblad plus ADC generator.  For
- # Gamma=(0.02,0.02,0.02), gamma_ADC=0.10, t=1, the X/Y factor is
- # exp(-0.07)=0.9324 and the Z factor is exp(-0.12)=0.8869; the stationary
- # bias is kappa=0.10/0.12=0.8333 and the translation is
- # 0.8333*(1-0.8869)=0.0943.  Semigroup composition is exact, enabling the
- # efficient sliding filter.  The rate triangle check rejects non-CP choices.
-    """Exponentiate a simultaneous Pauli-Lindblad plus ADC generator.
-
-    ``pauli_decay_rates`` are the decay rates of X, Y and Z Pauli modes.  A
-    scalar denotes isotropic depolarization.  The triangle constraints are
-    checked so that the rates correspond to nonnegative Pauli jump rates.
-    """
-    rates = _as_finite_real_array(
-        pauli_decay_rates, name="Pauli decay rates"
-    )
-    if rates.ndim == 0:
-        rates = np.repeat(rates, 3)
-    if rates.shape != (3,):
-        raise ValueError("provide one or three Pauli decay rates")
-    adc_rate, time = _as_finite_real_array(
-        [adc_rate, time], name="ADC rate and time"
-    )
-    if np.any(rates < 0.0) or adc_rate < 0.0 or time < 0.0:
-        raise ValueError("rates and time must be nonnegative")
-    _validate_pauli_lindblad_rates(rates)
-
-    gamma_x, gamma_y, gamma_z = rates
-    longitudinal_rate = gamma_z + adc_rate
-    scale_z = np.exp(-longitudinal_rate * time)
-    if longitudinal_rate == 0.0:
-        shift_z = 0.0
-    else:
-        fixed_point_bias = adc_rate / longitudinal_rate
-        shift_z = fixed_point_bias * -np.expm1(-longitudinal_rate * time)
-    return LocalAffineChannel(
-        scale_x=np.exp(-(gamma_x + adc_rate / 2.0) * time),
-        scale_y=np.exp(-(gamma_y + adc_rate / 2.0) * time),
-        scale_z=scale_z,
-        shift_z=shift_z,
-    )
 
 
 def compose_channels(after, before):

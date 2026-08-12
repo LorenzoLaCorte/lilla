@@ -6,10 +6,8 @@ from numpy.testing import assert_allclose
 
 from src.core.pauli_adc import (
     apply_local_channels,
-    compose_channels,
     coordinates_to_matrix,
     is_physical,
-    joint_pauli_adc_channel,
     matrix_to_coordinates,
     pauli_eigenvalues,
     phi_plus_fidelity,
@@ -25,7 +23,7 @@ Z = np.diag([1, -1]).astype(complex)
 PAULIS = (I2, X, Y, Z)
 
 
-def _single_qubit_kraus(probabilities, eta, order):
+def _single_qubit_kraus(probabilities, eta):
     adc = (
         np.diag([1.0, np.sqrt(eta)]).astype(complex),
         np.array([[0.0, np.sqrt(1.0 - eta)], [0.0, 0.0]], dtype=complex),
@@ -34,11 +32,7 @@ def _single_qubit_kraus(probabilities, eta, order):
         np.sqrt(probability) * operator
         for probability, operator in zip(probabilities, PAULIS)
     )
-    if order == "pauli_after_adc":
-        return tuple(p @ a for p in pauli for a in adc)
-    if order == "adc_after_pauli":
-        return tuple(a @ p for a in adc for p in pauli)
-    raise ValueError(order)
+    return tuple(p @ a for p in pauli for a in adc)
 
 
 def _apply_direct_local_channels(rho, left_kraus, right_kraus):
@@ -83,22 +77,22 @@ def test_worked_phi_plus_example_matches_full_kraus_calculation():
 
     probabilities = np.array([0.925, 0.025, 0.025, 0.025])
     mu = pauli_eigenvalues(probabilities)
-    channel = sequential_pauli_adc_channel(mu, 0.8, order="pauli_after_adc")
+    channel = sequential_pauli_adc_channel(mu, 0.8)
     actual_coordinates = apply_local_channels(coordinates, channel)
     expected_coordinates = np.array([1.0, 0.18, 0.18, 0.5508, 0.648, -0.648])
     assert_allclose(actual_coordinates, expected_coordinates, atol=1.0e-15)
 
     direct = _apply_direct_local_channels(
         rho,
-        _single_qubit_kraus(probabilities, 0.8, "pauli_after_adc"),
-        _single_qubit_kraus(probabilities, 0.8, "pauli_after_adc"),
+        _single_qubit_kraus(probabilities, 0.8),
+        _single_qubit_kraus(probabilities, 0.8),
     )
     assert_allclose(coordinates_to_matrix(actual_coordinates), direct, atol=1.0e-15)
     assert_allclose(phi_plus_fidelity(actual_coordinates), 0.7117, atol=1.0e-15)
     assert is_physical(actual_coordinates)
 
 
-def test_asymmetric_noise_matches_full_density_matrix_for_both_orders():
+def test_asymmetric_noise_matches_full_density_matrix():
     rho = np.array(
         [
             [0.4, 0.0, 0.0, 0.12],
@@ -112,20 +106,19 @@ def test_asymmetric_noise_matches_full_density_matrix_for_both_orders():
     left_probabilities = np.array([0.86, 0.06, 0.05, 0.03])
     right_probabilities = np.array([0.91, 0.02, 0.04, 0.03])
 
-    for order in ("pauli_after_adc", "adc_after_pauli"):
-        left = sequential_pauli_adc_channel(
-            pauli_eigenvalues(left_probabilities), 0.73, order=order
-        )
-        right = sequential_pauli_adc_channel(
-            pauli_eigenvalues(right_probabilities), 0.84, order=order
-        )
-        compact = apply_local_channels(coordinates, left, right)
-        direct = _apply_direct_local_channels(
-            rho,
-            _single_qubit_kraus(left_probabilities, 0.73, order),
-            _single_qubit_kraus(right_probabilities, 0.84, order),
-        )
-        assert_allclose(coordinates_to_matrix(compact), direct, atol=2.0e-15)
+    left = sequential_pauli_adc_channel(
+        pauli_eigenvalues(left_probabilities), 0.73
+    )
+    right = sequential_pauli_adc_channel(
+        pauli_eigenvalues(right_probabilities), 0.84
+    )
+    compact = apply_local_channels(coordinates, left, right)
+    direct = _apply_direct_local_channels(
+        rho,
+        _single_qubit_kraus(left_probabilities, 0.73),
+        _single_qubit_kraus(right_probabilities, 0.84),
+    )
+    assert_allclose(coordinates_to_matrix(compact), direct, atol=2.0e-15)
 
 
 def test_phi_plus_swap_is_a_two_by_two_matrix_product_and_tracks_probability():
@@ -209,46 +202,6 @@ def test_all_corrected_bell_branches_close_on_random_real_x_inputs():
         )
 
 
-def test_joint_generator_is_a_semigroup_but_ordered_layers_need_not_be():
-    gamma_depolarizing = 0.04
-    gamma_adc = 0.08
-    total_time = 5.0
-
-    joint_full = joint_pauli_adc_channel(
-        gamma_depolarizing, gamma_adc, total_time
-    )
-    joint_half = joint_pauli_adc_channel(
-        gamma_depolarizing, gamma_adc, total_time / 2.0
-    )
-    assert_allclose(
-        list(vars(joint_full).values()),
-        list(vars(compose_channels(joint_half, joint_half)).values()),
-        atol=1.0e-15,
-    )
-
-    mu_full = np.array(
-        [1.0, *([np.exp(-gamma_depolarizing * total_time)] * 3)]
-    )
-    mu_half = np.array(
-        [1.0, *([np.exp(-gamma_depolarizing * total_time / 2.0)] * 3)]
-    )
-    ordered_full = sequential_pauli_adc_channel(
-        mu_full,
-        np.exp(-gamma_adc * total_time),
-        order="pauli_after_adc",
-    )
-    ordered_half = sequential_pauli_adc_channel(
-        mu_half,
-        np.exp(-gamma_adc * total_time / 2.0),
-        order="pauli_after_adc",
-    )
-    ordered_two_steps = compose_channels(ordered_half, ordered_half)
-    assert_allclose(ordered_full.shift_z, 0.2699191169839555)
-    assert_allclose(ordered_two_steps.shift_z, 0.2855276072958546)
-    assert not np.isclose(ordered_full.shift_z, ordered_two_steps.shift_z)
-    assert_allclose(joint_full.shift_z, 0.3007922426039824)
-
-
 def test_random_compact_kernels_match_dense_oracles():
     rng = np.random.default_rng(20260801)
     phi_plus = np.array([1.0, 0.0, 0.0, 1.0]) / np.sqrt(2.0)
@@ -262,20 +215,19 @@ def test_random_compact_kernels_match_dense_oracles():
         probabilities_left = rng.dirichlet(np.ones(4))
         probabilities_right = rng.dirichlet(np.ones(4))
         eta_left, eta_right = rng.random(2)
-        order = "pauli_after_adc" if index % 2 == 0 else "adc_after_pauli"
         left_channel = sequential_pauli_adc_channel(
-            pauli_eigenvalues(probabilities_left), eta_left, order=order
+            pauli_eigenvalues(probabilities_left), eta_left
         )
         right_channel = sequential_pauli_adc_channel(
-            pauli_eigenvalues(probabilities_right), eta_right, order=order
+            pauli_eigenvalues(probabilities_right), eta_right
         )
         compact_noise = apply_local_channels(
             coordinates_a, left_channel, right_channel
         )
         dense_noise = _apply_direct_local_channels(
             rho_a,
-            _single_qubit_kraus(probabilities_left, eta_left, order),
-            _single_qubit_kraus(probabilities_right, eta_right, order),
+            _single_qubit_kraus(probabilities_left, eta_left),
+            _single_qubit_kraus(probabilities_right, eta_right),
         )
         assert_allclose(
             coordinates_to_matrix(compact_noise),
@@ -331,13 +283,3 @@ def test_channel_factories_reject_nonphysical_or_ambiguous_inputs():
             [1.0, 0.0, 0.0, 1.0, 1.0 + 1.0j, -1.0],
             sequential_pauli_adc_channel([1.0, 1.0, 1.0, 1.0], 1.0),
         )
-
-
-def test_joint_generator_is_accurate_near_the_identity():
-    channel = joint_pauli_adc_channel(0.04, 0.08, 1.0e-8)
-    assert_allclose(channel.fixed_point_bias, 2.0 / 3.0, rtol=2.0e-8)
-
-    tiny_time = 1.0e-12
-    tiny = joint_pauli_adc_channel(0.04, 0.08, tiny_time)
-    expected_shift = (0.08 / 0.12) * -np.expm1(-0.12 * tiny_time)
-    assert_allclose(tiny.shift_z, expected_shift, rtol=0.0, atol=1.0e-30)

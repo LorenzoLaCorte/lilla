@@ -48,10 +48,6 @@ def concatenated_channel(operator, probabilities, eta):
     return pauli_channel(amplitude_damping(operator, eta), probabilities)
 
 
-def reversed_concatenated_channel(operator, probabilities, eta):
-    return amplitude_damping(pauli_channel(operator, probabilities), eta)
-
-
 def pauli_transfer_matrix(channel):
     return sp.Matrix(
         4,
@@ -173,67 +169,6 @@ def test_concatenated_transfer_matrix_and_channel_order():
         ]
     )
     assert_matrix_zero(actual_transfer_matrix - expected_transfer_matrix)
-
-    pauli_after_adc = concatenated_channel(I2 / 2, probabilities, eta)
-    adc_after_pauli = amplitude_damping(
-        pauli_channel(I2 / 2, probabilities), eta
-    )
-    mu0 = p_i + p_x + p_y + p_z
-    expected_order_difference = (mu3 - mu0) * (1 - eta) * Z / 2
-    assert_matrix_zero(
-        pauli_after_adc - adc_after_pauli - expected_order_difference
-    )
-
-
-def test_reversed_concatenation_transfer_matrix_and_right_eigenoperators():
-    p_i, p_x, p_y, p_z, eta = sp.symbols("p_i p_x p_y p_z eta")
-    probabilities = (p_i, p_x, p_y, p_z)
-    mu0 = p_i + p_x + p_y + p_z
-    mu1 = p_i + p_x - p_y - p_z
-    mu2 = p_i - p_x + p_y - p_z
-    mu3 = p_i - p_x - p_y + p_z
-
-    actual_transfer_matrix = pauli_transfer_matrix(
-        lambda operator: reversed_concatenated_channel(
-            operator, probabilities, eta
-        )
-    )
-    expected_transfer_matrix = sp.Matrix(
-        [
-            [mu0, 0, 0, 0],
-            [0, mu1 * sp.sqrt(eta), 0, 0],
-            [0, 0, mu2 * sp.sqrt(eta), 0],
-            [mu0 * (1 - eta), 0, 0, mu3 * eta],
-        ]
-    )
-    assert_matrix_zero(actual_transfer_matrix - expected_transfer_matrix)
-
-    normalized_transfer_matrix = sp.Matrix(
-        [
-            [1, 0, 0, 0],
-            [0, mu1 * sp.sqrt(eta), 0, 0],
-            [0, 0, mu2 * sp.sqrt(eta), 0],
-            [1 - eta, 0, 0, mu3 * eta],
-        ]
-    )
-    channel = lambda operator: channel_from_transfer_matrix(
-        normalized_transfer_matrix, operator
-    )
-    right_eigenoperators = (
-        (1 - mu3 * eta) * I2 + (1 - eta) * Z,
-        X,
-        Y,
-        Z,
-    )
-    eigenvalues = (
-        1,
-        mu1 * sp.sqrt(eta),
-        mu2 * sp.sqrt(eta),
-        mu3 * eta,
-    )
-    for operator, eigenvalue in zip(right_eigenoperators, eigenvalues):
-        assert_matrix_zero(channel(operator) - eigenvalue * operator)
-
 
 def test_concatenated_channel_right_eigenoperators():
     mu1, mu2, mu3, eta = sp.symbols("mu1 mu2 mu3 eta")

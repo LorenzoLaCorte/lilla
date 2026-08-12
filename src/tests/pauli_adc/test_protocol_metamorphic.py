@@ -298,7 +298,6 @@ def test_end_to_end_pauli_fourier_reduction_through_cutoffs_and_retries():
         # the PF subspace, while unequal generation times exercise decay.
         "pauli_mode_decay_rates": [0.07, 0.07, 0.04],
         "amplitude_damping_rate": 0.0,
-        "pauli_adc_noise_model": "joint",
         "bell_outcomes": "all_corrected",
         "real_x_werner_twirling": False,
     }

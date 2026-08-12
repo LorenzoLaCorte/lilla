@@ -10,7 +10,6 @@ circuit.
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-from scipy.linalg import expm
 
 from src.core.pauli_adc import (
     RealXState,
@@ -90,84 +89,8 @@ def _random_real_x_density(rng):
     )
 
 
-def _joint_single_qubit_basis_images(pauli_decay_rates, adc_rate, time):
-    """Exponentiate the full Lindblad generator on the matrix-unit basis.
-
-    This is intentionally separate from the affine-PTM implementation.  The
-    Pauli jump rates are reconstructed from the requested X/Y/Z mode-decay
-    rates, and amplitude damping is represented by its lowering operator.
-    """
-    gamma_x, gamma_y, gamma_z = np.asarray(pauli_decay_rates, dtype=float)
-    jump_rates = np.array(
-        [
-            gamma_y + gamma_z - gamma_x,
-            gamma_x + gamma_z - gamma_y,
-            gamma_x + gamma_y - gamma_z,
-        ]
-    ) / 4.0
-    assert np.min(jump_rates) >= -1.0e-14
-
-    lowering = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=complex)
-    excited_projector = lowering.conj().T @ lowering
-
-    def generator(matrix):
-        result = np.zeros((2, 2), dtype=complex)
-        for rate, pauli in zip(jump_rates, (X, Y, Z)):
-            result += rate * (pauli @ matrix @ pauli - matrix)
-        result += adc_rate * (
-            lowering @ matrix @ lowering.conj().T
-            - 0.5 * (excited_projector @ matrix + matrix @ excited_projector)
-        )
-        return result
-
-    matrix_units = []
-    generator_matrix = np.zeros((4, 4), dtype=complex)
-    for row in range(2):
-        for column in range(2):
-            matrix_unit = np.zeros((2, 2), dtype=complex)
-            matrix_unit[row, column] = 1.0
-            matrix_units.append(matrix_unit)
-            generator_matrix[:, 2 * row + column] = generator(matrix_unit).reshape(-1)
-
-    propagator = expm(time * generator_matrix)
-    return tuple(
-        (propagator @ matrix_unit.reshape(-1)).reshape(2, 2)
-        for matrix_unit in matrix_units
-    )
-
-
-def _apply_independent_joint_noise(
-    rho,
-    left_pauli_rates,
-    left_adc_rate,
-    right_pauli_rates,
-    right_adc_rate,
-    time,
-):
-    left_images = _joint_single_qubit_basis_images(
-        left_pauli_rates, left_adc_rate, time
-    )
-    right_images = _joint_single_qubit_basis_images(
-        right_pauli_rates, right_adc_rate, time
-    )
-    output = np.zeros((4, 4), dtype=complex)
-    for left_row in range(2):
-        for left_column in range(2):
-            for right_row in range(2):
-                for right_column in range(2):
-                    coefficient = rho[
-                        2 * left_row + right_row,
-                        2 * left_column + right_column,
-                    ]
-                    output += coefficient * np.kron(
-                        left_images[2 * left_row + left_column],
-                        right_images[2 * right_row + right_column],
-                    )
-    return output
-
-
-def _single_qubit_sequential_kraus(pauli_decay_rates, adc_rate, time, order):
-    """Construct an ordered Pauli/ADC layer directly from Kraus operators."""
+def _single_qubit_sequential_kraus(pauli_decay_rates, adc_rate, time):
+    """Construct fixed-order Pauli-after-ADC Kraus operators."""
     mu_x, mu_y, mu_z = np.exp(-np.asarray(pauli_decay_rates, dtype=float) * time)
     probabilities = np.array(
         [
@@ -189,11 +112,7 @@ def _single_qubit_sequential_kraus(pauli_decay_rates, adc_rate, time, order):
         np.diag([1.0, np.sqrt(eta)]).astype(complex),
         np.array([[0.0, np.sqrt(1.0 - eta)], [0.0, 0.0]], dtype=complex),
     )
-    if order == "pauli_after_adc":
-        return tuple(pauli @ adc for pauli in pauli_kraus for adc in adc_kraus)
-    if order == "adc_after_pauli":
-        return tuple(adc @ pauli for adc in adc_kraus for pauli in pauli_kraus)
-    raise ValueError(order)
+    return tuple(pauli @ adc for pauli in pauli_kraus for adc in adc_kraus)
 
 
 def _apply_independent_sequential_noise(
@@ -203,13 +122,12 @@ def _apply_independent_sequential_noise(
     right_pauli_rates,
     right_adc_rate,
     time,
-    order,
 ):
     left_kraus = _single_qubit_sequential_kraus(
-        left_pauli_rates, left_adc_rate, time, order
+        left_pauli_rates, left_adc_rate, time
     )
     right_kraus = _single_qubit_sequential_kraus(
-        right_pauli_rates, right_adc_rate, time, order
+        right_pauli_rates, right_adc_rate, time
     )
     output = np.zeros((4, 4), dtype=complex)
     for left in left_kraus:
@@ -478,7 +396,7 @@ def test_batched_polish_reports_first_materially_nonphysical_bin():
         ("phi_plus", 5, 2, 0.61, "right", (1, 2)),
     ],
 )
-def test_one_attempt_swap_with_endpoint_local_joint_noise_matches_dense_oracle(
+def test_one_attempt_swap_with_endpoint_sequential_noise_matches_dense_oracle(
     outcomes,
     t_left,
     t_right,
@@ -531,13 +449,12 @@ def test_one_attempt_swap_with_endpoint_local_joint_noise_matches_dense_oracle(
         bell_outcomes=outcomes,
         node_pauli_rates=node_pauli_rates,
         node_adc_rates=node_adc_rates,
-        noise_model="joint",
     )
 
     first_node, second_node = node_pair
     time = abs(t_left - t_right)
     if older_link == "left":
-        rho_left = _apply_independent_joint_noise(
+        rho_left = _apply_independent_sequential_noise(
             rho_left,
             node_pauli_rates[first_node],
             node_adc_rates[first_node],
@@ -546,7 +463,7 @@ def test_one_attempt_swap_with_endpoint_local_joint_noise_matches_dense_oracle(
             time,
         )
     else:
-        rho_right = _apply_independent_joint_noise(
+        rho_right = _apply_independent_sequential_noise(
             rho_right,
             node_pauli_rates[first_node],
             node_adc_rates[first_node],
@@ -573,7 +490,7 @@ def test_one_attempt_swap_with_endpoint_local_joint_noise_matches_dense_oracle(
 
 
 @pytest.mark.parametrize("t_kept,t_auxiliary", [(2, 6), (7, 3)])
-def test_unequal_time_distillation_with_endpoint_joint_noise_matches_dense_oracle(
+def test_unequal_time_distillation_with_endpoint_sequential_noise_matches_dense_oracle(
     t_kept,
     t_auxiliary,
 ):
@@ -619,13 +536,12 @@ def test_unequal_time_distillation_with_endpoint_joint_noise_matches_dense_oracl
         hardware_success=hardware_success,
         node_pauli_rates=endpoint_pauli_rates,
         node_adc_rates=endpoint_adc_rates,
-        noise_model="joint",
         werner_twirl=False,
     )
 
     waiting_time = abs(t_kept - t_auxiliary)
     if t_kept < t_auxiliary:
-        rho_kept = _apply_independent_joint_noise(
+        rho_kept = _apply_independent_sequential_noise(
             rho_kept,
             endpoint_pauli_rates[0],
             endpoint_adc_rates[0],
@@ -634,7 +550,7 @@ def test_unequal_time_distillation_with_endpoint_joint_noise_matches_dense_oracl
             waiting_time,
         )
     else:
-        rho_auxiliary = _apply_independent_joint_noise(
+        rho_auxiliary = _apply_independent_sequential_noise(
             rho_auxiliary,
             endpoint_pauli_rates[0],
             endpoint_adc_rates[0],
@@ -661,8 +577,7 @@ def test_unequal_time_distillation_with_endpoint_joint_noise_matches_dense_oracl
     _assert_attempt_mass_conservation(actual)
 
 
-@pytest.mark.parametrize("order", ["pauli_after_adc", "adc_after_pauli"])
-def test_sequential_order_join_matches_independent_kraus_oracle(order):
+def test_sequential_join_matches_independent_kraus_oracle():
     rho_left = np.array(
         [
             [0.39, 0.0, 0.0, 0.14],
@@ -706,8 +621,6 @@ def test_sequential_order_join_matches_independent_kraus_oracle(order):
         bell_outcomes="phi_plus",
         node_pauli_rates=node_pauli_rates,
         node_adc_rates=node_adc_rates,
-        noise_model="sequential",
-        sequential_order=order,
     )
     noisy_left = _apply_independent_sequential_noise(
         rho_left,
@@ -716,7 +629,6 @@ def test_sequential_order_join_matches_independent_kraus_oracle(order):
         node_pauli_rates[1],
         node_adc_rates[1],
         t_right - t_left,
-        order,
     )
     accepted = _dense_swap(noisy_left, rho_right, "phi_plus")
     success = hardware_success * np.trace(accepted).real
@@ -907,7 +819,7 @@ def test_stochastic_two_leaf_protocol_matches_dense_full_reset_renewal_oracle():
     noisy_left = {0: rho_left}
     noisy_right = {0: rho_right}
     for waiting_time in range(1, cutoff + 1):
-        noisy_left[waiting_time] = _apply_independent_joint_noise(
+        noisy_left[waiting_time] = _apply_independent_sequential_noise(
             rho_left,
             node_pauli_rates[0],
             node_adc_rates[0],
@@ -915,7 +827,7 @@ def test_stochastic_two_leaf_protocol_matches_dense_full_reset_renewal_oracle():
             node_adc_rates[1],
             waiting_time,
         )
-        noisy_right[waiting_time] = _apply_independent_joint_noise(
+        noisy_right[waiting_time] = _apply_independent_sequential_noise(
             rho_right,
             node_pauli_rates[1],
             node_adc_rates[1],
@@ -999,7 +911,6 @@ def test_stochastic_two_leaf_protocol_matches_dense_full_reset_renewal_oracle():
         "bell_outcomes": "phi_plus",
         "pauli_mode_decay_rates": node_pauli_rates,
         "amplitude_damping_rate": node_adc_rates,
-        "pauli_adc_noise_model": "joint",
     }
     actual_pmf, actual_states = evaluator.compute_unit(
         parameters,

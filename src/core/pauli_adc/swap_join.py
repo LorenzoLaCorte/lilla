@@ -17,9 +17,9 @@ import numpy as np
 from src.core.pauli_adc.protocol_units import (
     accepted_bell_swap,
     apply_local_channels,
-    joint_pauli_adc_channel,
     recurrence_distillation,
     sequential_pauli_adc_channel,
+    _validate_pauli_lindblad_rates,
 )
 from src.core.pauli_adc.state import _minimum_real_x_eigenvalue
 
@@ -117,22 +117,12 @@ def canonical_node_adc_rates(value, node_count):
     return rates
 
 
-def _memory_channel(pauli_rates, adc_rate, dt, noise_model, sequential_order):
- # PATCH GUIDE — model dispatch
- # The direct oracle supports both joint and explicit sequential noise.  The
- # efficient join intentionally accepts only joint: sequential finite layers do
- # not provide the same time-homogeneous semigroup recurrence.
-    if noise_model == "joint":
-        return joint_pauli_adc_channel(pauli_rates, adc_rate, dt)
-    if noise_model == "sequential":
-        # Reuse the generator factory's public validation of the mode-decay
-        # triangle, even though this branch deliberately composes finite
-        # Pauli and ADC layers rather than exponentiating their sum.
-        joint_pauli_adc_channel(pauli_rates, adc_rate, 0.0)
-        mu = np.concatenate(([1.0], np.exp(-np.asarray(pauli_rates) * dt)))
-        eta = np.exp(-adc_rate * dt)
-        return sequential_pauli_adc_channel(mu, eta, order=sequential_order)
-    raise ValueError("pauli_adc_noise_model must be 'joint' or 'sequential'")
+def _memory_channel(pauli_rates, adc_rate, dt):
+    """Build fixed-order ``pauli_after_adc`` channel for waiting duration."""
+    _validate_pauli_lindblad_rates(np.asarray(pauli_rates, dtype=float))
+    mu = np.concatenate(([1.0], np.exp(-np.asarray(pauli_rates) * dt)))
+    eta = np.exp(-adc_rate * dt)
+    return sequential_pauli_adc_channel(mu, eta)
 
 
 def _apply_waiting_noise(
@@ -148,8 +138,6 @@ def _apply_waiting_noise(
     operation,
     node_pauli_rates,
     node_adc_rates,
-    noise_model,
-    sequential_order,
 ):
     state1 = np.asarray(state1, dtype=float).copy()
     state2 = np.asarray(state2, dtype=float).copy()
@@ -175,15 +163,11 @@ def _apply_waiting_noise(
         node_pauli_rates[left_node],
         node_adc_rates[left_node],
         dt,
-        noise_model,
-        sequential_order,
     )
     right_channel = _memory_channel(
         node_pauli_rates[right_node],
         node_adc_rates[right_node],
         dt,
-        noise_model,
-        sequential_order,
     )
     if target == 1:
         state1 = apply_local_channels(state1, left_channel, right_channel)
@@ -227,8 +211,6 @@ def _validate_attempt_inputs(
     hardware_success,
     node_pauli_rates,
     node_adc_rates,
-    noise_model,
-    sequential_order,
 ):
     """Canonicalize inputs shared by the direct and efficient joins."""
     pmf1 = np.asarray(pmf1, dtype=float)
@@ -292,15 +274,13 @@ def _validate_attempt_inputs(
     node_count = 3 if operation == "swap" else 2
     pauli_rates = canonical_node_pauli_rates(node_pauli_rates, node_count)
     adc_rates = canonical_node_adc_rates(node_adc_rates, node_count)
-    # Validate CP triangle constraints and the selected concatenation order
-    # even when every populated pair happens to have zero waiting time.
+    # Validate CP triangle constraints even when every populated pair has zero
+    # waiting time.
     for node in range(node_count):
         _memory_channel(
             pauli_rates[node],
             adc_rates[node],
             0.0,
-            noise_model,
-            sequential_order,
         )
     return (
         pmf1,
@@ -331,8 +311,6 @@ def real_x_attempt_join(
     bell_outcomes="all_corrected",
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
-    noise_model="sequential",
-    sequential_order="pauli_after_adc",
     werner_twirl=False,
 ):
     """Enumerate one preparation-and-operation attempt.
@@ -359,8 +337,6 @@ def real_x_attempt_join(
         hardware_success=hardware_success,
         node_pauli_rates=node_pauli_rates,
         node_adc_rates=node_adc_rates,
-        noise_model=noise_model,
-        sequential_order=sequential_order,
     )
     size = len(pmf1)
 
@@ -391,8 +367,6 @@ def real_x_attempt_join(
                 operation=operation,
                 node_pauli_rates=pauli_rates,
                 node_adc_rates=adc_rates,
-                noise_model=noise_model,
-                sequential_order=sequential_order,
             )
             if operation == "swap":
                 quantum_output, _ = accepted_bell_swap(
