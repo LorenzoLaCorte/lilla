@@ -1,0 +1,46 @@
+{
+  "hardware": {
+    "p_distillation": 1.0,
+    "p_gen": [
+      0.2,
+      0.05,
+      0.2,
+      0.2
+    ],
+    "p_swap": 0.9
+  },
+  "initial_state": {
+    "fidelity": 0.98,
+    "kind": "werner"
+  },
+  "links": 4,
+  "memory": {
+    "kind": "t1_t2",
+    "t1_slots": 2000.0,
+    "t2_slots": 1000.0
+  },
+  "name": "Slow link",
+  "numerics": {
+    "coverage_target": 0.999,
+    "t_trunc": 1024
+  },
+  "prediction_model": "full_real_x",
+  "protocol": {
+    "bell_outcomes": "all_corrected",
+    "cutoff_overrides": {},
+    "distillation_rounds": {},
+    "memory_cutoff_slots": null,
+    "tree": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  "schema_version": 1,
+  "slot_duration_seconds": null
+}

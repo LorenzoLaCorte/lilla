@@ -1,0 +1,2 @@
+# Optional local explorer; install requirements.txt first. Python >=3.9.
+streamlit==1.41.1

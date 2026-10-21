@@ -26,6 +26,24 @@ Install requirements:
 pip install -r requirements.txt
 ```
 
+## Local Pauli–ADC explorer
+
+The [visualization MVP brief](visualization-tool.md) is implemented as a local
+Streamlit/Plotly app and a shared CLI evaluation service. See the
+[setup, working example, scientific conventions, and verification commands](src/visualization/README.md).
+
+```bash
+source venv/bin/activate
+python -m pip install -r requirements-viz.txt
+python -m streamlit run src/visualization/app.py --server.address 127.0.0.1
+```
+
+Evaluate the same default scenario without the UI:
+
+```bash
+python -m src.visualization.cli --config src/visualization/presets/default.json --output results/visualization
+```
+
 ## Reproduce Results
 
 1) To reproduce (Li, Coopmans & Elkouss 2021) results, refer to the [original repository](https://github.com/BoxiLi/repeater-cut-off-optimization)
