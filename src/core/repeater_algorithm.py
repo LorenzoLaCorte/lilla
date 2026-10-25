@@ -154,7 +154,12 @@ class RepeaterChainEvaluation():
         cut_type,
         hardware_success,
     ):
-        """Evaluate a real-X swap/distillation with full-reset retries."""
+        """Evaluate a real-X swap/distillation with full-reset retries.
+
+        The efficient path bypasses renewal for an exactly zero failure kernel.
+        FFT validation failures retry only the renewal with the O(T^2) causal
+        solver, logging the fallback and retaining the same physicality checks.
+        """
         use_efficient_join = self.efficient and cut_type == "memory_time"
         if self.efficient and not use_efficient_join:
             logging.info(
@@ -211,22 +216,36 @@ class RepeaterChainEvaluation():
                 retry_failure[shift:] += attempt.cutoff_failure[
                     : len(retry_failure) - shift
                 ]
-            if self.use_fft:
-                # Renew all six coordinates with one shared formal-series
-                # resolvent.  Its II column is the completion-time PMF.
-                pmf_out, weighted_out = renewal_weighted(
-                    retry_failure,
-                    weighted_first=attempt.weighted_success,
-                )
+            if not np.any(retry_failure):
+                # The renewal is the identity when no attempt can fail.
+                # Preserve rare successful bins without an unnecessary FFT.
+                weighted_out = np.array(attempt.weighted_success, copy=True)
             else:
-                pmf_out = renewal_sum(
-                    retry_failure,
-                    first_success=attempt.valid_success,
-                )
+                if self.use_fft:
+                    try:
+                        pmf_out, weighted_out = renewal_weighted(
+                            retry_failure,
+                            weighted_first=attempt.weighted_success,
+                        )
+                        state_out = normalize_weighted_x_func(weighted_out, pmf_out)
+                    except ValueError as error:
+                        # Conditioning tiny FFT coefficients can amplify roundoff
+                        # into nonphysical states. Retry this renewal only; keep
+                        # the same attempt, parameters and physicality checks.
+                        logging.warning(
+                            "Real-X FFT renewal failed validation (%s); "
+                            "recomputing this %s step with causal renewal.",
+                            error, operation,
+                        )
+                    else:
+                        return pmf_out, state_out
+                # Renew all six coordinates together, including the trace.
+                # A causal failure still propagates to the caller.
                 weighted_out = renewal_sum(
                     retry_failure,
                     first_success=attempt.weighted_success,
                 )
+            pmf_out = np.array(weighted_out[:, 0], copy=True)
             state_out = normalize_weighted_x_func(weighted_out, pmf_out)
             return pmf_out, state_out
 

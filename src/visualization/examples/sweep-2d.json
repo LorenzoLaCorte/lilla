@@ -1,0 +1,17 @@
+{
+  "mode": "sweep",
+  "axes": [
+    {
+      "parameter": "T1",
+      "min": 500,
+      "max": 2000,
+      "points": 2
+    },
+    {
+      "parameter": "Generation success",
+      "min": 0.5,
+      "max": 1,
+      "points": 2
+    }
+  ]
+}

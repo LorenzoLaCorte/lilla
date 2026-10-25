@@ -1,0 +1,12 @@
+{
+  "mode": "sweep",
+  "axes": [
+    {
+      "parameter": "T1",
+      "min": 500,
+      "max": 2000,
+      "points": 3
+    }
+  ],
+  "pure_relaxation": true
+}

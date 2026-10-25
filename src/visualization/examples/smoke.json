@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "name": "Two-link smoke example",
+  "links": 2,
+  "slot_duration_seconds": null,
+  "hardware": {
+    "p_gen": 0.5,
+    "p_swap": 0.9,
+    "p_distillation": 1.0
+  },
+  "initial_state": {
+    "kind": "werner",
+    "fidelity": 0.98
+  },
+  "memory": {
+    "kind": "t1_t2",
+    "t1_slots": 2000.0,
+    "t2_slots": 1000.0
+  },
+  "protocol": {
+    "tree": [
+      0,
+      1
+    ],
+    "distillation_rounds": {},
+    "memory_cutoff_slots": null,
+    "cutoff_overrides": {},
+    "bell_outcomes": "all_corrected"
+  },
+  "prediction_model": "full_real_x",
+  "numerics": {
+    "t_trunc": 128,
+    "coverage_target": 0.999
+  }
+}

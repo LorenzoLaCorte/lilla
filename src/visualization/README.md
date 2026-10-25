@@ -1,228 +1,144 @@
-# Local Pauli–ADC explorer
+# Local repeater explorer
 
-This implements the [MVP brief](../../visualization-tool.md) using the existing
-Pauli–ADC backend. Scientific context is in [analysis.md](../../analysis.md)
-and the Pauli–ADC section of the Overleaf notes. Neither file is needed at runtime.
-Core physics is unchanged.
+A local Streamlit/Plotly workbench with single runs, fixed-tree parameter grids,
+and bounded Bayesian or enumeration searches. Physics comes from the existing
+Pauli–ADC backend; [the brief](../../visualization-tool.md) describes the interface.
 
-## Setup and launch
+**Deploy online:** use the [Render deploy button and three-step setup](DEPLOY.md).
+The deployment installs only the CPU app dependencies; a persistent results
+directory can be configured with `LILLA_RESULTS_DIR`.
 
-Run these commands from the repository root. For a fresh environment, first run:
+From the repository root:
 
 ```bash
-python -m venv venv
 source venv/bin/activate
-python -m pip install -r requirements.txt
+# For a fresh environment, install requirements.txt first.
 python -m pip install -r requirements-viz.txt
-```
-
-For the existing environment, activate it and install only the optional requirements.
-Use `.venv` in place of `venv` if that is your environment directory.
-`requirements-viz.txt` pins Streamlit 1.41.1, compatible with the repository's
-Python 3.10 environment, NumPy 2.0.0, pandas 2.2.2 and Plotly 5.22.0.
-It does not upgrade the scientific dependencies.
-
-```bash
-source venv/bin/activate
 python -m streamlit run src/visualization/app.py --server.address 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8501`. Repository `.streamlit/config.toml` disables usage
-statistics and defaults to localhost. Evaluation, plotting, persistence and HTML
-exports work offline after installation. No cloud account, external assets or
-Overleaf access is used. Stop the app with Ctrl-C.
+These local commands bind to localhost; telemetry is disabled in `.streamlit/config.toml`.
+After installation no network access is needed. Use `.venv` if that is your
+Python environment's directory.
 
-## Working example
+## Use
 
-The initial form is `presets/default.json`: four links, balanced ordered tree,
-generation probability 0.2, swap hardware success 0.9, Werner fidelity 0.98,
-T1=2000 and T2=1000 slots, all corrected Bell outcomes, no cutoff, and T=1024.
-Submit **Preview configuration** to inspect the compiled operations and derived
-node rates, then **Evaluate**. The operations are `s0,s2,s1`, with IDs
-`swap:0:1`, `swap:2:3`, `swap:0:3`. Each node has
-`(GammaX,GammaY,GammaZ)=(0.00075,0.00075,0)` and kappa=0.0005 per slot.
+Load a scenario/configuration or start with the four-link balanced preset.
+Choose the initial-state mode, link count and **Tree shape** slider: −1 is the
+fully left-unbalanced tree, 0 is balanced, and +1 is fully right-unbalanced.
+The discrete positions retain all ordered trees and their mirrors. For sizes
+with tied balanced shapes, the center is a deterministic representative; a
+few repeated balanced positions keep the midpoint selectable. Search uses only
+unique physical trees, and saved configurations retain the actual tree.
 
-Reproduce it through the same service from the CLI:
+Every node shows its distillation count inside a circle, following the protocol
+tree notation: leaves are elementary links, parents are swap outputs, and the
+root is the end-to-end link. Click a number to edit it directly; Tab and arrow
+keys also work. Link spans appear on hover. The tree has no zoom, pan or toolbar,
+and no separate counter fields. Edits update the draft without running a simulation.
+The editor uses bundled local HTML/JavaScript; no frontend build or CDN is needed.
+The tree space is limited to 1–8 elementary links to keep enumeration practical.
+
+The main controls cover fidelity, hardware probabilities, T1/T2, shared cutoff,
+horizon and global Bell acceptance. Full real-X dynamics and T1/T2 memory
+controls are the defaults. Per-link/node tables, direct rates, channel twirling,
+per-operation cutoffs and search settings are inside **Advanced settings**.
+Each additional distillation round gets a separate operation ID: `dist:0:3`,
+`dist:0:3:2`, etc., so cutoff overrides remain attached to individual rounds.
+
+The app's starting values live in `presets/default.json`: F0=0.98, p_swap=0.5,
+p_gen=0.02, T1=2000, T2=1000 and horizon=10000. `config.DEFAULT` retains the
+older seed used by existing analysis scripts; imported version-1 configurations
+keep their submitted values.
+
+- **Single run:** press **Run**. Editing controls, selecting distributions or
+  inspecting a result never calls the simulator.
+- **Parameter sweep:** choose one to three parameters, bounds and point counts.
+  The tree stays fixed. One axis produces curves, two produce heatmaps, and
+  three produce 3D scatter plots colored by each metric. The default is 15
+  points per axis with a 500-evaluation ceiling; reduce points or explicitly
+  change the ceiling in Advanced settings. Invalid physical points remain in
+  the history. The optional T2=2T1 constraint varies both lifetimes together.
+- **Bayesian optimization:** search tree, shared cutoff, distillation placement
+  and/or Bell acceptance at fixed hardware and memory. Defaults are 20 trials,
+  including five initial trials, over tree and cutoff. Advanced settings expose
+  bounds, seed, maximum rounds and bounded enumeration. The GP uses the existing
+  left-balanced-right tree ordering and `skopt` LCB machinery with the real-X objective. Budget
+  counts trials including duplicate proposals, which reuse cached results.
+
+Sweeps/searches perform one evaluation per UI rerun. **Cancel remaining trials**
+stops between evaluations and keeps completed results. Best-found selection uses
+only covered runs. Use **Inspect trial** for any completed point, including
+under-covered results; 1D/2D plots also support point selection. For 3D views use
+this selector. The selected configuration stays attached to its plots even
+when the editor changes.
+
+The main result window shows SKR, SKF, mean waiting time, mean Φ+ fidelity and
+coverage, followed by completion PMF and Φ+ fidelity. The fidelity histogram
+weights states by completion probability. Diagnostics and additional plots are
+collapsed under **More visualizations**; overlays and exports are under
+**Saved runs / Compare**.
+
+## CLI examples
+
+All modes use the same evaluator as the UI. These small examples are quicker
+than the default scenario:
+
+```bash
+python -m src.visualization.cli --config src/visualization/examples/smoke.json
+python -m src.visualization.cli --config src/visualization/examples/smoke.json --study src/visualization/examples/sweep.json
+python -m src.visualization.cli --config src/visualization/examples/smoke.json --study src/visualization/examples/optimize.json
+```
+
+Also supplied: `sweep-2d.json`, `sweep-3d.json` and `enumerate.json`. Edit these
+ordinary JSON requests to change bounds, point counts, trial budget or seed.
+`--output PATH` changes the save directory. Ctrl+C preserves completed study
+trials and exits with status 130.
+
+Results go to **`results/visualization/`**, or **`LILLA_RESULTS_DIR`** when set. Each immutable `run-*` bundle holds
+configuration, source metadata, diagnostics and full-resolution NPZ arrays.
+Each `study-*` directory holds a checkpointed `history.json` with the actual
+candidate configurations/run paths, plus `trials.csv`. The CLI also writes
+self-contained HTML plots. The app offers JSON, CSV, NPZ and HTML downloads.
+Reload a run through **Load a scenario or configuration**. Arrays load without
+pickle. No earlier run is overwritten.
+
+## Numerical conventions and checks
+
+T2≤2T1; equality means pure relaxation. Times are attempt slots and rates are
+bits/slot under the existing pooled BB84 convention. No extra sifting or Bell
+acceptance factor is applied. The mean is the repository's finite-horizon
+estimate. Low coverage is provisional; **Run at 2× horizon** saves a separate
+check. Horizon growth is always explicit. Material state/probability failures
+are reported, never broadly clipped; this includes numerical tail failures that
+can arise for extreme near-deterministic repeated distillation.
 
 ```bash
 source venv/bin/activate
-python -m src.visualization.cli --config src/visualization/presets/default.json --output results/visualization
-```
-
-Measured on this workspace on 2026-10-05 with Python 3.10.12:
-
-| Quantity | Default result |
-|---|---:|
-| Covered probability | 0.999999999999732 |
-| Repository finite-horizon mean | 12.274101616471224 slots |
-| Observed conditional mean | 12.274101616196784 slots |
-| Pooled secret fraction | 0.33668136114768227 |
-| Pooled key rate | 0.02743022435922104 bits/slot |
-| Average Phi+ fidelity | 0.9067255182834015 |
-| eX / eZ | 0.06435087812049628 / 0.05784720719220443 |
-| Service wall time, one uncached CLI evaluation | 0.0267 seconds |
-
-This is a smoke example, not a runtime guarantee or optimization result.
-The CLI prints the exact newly created bundle path and runtime. Bundles under
-`results/visualization/` are ignored by the existing repository ignore rules.
-Each bundle includes `run.json`, `config.json`, compressed `arrays.npz`, and
-the CLI additionally writes `per-time.csv`, `summary.csv`, and `figures.html`.
-The HTML embeds Plotly, so it can be opened without network access.
-This workspace's smoke bundle is
-`results/visualization/run-500dddfa212c4d5cb774248a6ea5584c-fe5ebf51/`;
-use **Reload result** to inspect it in the app. The CLI generates a fresh bundle
-when reproducing the example.
-
-## Controls and interpretation
-
-Structural controls refresh the available form fields without simulating:
-choose 1–8 elementary links, an ordered tree, homogeneous or per-link/per-node
-tables, initial-state mode, and memory mode. This small-workbench link limit
-bounds the ordered-tree dropdown; mirror trees are retained. All simulation
-inputs are submitted with the form. Only **Evaluate** and explicit re-evaluation
-actions invoke the backend. Chart zoom, log-axis changes, exports, reloads and
-ordinary reruns reuse saved results. Failed evaluations retain the last success.
-The [Streamlit form API](https://docs.streamlit.io/develop/api-reference/execution-flow/st.form)
-documents batching; charts use its
-[Plotly integration](https://docs.streamlit.io/develop/api-reference/charts/st.plotly_chart).
-
-Choose a scenario preset: default, no memory noise, pure dephasing, one slow
-link, or one poor memory. Protocol variants provide root distillation, a shared
-cutoff of 10 slots, both together, Phi pair, and Psi pair. **Custom** uses the
-form's selected recurrence locations, cutoff and outcomes. These variants
-describe candidates, with no promised improvement.
-
-All physical inputs follow the version-1 JSON schema in the brief and default
-preset. JSON `null` means an infinite lifetime or no cutoff. In node tables,
-blank lifetime cells mean infinite lifetime. Advanced controls accept Bell
-populations in `(phi+,psi+,psi-,phi-)` order or normalized, physical real-X
-coordinates in `(II,IZ,ZI,ZZ,XX,YY)` order. Advanced Pauli rates are mode decay
-rates constrained by the CP triangle inequalities.
-
-Distillation consumes two independent copies of the selected subtree, at most
-one round at each location, including leaves and root. Operation cutoffs are
-attached to stable IDs, including distillation. For example, this protocol
-object adds root distillation and assigns two overrides:
-
-```json
-{
-  "tree": [[0, 1], [2, 3]],
-  "distillation_rounds": {"0:3": 1},
-  "memory_cutoff_slots": null,
-  "cutoff_overrides": {"swap:0:3": 10, "dist:0:3": null},
-  "bell_outcomes": "phi_pair"
-}
-```
-
-The operation sequence becomes `s0,s2,s1,d3`; no-cutoff entries are compiled
-to the current horizon, while `null` remains in the high-level config.
-Cutoffs accept arrival differences `abs(t1-t2) <= cutoff`; they do not bound
-total duration. Hardware success and quantum outcome acceptance remain
-separate, and the backend includes destructive retries. No extra acceptance
-factor is applied to the rate.
-
-Times are generation-attempt slots. Optional `slot_duration_seconds` converts
-times to seconds and rates to bits/second, without changing dynamics. Rates
-use the repository's BB84 convention without an extra basis-sifting factor.
-T1/T2 mapping is kappa=1/T1 and gamma_phi=1/T2−kappa/2, requiring T2≤2T1.
-The memory channel applies AD followed by Pauli noise over each waiting interval;
-general Pauli rates need not represent simultaneous generator evolution.
-The pure Z dephasing and AD channels in the T1/T2 mapping commute.
-
-The two prediction models share the real-X evaluator and all protocol maps:
-full dynamics preserves the physical rates, and local channel twirling changes
-node rates to `(GammaX+kappa/2,GammaY+kappa/2,GammaZ+kappa)` with damping zero.
-The original physical config is always saved. **Re-evaluate in full model**
-starts from it. General real-X initial states can retain local biases under
-the channel approximation; this is not a Bell/Werner state-projection baseline.
-
-The headline objective uses completion-mass-weighted pooled coordinates. The
-returned backend rows are already normalized; they are not divided by the PMF.
-The State tab shows correlators, local biases, Bell populations, the pooled or
-completion-time-selected density matrix, trace and minimum eigenvalue.
-Time-separated processing is an ideal asymptotic diagnostic of the same run;
-the headline rate remains pooled.
-
-Quality plots mask `pmf <= 1e-12` for display. All positive bins remain in
-metrics, NPZ and CSV exports; empty rows have no conditional state values in CSV.
-Material probability/physicality errors and nonfinite outputs fail evaluation.
-Cleanup only permits roundoff at tolerance `1e-10`: bin-0 residue, negative mass,
-unit-mass excess, and normalized-state endpoint/PSD roundoff. Any cleanup is
-recorded under run diagnostics. Backend normalization also applies its existing
-physicality checks. Undefined no-completion metrics are JSON `null`, with status
-`no_completion`, and rate/coverage zero.
-
-Low-coverage results are provisional. **Re-evaluate at 2× horizon** saves another
-run, rebuilds no-cutoff entries and reports rate/coverage changes. The repository
-mean includes an unresolved-tail finite-horizon estimate; the observed mean is
-conditional on completion inside the horizon. Neither certifies an infinite-
-horizon mean. High coverage alone does not establish a reliable close ranking.
-
-## Saved runs and manual comparison
-
-Every successful explicit evaluation saves a new atomic JSON/NPZ bundle.
-Display names never overwrite another run. **Reload result** restores the
-submitted physical configuration, numerical status and arrays, without
-simulation. Export the draft or submitted config, per-time CSV, comparison
-summary CSV, or embedded HTML figures using buttons outside the form.
-The CLI also exports these files. NumPy loading disables pickle.
-
-Select up to 12 saved runs in **Compare**. The table shows model, tree,
-distillation, cutoff, outcome policy, rate, waiting time, fidelity, coverage,
-horizon and status; a second table highlights configuration differences.
-Time overlays use stable run colors and descriptive labels. Mixed unit overlays
-use slots. Different hardware is allowed for exploratory overlays.
-
-For controlled selection-loss calculations, selected runs must share the same
-expanded physical scenario, units and horizon. Press **Evaluate candidates in
-both models** to evaluate the distinct manual candidates under both models.
-The app shows pending backend calls first, advances progress per result, saves
-partial successes, and refuses a loss calculation for an incomplete matrix.
-An eight-result in-memory cache uses expanded inputs, horizon, prediction
-model, evaluator options and the relevant source fingerprint. Names, units
-metadata and coverage targets are recomputed on cache hits. Disk runs are
-history and are never silently inserted into the cache; historical source
-differences are shown.
-
-Prediction error is twirled minus full rate for each candidate. Selection loss
-is the full-model performance lost by choosing the twirled-model winner within
-these candidates. Relative loss is undefined when the best full-model rate is
-zero. All near-tied winners are retained with ranges of physical rates/losses,
-using `abs(a-b) <= 1e-12 + 1e-3*max(abs(a),abs(b))` bits/slot. This describes
-ranking ambiguity, not a certified numerical error bound. Coverage deficiencies
-make the comparison provisional.
-
-The MVP includes no optimizer, automatic sweep, Bell/Werner projection schedule,
-intermediate-operation traces, adaptive outcomes or cutoffs, online scheduler,
-or syndrome/finite-key processing. Those remain the later extensions in the brief.
-
-## Verification
-
-Run the new tests and the relevant short backend checks:
-
-```bash
-source venv/bin/activate
-python -m pytest -q src/tests/visualization src/tests/pauli_adc/test_numeric.py src/tests/pauli_adc/test_metrics.py src/tests/pauli_adc/test_protocol_metamorphic.py src/tests/pauli_adc/test_sequential_efficient_backend.py -k 'not avoids_quadratic'
+python -m pytest -q src/tests/visualization src/tests/analysis src/tests/pauli_adc/test_numeric.py src/tests/pauli_adc/test_metrics.py src/tests/pauli_adc/test_protocol_metamorphic.py
 python -m compileall -q src/visualization
-python -m pip check
+node --check src/visualization/tree_component/editor.js
+git diff --check
 ```
 
-The efficient-backend enumeration/scaling check is explicitly deselected;
-the optimizer and unrelated campaigns are not run. Tests include physical
-mapping/rejection, ordered operation replay, cutoff alignment, direct/service/CLI
-parity under heterogeneous noise and postselection, channel/state-twirl controls,
-deterministic and zero-completion controls, biased-input corrected swapping,
-horizon/cache behavior, storage/exports, 12-candidate comparisons, near ties,
-zero denominators and incomplete matrices. Streamlit's test harness exercises
-submission, previews, display reruns, failures, JSON import, exports, reload,
-heterogeneous controls, full-model conversion and comparison partial failures.
-The UI tests skip when the optional Streamlit dependency is absent.
+Checks cover backend parity, physical mapping, centered tree ordering/mirrors,
+multiple-round cutoff alignment, all three grid dimensions, seeded search,
+failed/provisional trials, cancellation checkpoints, weighted fidelity plots,
+CLI examples and Streamlit submission/export/reload without automatic simulation.
+Tree-editor checks cover inline edits reaching Run and saved configurations,
+nonnegative integer validation, and stale events after changing tree shape.
 
-The combined test command above passed **105 tests with 1 deselected** in
-5.41 seconds on this workspace. Python compilation, `pip check`, and
-`git diff --check` also passed.
+Verified locally: **117 tests passed** (9.69 s). The GP emitted one ordinary
+duplicate-proposal warning and chose another point. Compilation and diff checks
+passed. An isolated headless Chrome check exercised the actual local app:
+seven inline node inputs, edits 2 → 0 → 3 acknowledged by Streamlit, negative
+counts rejected, and no tree toolbar. The localhost health endpoint returned 200.
 
-Local startup was checked using the documented command and
-`http://127.0.0.1:8501/_stcore/health` returned HTTP 200 with `ok`.
-The CLI smoke example produced the values above; dependency compatibility and
-Python compilation checks passed.
+The requested default at horizon 10000 took 0.049 s in the evaluator: coverage
+0.999999999998, mean wait 431.542 slots, mean Φ+ fidelity 0.726959, SKR=0.
+The small single-run example gave SKR=0.215706 bits/slot in 0.027 s. The supplied
+1D/2D/3D examples completed 3/4/8 points in 0.089/0.120/0.239 s; the four-trial
+Bayesian and enumeration examples took 0.394/0.121 s. These are measured local
+smoke runs, not performance guarantees. Their bundles are under
+`results/visualization/working-examples/`; the default bundle is directly under
+`results/visualization/`. Other hardware/protocols can take substantially longer.

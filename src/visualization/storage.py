@@ -1,6 +1,6 @@
 """Atomic JSON/NPZ run bundles and full-resolution offline exports."""
 import csv
-from io import StringIO
+from io import BytesIO, StringIO
 import json
 import os
 from pathlib import Path
@@ -14,15 +14,15 @@ from src.visualization.config import canonical, expand_config
 from src.visualization.evaluate import ROOT, Run
 from src.visualization.metrics import bell_populations, time_quantities, validate_outputs
 
-DEFAULT_DIRECTORY = ROOT / "results" / "visualization"
+DEFAULT_DIRECTORY = Path(os.environ.get("LILLA_RESULTS_DIR") or ROOT / "results" / "visualization").expanduser()
 
 
 def config_json(config):
     return json.dumps(config, indent=2, sort_keys=True, allow_nan=False)
 
 
-def save_run(run, directory=DEFAULT_DIRECTORY):
-    directory = Path(directory)
+def save_run(run, directory=None):
+    directory = Path(directory if directory is not None else DEFAULT_DIRECTORY)
     directory.mkdir(parents=True, exist_ok=True)
     destination = directory / f"run-{run.metadata['run_id']}-{uuid4().hex[:8]}"
     staging = Path(tempfile.mkdtemp(prefix=".pending-", dir=directory))
@@ -34,6 +34,30 @@ def save_run(run, directory=DEFAULT_DIRECTORY):
     except Exception:
         shutil.rmtree(staging, ignore_errors=True)
         raise
+    return destination
+
+
+def arrays_npz(run):
+    stream = BytesIO()
+    np.savez_compressed(stream, pmf=run.pmf, x=run.x)
+    return stream.getvalue()
+
+
+def save_experiment(experiment, directory=None):
+    """Checkpoint every completed/invalid trial; keep partial histories on cancellation."""
+    directory = Path(directory if directory is not None else DEFAULT_DIRECTORY)
+    destination = directory/f"study-{experiment.mode}-{experiment.id}"
+    destination.mkdir(parents=True, exist_ok=True)
+    for entry in experiment.entries:
+        if entry.run is not None and entry.bundle is None:
+            # Reused trials can reference the original immutable run bundle.
+            previous = next((e for e in experiment.entries if e is not entry and e.bundle
+                             and e.run is not None and e.run.metadata["run_id"] == entry.run.metadata["run_id"]), None)
+            entry.bundle = previous.bundle if previous else str(save_run(entry.run, directory))
+    temporary = destination/f".history-{uuid4().hex}.json"
+    temporary.write_text(config_json(experiment.history()), encoding="utf-8")
+    os.replace(temporary, destination/"history.json")
+    (destination/"trials.csv").write_text(csv_text([e.row() for e in experiment.entries]), encoding="utf-8")
     return destination
 
 

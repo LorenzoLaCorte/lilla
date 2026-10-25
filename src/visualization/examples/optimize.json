@@ -1,0 +1,11 @@
+{
+  "mode": "optimize",
+  "dimensions": [
+    "cutoff",
+    "bell_outcomes"
+  ],
+  "cutoff_max": 2,
+  "budget": 4,
+  "initial": 2,
+  "seed": 7
+}

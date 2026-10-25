@@ -1,0 +1,10 @@
+# Self-contained CPU runtime for the visualization app and its CLI.
+# No need to install the full research/notebook requirements.txt.
+-r requirements-viz.txt
+numpy==2.0.0
+scipy==1.14.0
+numba==0.60.0
+pandas==2.2.2
+plotly==5.22.0
+scikit-learn==1.5.1
+scikit-optimize==0.10.2

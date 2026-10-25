@@ -107,13 +107,19 @@ def test_invalid_tree(config, tree):
         expand_config(config)
 
 
-def test_stale_overrides_and_unsupported_rounds(config):
+def test_stale_overrides_and_multiple_rounds(config):
     config["protocol"]["cutoff_overrides"] = {"dist:0:3": 10}
     with pytest.raises(ValueError, match="nonexistent"):
         expand_config(config)
     config["protocol"]["cutoff_overrides"] = {}
     config["protocol"]["distillation_rounds"] = {"0:3": 2}
-    with pytest.raises(ValueError, match="0 or 1"):
+    sequence, operations = compile_protocol(config["protocol"], 4, 32)
+    assert sequence[-2:] == ("d3", "d3")
+    assert [o["id"] for o in operations][-2:] == ["dist:0:3", "dist:0:3:2"]
+    config["protocol"]["cutoff_overrides"] = {"dist:0:3:2": 7}
+    assert compile_protocol(config["protocol"], 4, 32)[1][-1]["backend_cutoff"] == 7
+    config["protocol"]["distillation_rounds"] = {"0:3": -1}
+    with pytest.raises(ValueError, match="nonnegative"):
         expand_config(config)
 
 

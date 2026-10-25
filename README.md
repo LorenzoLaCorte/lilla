@@ -28,6 +28,11 @@ pip install -r requirements.txt
 
 ## Local Pauli–ADC explorer
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FLorenzoLaCorte%2Flilla)
+
+Deploy the explorer online with the supplied `render.yaml`:
+[three-step deployment instructions](src/visualization/DEPLOY.md).
+
 The [visualization MVP brief](visualization-tool.md) is implemented as a local
 Streamlit/Plotly app and a shared CLI evaluation service. See the
 [setup, working example, scientific conventions, and verification commands](src/visualization/README.md).

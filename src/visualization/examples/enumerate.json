@@ -1,0 +1,9 @@
+{
+  "mode": "optimize",
+  "method": "enumeration",
+  "dimensions": [
+    "cutoff"
+  ],
+  "cutoff_max": 2,
+  "budget": 4
+}

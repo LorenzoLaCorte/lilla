@@ -1,8 +1,8 @@
 {
   "hardware": {
     "p_distillation": 1.0,
-    "p_gen": 0.2,
-    "p_swap": 1.0
+    "p_gen": 0.02,
+    "p_swap": 0.5
   },
   "initial_state": {
     "fidelity": 0.98,

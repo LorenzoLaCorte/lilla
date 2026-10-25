@@ -1,393 +1,519 @@
-"""Run from the repository root with python -m streamlit run src/visualization/app.py."""
+"""Local repeater explorer. Run with: streamlit run src/visualization/app.py."""
 from copy import deepcopy
 import json
 from pathlib import Path
 import sys
 
-# Streamlit executes this file as a script, so make repository imports explicit.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
-from src.core.pauli_adc.state import coordinates_to_matrix
-from src.visualization.comparisons import (candidate_key, comparison_plan, comparison_rows,
-                                          parameter_differences, scenario_key, selection_loss)
-from src.visualization.config import (DEFAULT, MODELS, OUTCOMES, converted, expand_config,
-                                      canonical, load_config)
-from src.visualization.evaluate import EvaluationService, source_fingerprint
+from src.visualization.config import MODELS, OUTCOMES, converted, expand_config, load_config
+from src.visualization.evaluate import EvaluationService
+from src.visualization.experiments import Experiment, PARAMETERS
 from src.visualization.metrics import DISPLAY_THRESHOLD, bell_populations
-from src.visualization.plots import (matrix_figure, run_label, state_figure, time_figures,
-                                     tree_figure)
-from src.visualization.protocols import locations, ordered_trees, parse_tree
-from src.visualization.storage import (DEFAULT_DIRECTORY, config_json, figures_html, load_run,
-                                       per_time_csv, save_run, summary_csv)
+from src.visualization.plots import (main_figures, matrix_figure, search_figure, state_figure,
+                                     sweep_figures, time_figures)
+from src.visualization.protocols import (balanced_tree,
+                                         tree_slider_choices, tree_slider_position)
+from src.visualization.tree_editor import protocol_tree
+from src.visualization import storage
 
 PRESETS = Path(__file__).with_name("presets")
-st.set_page_config(page_title="Pauli–ADC explorer", layout="wide")
-st.title("Local Pauli–ADC explorer")
-st.caption("One fixed recursive protocol per evaluation. AD then Pauli memory noise, immediate corrections, destructive full-reset retries. Times are generation-attempt slots.")
+STATE_MODES = {"Werner fidelity": "werner", "Bell weights": "bell_weights", "Real-X coordinates": "real_x"}
+BELL_LABELS = {"all_corrected": "All corrected", "phi_pair": "Φ pair", "psi_pair": "Ψ pair", "phi_plus": "Φ+ only"}
+SEARCH_LABELS = {"tree": "Tree", "cutoff": "Shared cutoff", "distillation": "Distillation placement",
+                 "bell_outcomes": "Bell acceptance"}
 
-if "service" not in st.session_state:
-    st.session_state.service = EvaluationService()
-    st.session_state.draft = deepcopy(DEFAULT)
-    st.session_state.epoch = 0
-    st.session_state.last = None
-    st.session_state.recent_comparison = []
+st.set_page_config(page_title="Repeater explorer", layout="wide")
+st.title("Repeater explorer")
+ss = st.session_state
+if "draft" not in ss:
+    ss.draft = load_config((PRESETS/"default.json").read_text())
+    ss.epoch = 0
+if "service" not in ss:
+    ss.service = EvaluationService()
+if "last" not in ss:
+    ss.last = None
+if "job" not in ss:
+    ss.job = None
+if "experiment" not in ss:
+    ss.experiment = None
 
 
-def set_draft(config):
-    expand_config(config)
-    st.session_state.draft = deepcopy(config)
-    st.session_state.epoch += 1
+def load_draft(config):
+    if ss.job is not None:
+        ss.job.cancelled = True
+        storage.save_experiment(ss.job)
+        ss.job = None
+    ss.experiment = None
+    ss.draft = deepcopy(config)
+    ss.epoch += 1
     st.rerun()
 
 
-def evaluate_and_save(config):
-    with st.spinner("Evaluating the explicit protocol…"):
-        run = st.session_state.service.evaluate(config)
-        destination = save_run(run)
-    st.session_state.last = run
-    st.success(f"Saved {destination.name}; {run.metadata['wall_seconds']:.3f} s"
-               + (" (memory cache)" if run.metadata["cache_hit"] else ""))
-    return run
+def first(value, default):
+    value = value[0] if isinstance(value, list) and value else value
+    return default if value is None else value
 
 
-def json_input(label, value, key):
-    return st.text_area(label, config_json(value), key=key, height=80)
+def run_paths():
+    return sorted(storage.DEFAULT_DIRECTORY.glob("run-*"), key=lambda p: p.stat().st_mtime, reverse=True)
 
 
-def parse_json(text):
-    return json.loads(text, parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
-
-
-def node_values(value, count):
-    return value if isinstance(value, list) else [value]*count
-
-
-def cleaned_column(frame, name):
-    return [None if pd.isna(v) else float(v) for v in frame[name]]
-
-
-with st.expander("Load a scenario or configuration", expanded=False):
-    preset = st.selectbox("Scenario preset", sorted(PRESETS.glob("*.json")),
-                          format_func=lambda p: p.stem.replace("_", " "))
-    if st.button("Load preset"):
-        set_draft(load_config(preset.read_text()))
-    uploaded = st.file_uploader("Import config JSON", type=["json"])
-    if st.button("Import configuration", disabled=uploaded is None):
-        try:
-            set_draft(load_config(uploaded.getvalue().decode("utf-8")))
-        except (ValueError, KeyError, TypeError) as error:
-            st.error(str(error))
-    raw_config = st.text_area("Or paste a complete version-1 config", "", height=100)
-    if st.button("Load pasted configuration"):
-        try:
-            set_draft(load_config(raw_config))
-        except (ValueError, KeyError, TypeError) as error:
-            st.error(str(error))
-
-c = deepcopy(st.session_state.draft)
-epoch = st.session_state.epoch
-key = lambda name: f"draft-{epoch}-{name}"
-# Structural controls rerender available tree locations; they never evaluate.
-s = int(st.number_input("Elementary links (physical nodes = links + 1)", min_value=1,
-                        max_value=8, value=c["links"], key=key("links")))
-trees = ordered_trees(s)
-index = trees.index(c["protocol"]["tree"]) if c["protocol"]["tree"] in trees else 0
-tree = st.selectbox("Ordered swap tree", trees, index=index,
-                    format_func=lambda v: json.dumps(v), key=key(f"tree-{s}"))
-heterogeneous = st.toggle("Per-link / per-node tables", value=isinstance(c["hardware"]["p_gen"], list),
-                          key=key("heterogeneous"))
-initial_mode = st.selectbox("Initial-state mode", ["werner", "bell_weights", "real_x"],
-                           index=["werner", "bell_weights", "real_x"].index(c["initial_state"]["kind"]),
-                           key=key("initial-mode"))
-memory_mode = st.selectbox("Memory controls", ["t1_t2", "pauli_adc"],
-                          index=["t1_t2", "pauli_adc"].index(c["memory"]["kind"]), key=key("memory-mode"))
-variant = st.selectbox("Convenient protocol variant", ["Custom", "Root distillation", "Cutoff 10",
-                      "Root distillation + cutoff 10", "Phi pair", "Psi pair"], key=key("variant"))
-st.caption("Structural controls refresh the form. Use Preview configuration to inspect it; Evaluate runs the simulation.")
-
-with st.form(key("evaluation")):
-    name = st.text_input("Run name", c["name"])
-    slot_text = st.text_input("Slot duration in seconds (optional JSON number; null = slots only)",
-                              json.dumps(c["slot_duration_seconds"]))
-    p_swap = st.number_input("Swap hardware success", 0.0, 1.0, float(c["hardware"]["p_swap"]))
-    p_dist = st.number_input("Distillation hardware success", 0.0, 1.0,
-                            float(c["hardware"]["p_distillation"]))
-    if heterogeneous:
-        _, original, _ = expand_config(converted(c, model="full_real_x"))
-        pgen = original["p_gen"] if s == c["links"] else [0.2]*s
-        fidelities = node_values(c["initial_state"].get("fidelity", 0.98), s)
-        if len(fidelities) != s:
-            fidelities = [0.98]*s
-        link_data = {"link": list(range(s)), "p_gen": pgen}
-        if initial_mode == "werner":
-            link_data["fidelity"] = fidelities
-        link_frame = st.data_editor(pd.DataFrame(link_data), disabled=["link"],
-                                    hide_index=True, key=key(f"link-table-{s}-{initial_mode}"))
-        st.caption("Link i connects physical nodes i and i+1. Each node's rate is shared by its memories.")
-    else:
-        pgen_text = json_input("Generation success (scalar or per-link JSON list)", c["hardware"]["p_gen"], key("pgen"))
-        if initial_mode == "werner":
-            fidelity_text = json_input("Werner fidelity F0 (scalar or per-link list)",
-                                       c["initial_state"].get("fidelity", 0.98), key("fidelity"))
-    if initial_mode != "werner":
-        initial_values = c["initial_state"].get("values", [0.98, 0.02/3, 0.02/3, 0.02/3]
-                         if initial_mode == "bell_weights" else [1, 0, 0, 1, 1, -1])
-        if np.asarray(initial_values).shape[-1] != (4 if initial_mode == "bell_weights" else 6):
-            initial_values = [1, 0, 0, 0] if initial_mode == "bell_weights" else [1, 0, 0, 1, 1, -1]
-        state_text = json_input("Bell order: phi+, psi+, psi-, phi-; real-X order: II, IZ, ZI, ZZ, XX, YY",
-                                initial_values, key("state-values"))
-    if memory_mode == "t1_t2":
-        t1, t2 = c["memory"].get("t1_slots", 2000), c["memory"].get("t2_slots", 1000)
-        if heterogeneous:
-            t1s, t2s = node_values(t1, s+1), node_values(t2, s+1)
-            if len(t1s) != s+1 or len(t2s) != s+1:
-                t1s, t2s = [2000.0]*(s+1), [1000.0]*(s+1)
-            node_frame = st.data_editor(pd.DataFrame({"physical_node": range(s+1),
-                            "T1_slots": t1s, "T2_slots": t2s}, dtype=object),
-                            column_config={"T1_slots": st.column_config.NumberColumn(),
-                                           "T2_slots": st.column_config.NumberColumn()},
-                            disabled=["physical_node"], hide_index=True, key=key(f"node-table-{s}"))
-            st.caption("Blank lifetime cells mean infinite lifetime (JSON null). T2 must be at most 2*T1.")
-        else:
-            t1_text = json_input("T1 in slots (null = infinite)", t1, key("t1"))
-            t2_text = json_input("T2 in slots (null = infinite)", t2, key("t2"))
-    else:
-        _, physical_seed, _ = expand_config(converted(c, model="full_real_x"))
-        if heterogeneous:
-            gamma_seed = physical_seed["pauli_mode_decay_rates"] if s == c["links"] else [[0.00075, 0.00075, 0]]*(s+1)
-            kappa_seed = physical_seed["amplitude_damping_rate"] if s == c["links"] else [0.0005]*(s+1)
-            rate_frame = st.data_editor(pd.DataFrame({"physical_node": range(s+1),
-                           "GammaX": [g[0] for g in gamma_seed], "GammaY": [g[1] for g in gamma_seed],
-                           "GammaZ": [g[2] for g in gamma_seed], "kappa": kappa_seed}),
-                           disabled=["physical_node"], hide_index=True, key=key(f"rate-table-{s}"))
-            st.caption("All rates are per slot. Pauli MODE decay rates obey the triangle inequalities.")
-        else:
-            gamma_text = json_input("Pauli MODE decay rates: shared [GammaX,GammaY,GammaZ] or per-node rows",
-                         c["memory"].get("pauli_mode_decay_rates", physical_seed["pauli_mode_decay_rates"]), key("gamma"))
-            kappa_text = json_input("Amplitude damping rate: scalar or per-node list",
-                         c["memory"].get("amplitude_damping_rate", physical_seed["amplitude_damping_rate"]), key("kappa"))
-    spans = list(locations(parse_tree(tree, s)))
-    default_dists = [span for span, count in c["protocol"]["distillation_rounds"].items()
-                     if count and span in spans]
-    dists = st.multiselect("One recurrence round at these link spans", spans, default=default_dists,
-                           help="Two independent copies of the selected subtree are prepared.")
-    cutoff_text = st.text_input("Shared memory cutoff in slots (null = No cutoff)",
-                               json.dumps(c["protocol"]["memory_cutoff_slots"]))
-    override_text = json_input("Optional overrides by operation ID (e.g. swap:0:3 or dist:0:3)",
-                               c["protocol"]["cutoff_overrides"], key("overrides"))
-    outcomes = st.selectbox("Global Bell-outcome acceptance", OUTCOMES,
-                           index=OUTCOMES.index(c["protocol"]["bell_outcomes"]))
-    model = st.selectbox("Prediction model", MODELS, index=MODELS.index(c["prediction_model"]),
-                        format_func=lambda m: "Full real-X" if m == MODELS[0] else "Local Pauli channel twirl")
-    horizon = int(st.number_input("Horizon T (bins 0,...,T-1)", min_value=2,
-                                  value=c["numerics"]["t_trunc"], step=1))
-    coverage_target = st.number_input("Coverage target", 0.0, 1.0,
-                                      float(c["numerics"]["coverage_target"]), format="%.6f")
-    preview = st.form_submit_button("Preview configuration")
-    submitted = st.form_submit_button("Evaluate", type="primary")
-
-try:
-    draft = deepcopy(c)
-    draft.update(name=name, links=s, slot_duration_seconds=parse_json(slot_text), prediction_model=model,
-                 hardware={"p_gen": cleaned_column(link_frame, "p_gen") if heterogeneous else parse_json(pgen_text),
-                           "p_swap": p_swap, "p_distillation": p_dist},
-                 numerics={"t_trunc": horizon, "coverage_target": coverage_target})
-    draft["initial_state"] = ({"kind": "werner", "fidelity": cleaned_column(link_frame, "fidelity")
-                               if heterogeneous else parse_json(fidelity_text)} if initial_mode == "werner"
-                              else {"kind": initial_mode, "values": parse_json(state_text)})
-    draft["memory"] = ({"kind": "t1_t2", "t1_slots": cleaned_column(node_frame, "T1_slots")
-                        if heterogeneous else parse_json(t1_text), "t2_slots": cleaned_column(node_frame, "T2_slots")
-                        if heterogeneous else parse_json(t2_text)} if memory_mode == "t1_t2" else
-                       {"kind": "pauli_adc", "pauli_mode_decay_rates": rate_frame[["GammaX", "GammaY", "GammaZ"]].values.tolist()
-                        if heterogeneous else parse_json(gamma_text),
-                        "amplitude_damping_rate": cleaned_column(rate_frame, "kappa")
-                        if heterogeneous else parse_json(kappa_text)})
-    protocol = {"tree": tree, "distillation_rounds": {span: 1 for span in dists},
-                "memory_cutoff_slots": parse_json(cutoff_text), "cutoff_overrides": parse_json(override_text),
-                "bell_outcomes": outcomes}
-    if "Root distillation" in variant:
-        protocol["distillation_rounds"][f"0:{s-1}"] = 1
-    if "cutoff 10" in variant.lower():
-        protocol["memory_cutoff_slots"] = 10
-    if variant in ("Phi pair", "Psi pair"):
-        protocol["bell_outcomes"] = "phi_pair" if variant == "Phi pair" else "psi_pair"
-    draft["protocol"] = protocol
-    _, expanded, operations = expand_config(draft)
-    st.plotly_chart(tree_figure(tree, s, protocol["distillation_rounds"]), use_container_width=True, key="draft-tree")
-    st.dataframe(pd.DataFrame(operations), hide_index=True, use_container_width=True)
-    st.caption("Cutoffs accept |t1−t2| ≤ cutoff, rather than bounding total duration. No cutoff compiles to the horizon.")
-    with st.expander("Derived physical node rates and submitted backend parameters"):
-        _, physical, _ = expand_config(converted(draft, model="full_real_x"))
-        rate_rows = [{"node": i, "GammaX_per_slot": g[0], "GammaY_per_slot": g[1],
-                      "GammaZ_per_slot": g[2], "kappa_per_slot": k}
-                     for i, (g, k) in enumerate(zip(physical["pauli_mode_decay_rates"], physical["amplitude_damping_rate"]))]
-        if draft["slot_duration_seconds"]:
-            for row in rate_rows:
-                row.update({label.replace("per_slot", "per_second"): value/draft["slot_duration_seconds"]
-                            for label, value in list(row.items()) if "per_slot" in label})
-        st.dataframe(pd.DataFrame(rate_rows), hide_index=True)
-        st.json(expanded)
-    st.download_button("Export draft config JSON", config_json(draft), "config.json", "application/json")
-    if preview or submitted:
-        st.session_state.draft = deepcopy(draft)
-    if submitted:
-        evaluate_and_save(draft)
-except Exception as error:
-    st.error(f"Configuration/evaluation failed: {error}. The last successful result is retained.")
-
-paths = sorted(DEFAULT_DIRECTORY.glob("run-*/run.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-labels = {}
-for path in paths:
+def saved_label(path):
     try:
-        data = json.loads(path.read_text())
-        labels[str(path.parent)] = (f"{data['config']['name']} · {data['config']['prediction_model']} · "
-                                   f"T={data['horizon']} · {path.parent.name}")
-    except (ValueError, KeyError, OSError):
-        continue
-with st.expander("Reload a saved result"):
-    reload_path = st.selectbox("Local run bundle", list(labels), format_func=labels.get) if labels else None
-    if st.button("Reload result", disabled=reload_path is None):
-        try:
-            st.session_state.last = load_run(reload_path)
-        except Exception as error:
-            st.error(f"Reload failed: {error}")
+        return json.loads((Path(path)/"config.json").read_text())["name"] + " · " + Path(path).name[4:12]
+    except (OSError, ValueError, KeyError):
+        return Path(path).name
 
-run = st.session_state.last
+
+with st.expander("Load a scenario or configuration"):
+    left, right = st.columns(2)
+    with left:
+        preset = st.selectbox("Scenario", sorted(PRESETS.glob("*.json")), format_func=lambda p: p.stem.replace("_", " "))
+        if st.button("Load scenario"):
+            load_draft(load_config(preset.read_text()))
+        uploaded = st.file_uploader("Configuration JSON", type="json")
+        if st.button("Load uploaded configuration", disabled=uploaded is None):
+            try:
+                load_draft(load_config(uploaded.getvalue().decode("utf-8")))
+            except (ValueError, KeyError, TypeError) as error:
+                st.error(str(error))
+    with right:
+        pasted = st.text_area("Paste configuration JSON")
+        if st.button("Load pasted configuration"):
+            try:
+                load_draft(load_config(pasted))
+            except (ValueError, KeyError, TypeError) as error:
+                st.error(str(error))
+        saved = st.selectbox("Saved run", run_paths(), format_func=saved_label, index=None, key="saved-load")
+        if st.button("Load saved run", disabled=saved is None):
+            try:
+                run = storage.load_run(saved)
+                ss.last = run
+                ss.experiment = None
+                load_draft(run.config)
+            except (ValueError, OSError, KeyError) as error:
+                st.error(str(error))
+
+mode = st.radio("Mode", ("Single run", "Parameter sweep", "Bayesian optimization"), horizontal=True)
+c = deepcopy(ss.draft)
+key = lambda name: f"draft-{ss.epoch}-{name}"
+state_label = st.selectbox("State mode", list(STATE_MODES),
+                           index=list(STATE_MODES.values()).index(c["initial_state"]["kind"]), key=key("state-mode"))
+state_mode = STATE_MODES[state_label]
+links = int(st.number_input("Elementary links", min_value=1, max_value=8, value=c["links"], key=key("links")))
+if links != c["links"]:
+    c["links"] = links
+    ss[key(f"tree-shape-{links}")] = 0.0
+    c["protocol"].update(tree=balanced_tree(links), distillation_rounds={}, cutoff_overrides={})
+    for field in ("p_gen",):
+        if isinstance(c["hardware"][field], list):
+            c["hardware"][field] = [first(c["hardware"][field], .02)]*links
+    if isinstance(c["initial_state"].get("fidelity"), list):
+        c["initial_state"]["fidelity"] = [first(c["initial_state"]["fidelity"], .98)]*links
+    values = c["initial_state"].get("values")
+    if values is not None and np.asarray(values).ndim == 2:
+        c["initial_state"]["values"] = [values[0]]*links
+    for field, value in c["memory"].items():
+        if field != "kind" and isinstance(value, list) and (field != "pauli_mode_decay_rates" or np.asarray(value).ndim == 2):
+            c["memory"][field] = [value[0]]*(links+1)
+
+trees = tree_slider_choices(links)
+middle = len(trees)//2
+slider_key = key(f"tree-shape-{links}")
+if slider_key not in ss:
+    ss[slider_key] = tree_slider_position(c["protocol"]["tree"], links)
+position = st.slider("Tree shape", -1.0, 1.0,
+                     step=1.0/middle if middle else 1.0, format="%.3f" if middle>100 else "%.2f", disabled=not middle,
+                     help="−1: fully left-unbalanced; 0: balanced; +1: fully right-unbalanced.",
+                     key=slider_key)
+choice = middle + round(position*middle)
+tree = deepcopy(trees[choice])
+if tree != c["protocol"]["tree"]:
+    c["protocol"]["cutoff_overrides"] = {}
+c["protocol"]["tree"] = tree
+labels = st.columns(3)
+labels[0].caption("Left-unbalanced")
+labels[1].caption("Balanced")
+labels[2].caption("Right-unbalanced")
+st.caption("Edit a node’s number to set its distillation rounds.")
+c["protocol"]["distillation_rounds"] = protocol_tree(
+    tree, links, c["protocol"]["distillation_rounds"], key=key("protocol-tree"))
+
+basic = st.container()
+advanced = st.expander("Advanced settings")
+errors = []
+with advanced:
+    c["name"] = st.text_input("Run name", c["name"], key=key("name"))
+    c["prediction_model"] = st.selectbox("Prediction model", MODELS,
+        index=MODELS.index(c["prediction_model"]), key=key("model"),
+        format_func=lambda value: "Full real-X" if value == "full_real_x" else "Local Pauli channel twirl")
+    memory_mode = st.selectbox("Memory controls", ("t1_t2", "pauli_adc"),
+                              index=("t1_t2", "pauli_adc").index(c["memory"]["kind"]), key=key("memory-mode"))
+    heterogeneous = st.toggle("Per-link / per-node settings",
+        value=isinstance(c["hardware"]["p_gen"], list) or isinstance(c["memory"].get("t1_slots"), list)
+        or np.asarray(c["initial_state"].get("values", [])).ndim == 2
+        or isinstance(c["initial_state"].get("fidelity"), list)
+        or np.asarray(c["memory"].get("pauli_mode_decay_rates", [])).ndim == 2,
+        key=key("heterogeneous"))
+    advanced_phi = st.checkbox("Allow Φ+ only acceptance", value=c["protocol"]["bell_outcomes"] == "phi_plus", key=key("phi-plus"))
+    c["numerics"]["coverage_target"] = st.number_input("Coverage target", 0.0, 1.0,
+                                float(c["numerics"]["coverage_target"]), format="%.6f", key=key("coverage"))
+    seconds = st.checkbox("Set seconds per slot", value=c["slot_duration_seconds"] is not None, key=key("seconds-toggle"))
+    c["slot_duration_seconds"] = st.number_input("Seconds per slot", min_value=1e-12,
+                      value=float(c["slot_duration_seconds"] or 1), key=key("seconds")) if seconds else None
+    override_text = st.text_area("Per-operation cutoff overrides", json.dumps(c["protocol"]["cutoff_overrides"]), key=key("overrides"))
+    try:
+        c["protocol"]["cutoff_overrides"] = json.loads(override_text)
+    except ValueError as error:
+        errors.append(f"Invalid cutoff overrides: {error}")
+    link_table = st.container()
+    node_table = st.container()
+    raw = st.container()
+    if mode == "Parameter sweep":
+        max_evaluations = int(st.number_input("Maximum sweep evaluations", 1, 10000, 500))
+    if mode == "Bayesian optimization":
+        method = st.selectbox("Search method", ("bayesian", "enumeration"), format_func=str.title)
+        budget = int(st.number_input("Trial budget", 1, 500, 20))
+        initial_trials = int(st.number_input("Initial trials", 1, 500, 5))
+        seed = int(st.number_input("Random seed", 0, 2**32-1, 0))
+        cutoff_min = int(st.number_input("Minimum searched cutoff", 0, 10000, 0))
+        cutoff_max = int(st.number_input("Maximum searched cutoff", 0, 10000, 20))
+        include_no_cutoff = st.checkbox("Search No cutoff", value=True)
+        distillation_max = int(st.number_input("Maximum searched rounds per node", 0, 8, 1))
+        outcome_choices = st.multiselect("Searched Bell policies", OUTCOMES if advanced_phi else OUTCOMES[:3],
+                                        default=list(OUTCOMES[:3]), format_func=lambda v: BELL_LABELS[v])
+
+with basic:
+    a, b, d = st.columns(3)
+    with a:
+        fidelity = st.number_input("Initial fidelity F0", 0.0, 1.0,
+                   float(first(c["initial_state"].get("fidelity", .98), .98)),
+                   disabled=state_mode != "werner" or heterogeneous, key=key("fidelity"))
+    with b:
+        c["hardware"]["p_swap"] = st.number_input("Swap hardware success", 0.0, 1.0, float(c["hardware"]["p_swap"]), key=key("p-swap"))
+    with d:
+        c["hardware"]["p_distillation"] = st.number_input("Distillation hardware success", 0.0, 1.0, float(c["hardware"]["p_distillation"]), key=key("p-dist"))
+    a, b, d = st.columns(3)
+    with a:
+        pgen = st.number_input("Generation success", 0.0, 1.0, float(first(c["hardware"]["p_gen"], .02)),
+                              disabled=heterogeneous, key=key("p-gen"))
+    lifetimes = []
+    for column, label, field, fallback in ((b, "T1", "t1_slots", 2000.), (d, "T2", "t2_slots", 1000.)):
+        previous = c["memory"].get(field, fallback)
+        with column:
+            infinite = st.checkbox(f"Infinite {label}", value=previous is None, key=key(f"infinite-{label}"))
+            lifetime = st.number_input(f"{label} (slots)", min_value=1e-9, value=float(first(previous, fallback)),
+                                       disabled=infinite or heterogeneous or memory_mode != "t1_t2", key=key(label))
+        lifetimes.append(None if infinite else lifetime)
+    a, b, d = st.columns(3)
+    with a:
+        no_cutoff = st.checkbox("No cutoff", value=c["protocol"]["memory_cutoff_slots"] is None, key=key("no-cutoff"))
+        cutoff = st.number_input("Shared memory cutoff (slots)", min_value=0,
+                                  value=c["protocol"]["memory_cutoff_slots"] or 0, disabled=no_cutoff, key=key("cutoff"))
+        c["protocol"]["memory_cutoff_slots"] = None if no_cutoff else int(cutoff)
+    with b:
+        c["numerics"]["t_trunc"] = int(st.number_input("Horizon", min_value=2, value=c["numerics"]["t_trunc"], key=key("horizon")))
+    with d:
+        outcomes = OUTCOMES if advanced_phi else OUTCOMES[:3]
+        current = c["protocol"]["bell_outcomes"]
+        c["protocol"]["bell_outcomes"] = st.selectbox("Global Bell-outcome acceptance", outcomes,
+            index=outcomes.index(current) if current in outcomes else 0,
+            format_func=lambda v: BELL_LABELS[v], key=key("outcomes"))
+
+# Advanced tables override the corresponding shared controls explicitly.
+if heterogeneous:
+    with link_table:
+        old_gen = c["hardware"]["p_gen"]
+        data = {"Link": list(range(links)), "Generation success": old_gen if isinstance(old_gen, list) else [old_gen]*links}
+        if state_mode == "werner":
+            old_f = c["initial_state"].get("fidelity", .98)
+            data["Fidelity"] = old_f if isinstance(old_f, list) else [old_f]*links
+        table = st.data_editor(pd.DataFrame(data), disabled=["Link"], hide_index=True, key=key(f"links-{links}-{state_mode}"))
+        c["hardware"]["p_gen"] = table["Generation success"].tolist()
+        if state_mode == "werner":
+            fidelity = table["Fidelity"].tolist()
+else:
+    c["hardware"]["p_gen"] = pgen
+if state_mode == "werner":
+    c["initial_state"] = {"kind": "werner", "fidelity": fidelity}
+else:
+    names = ["Φ+", "Ψ+", "Ψ−", "Φ−"] if state_mode == "bell_weights" else ["II", "IZ", "ZI", "ZZ", "XX", "YY"]
+    defaults = [.98, .02/3, .02/3, .02/3] if state_mode == "bell_weights" else [1, 0, 0, 1, 1, -1]
+    values = c["initial_state"].get("values", defaults)
+    if np.asarray(values).shape[-1] != len(names):
+        values = defaults
+    if np.asarray(values).ndim == 1:
+        values = [values]*(links if heterogeneous else 1)
+    elif not heterogeneous:
+        values = [values[0]]
+    with (link_table if heterogeneous else basic):
+        table = st.data_editor(pd.DataFrame(values, columns=names), hide_index=True, key=key(f"state-{links}-{state_mode}-{heterogeneous}"))
+    c["initial_state"] = {"kind": state_mode, "values": table.to_numpy().tolist() if heterogeneous else table.iloc[0].tolist()}
+
+if memory_mode == "t1_t2":
+    if heterogeneous:
+        with node_table:
+            data = {"Node": list(range(links+1))}
+            for field, value in zip(("t1_slots", "t2_slots"), lifetimes):
+                old = c["memory"].get(field, value)
+                data[field] = old if isinstance(old, list) else [old]*(links+1)
+            table = st.data_editor(pd.DataFrame(data, dtype=object), disabled=["Node"], hide_index=True,
+                column_config={name: st.column_config.NumberColumn() for name in ("t1_slots", "t2_slots")}, key=key(f"memories-{links}"))
+            lifetimes = [[None if pd.isna(v) else float(v) for v in table[field]] for field in ("t1_slots", "t2_slots")]
+            st.caption("Blank lifetimes mean infinity. Link i connects nodes i and i+1.")
+    c["memory"] = {"kind": "t1_t2", "t1_slots": lifetimes[0], "t2_slots": lifetimes[1]}
+else:
+    with node_table:
+        try:
+            _, p, _ = expand_config(converted(c, model="full_real_x"))
+            gamma, kappa = p["pauli_mode_decay_rates"], p["amplitude_damping_rate"]
+        except (ValueError, TypeError, KeyError):
+            gamma, kappa = [[.00075, .00075, 0]]*(links+1), [.0005]*(links+1)
+        data = {"Node": list(range(links+1)) if heterogeneous else ["Shared"],
+                "ΓX": [g[0] for g in gamma], "ΓY": [g[1] for g in gamma], "ΓZ": [g[2] for g in gamma], "κ": kappa}
+        if not heterogeneous:
+            data = {k: v[:1] for k, v in data.items()}
+        table = st.data_editor(pd.DataFrame(data), disabled=["Node"], hide_index=True, key=key(f"rates-{links}-{heterogeneous}"))
+        rates, damping = table[["ΓX", "ΓY", "ΓZ"]].to_numpy().tolist(), table["κ"].tolist()
+        c["memory"] = {"kind": "pauli_adc", "pauli_mode_decay_rates": rates if heterogeneous else rates[0],
+                       "amplitude_damping_rate": damping if heterogeneous else damping[0]}
+
+request = None
+if mode == "Parameter sweep":
+    available = [name for name in PARAMETERS if (name != "Initial fidelity" or state_mode == "werner")
+                 and (name not in ("T1", "T2") or memory_mode == "t1_t2")]
+    selected = st.multiselect("Sweep parameters", available, default=["T1"] if "T1" in available else [available[0]], max_selections=3)
+    bounds = {"Initial fidelity": (.9, 1.), "Swap hardware success": (.2, 1.), "Distillation hardware success": (.5, 1.),
+              "Generation success": (.01, .2), "T1": (500., 4000.), "T2": (500., 2000.),
+              "Shared memory cutoff": (0., 20.), "Horizon": (128., 2048.)}
+    axes = []
+    for name in selected:
+        st.caption(name)
+        columns = st.columns(4)
+        with columns[0]:
+            low = st.number_input("Minimum", value=bounds[name][0], key=f"sweep-min-{name}")
+        with columns[1]:
+            high = st.number_input("Maximum", value=bounds[name][1], key=f"sweep-max-{name}")
+        with columns[2]:
+            points = int(st.number_input("Points", 1, 1000, 15, key=f"sweep-points-{name}"))
+        with columns[3]:
+            spacing = st.selectbox("Spacing", ("linear", "log"), key=f"sweep-spacing-{name}")
+        axes.append(dict(parameter=name, min=low, max=high, points=points, spacing=spacing))
+    coupled = st.checkbox("Pure relaxation: T2=2T1", disabled="T1" not in selected or "T2" in selected)
+    request = dict(mode="sweep", axes=axes, max_evaluations=max_evaluations,
+                   pure_relaxation=coupled and "T1" in selected and "T2" not in selected)
+elif mode == "Bayesian optimization":
+    dims = st.multiselect("Search protocol controls", list(SEARCH_LABELS), default=["tree", "cutoff"],
+                         format_func=lambda v: SEARCH_LABELS[v])
+    request = dict(mode="optimize", method=method, dimensions=dims, budget=budget, initial=initial_trials,
+                   seed=seed, cutoff_min=cutoff_min, cutoff_max=cutoff_max, include_no_cutoff=include_no_cutoff,
+                   distillation_max=distillation_max, outcomes=outcome_choices)
+
+ss.draft = deepcopy(c)
+plan = None
+try:
+    _, expanded, operations = expand_config(c)
+    if request:
+        plan = Experiment(c, request)
+        st.caption(f"Evaluation budget: {plan.planned} trials · no automatic horizon growth")
+    with raw:
+        st.dataframe(operations, hide_index=True, use_container_width=True)
+        st.json({"memory_rates": {k: expanded[k] for k in ("amplitude_damping_rate", "pauli_mode_decay_rates")},
+                 "submitted_configuration": c})
+except (ValueError, KeyError, TypeError, OverflowError) as error:
+    errors.append(str(error))
+for error in errors:
+    st.error(error)
+
+label = {"Single run": "Run", "Parameter sweep": "Run sweep", "Bayesian optimization": "Optimize"}[mode]
+if st.button(label, type="primary", disabled=bool(errors) or ss.job is not None):
+    if plan is not None:
+        ss.experiment = plan
+        ss.job = plan
+    else:
+        try:
+            with st.spinner("Evaluating…"):
+                run = ss.service.evaluate(c)
+                storage.save_run(run)
+            ss.last = run
+            ss.experiment = None
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError, ArithmeticError) as error:
+            st.error(f"Evaluation failed: {error}")
+
+job_area = st.container()
+with job_area:
+    if ss.job is not None:
+        st.progress(len(ss.job.entries)/ss.job.planned, text=f"{len(ss.job.entries)}/{ss.job.planned} trials")
+        if st.button("Cancel remaining trials"):
+            ss.job.cancelled = True
+            try:
+                storage.save_experiment(ss.job)
+            except OSError as error:
+                st.error(f"Could not save history: {error}")
+            ss.job = None
+
+study_area = st.container()
+with study_area:
+    experiment = ss.experiment
+    if experiment and experiment.entries:
+        preferred = ss.pop("preferred_trial", None)
+        if preferred and preferred[0] == experiment.id:
+            ss[f"inspect-{experiment.id}"] = preferred[1]
+        st.subheader("Sweep" if experiment.mode == "sweep" else "Search")
+        if experiment.mode == "sweep":
+            charts = sweep_figures(experiment)
+            selector_key = f"inspect-{experiment.id}"
+            for i, fig in enumerate(charts):
+                # A new row every two metrics, preserving a compact 2x2 layout.
+                if i % 2 == 0:
+                    chart_columns = st.columns(2)
+                with chart_columns[i % 2]:
+                    if len(experiment.axes) < 3:
+                        event = st.plotly_chart(fig, use_container_width=True, key=f"grid-{experiment.id}-{i}",
+                                                on_select="rerun", selection_mode="points")
+                        points = event.selection.points
+                        signature = json.dumps(points, sort_keys=True)
+                        event_key = f"selection-{experiment.id}-{i}"
+                        if points and ss.get(event_key) != signature:
+                            selected_index = points[0].get("customdata")
+                            if isinstance(selected_index, list):
+                                selected_index = selected_index[0]
+                            if selected_index:
+                                ss[selector_key] = int(selected_index)
+                            ss[event_key] = signature
+                    else:
+                        st.plotly_chart(fig, use_container_width=True, key=f"grid-{experiment.id}-{i}")
+        else:
+            st.plotly_chart(search_figure(experiment), use_container_width=True)
+            with st.expander("Ranked trials"):
+                table = pd.DataFrame([e.row() for e in experiment.entries])
+                st.dataframe(table.sort_values("SKR", ascending=False, na_position="last").head(10), hide_index=True)
+        if experiment.best:
+            st.caption(f"Best found: trial {experiment.best.index} · {experiment.best.run.summary['rate_bits_per_slot']:.6g} bits/slot")
+        else:
+            st.warning("No eligible best candidate: completed trials are failed, invalid, or under-covered.")
+        choices = [e.index for e in experiment.entries if e.run is not None]
+        if choices:
+            selector_key = f"inspect-{experiment.id}"
+            if ss.get(selector_key) not in choices:
+                ss[selector_key] = experiment.best.index if experiment.best else choices[0]
+            selected_index = st.selectbox("Inspect trial", choices, key=selector_key)
+            ss.last = next(e.run for e in experiment.entries if e.index == selected_index)
+        if experiment.cancelled:
+            st.info("Cancelled; completed trials were retained.")
+
+# Reserve positions so comparisons below can supply overlays to the main plots above.
+main_result = st.container()
+more = st.expander("More visualizations")
+saved_area = st.expander("Saved runs / Compare")
+run = ss.last
 if run is not None:
-    st.subheader(run_label(run))
-    st.caption("Results below use this run's saved submitted configuration.")
-    if run.metadata["source_fingerprint"] != source_fingerprint():
-        st.info("Historical result: source fingerprint differs from current code. Explicit re-evaluation uses current code.")
-    if run.summary["status"] == "no_completion":
-        st.warning("No completion inside this horizon. Rate and coverage are zero; conditional state quantities are undefined.")
-    elif run.metadata["diagnostics"]["provisional"]:
-        st.warning("Provisional rate and mean: probability coverage is below target. Missing mass is unresolved late completion.")
-    summary = run.summary
-    rate_field = "rate_bits_per_second" if run.config["slot_duration_seconds"] else "rate_bits_per_slot"
-    columns = st.columns(4)
-    columns[0].metric("Pooled key rate (bits/second)" if run.config["slot_duration_seconds"] else "Pooled key rate (bits/slot)",
-                       f"{summary[rate_field]:.8g}")
-    columns[1].metric("Pooled secret fraction", "undefined" if summary["pooled_secret_fraction"] is None
-                       else f"{summary['pooled_secret_fraction']:.8g}")
-    columns[2].metric("Covered probability", f"{summary['coverage']:.12g}")
-    columns[3].metric("Average Phi+ fidelity", "undefined" if summary["average_fidelity"] is None
-                       else f"{summary['average_fidelity']:.8g}")
-    st.write({"Repository finite-horizon mean (slots)": summary["mean_wait_repository_slots"],
-              "Observed mean, conditional on completion in horizon (slots)": summary["mean_wait_observed_slots"],
-              "Repository mean (seconds)": summary["mean_wait_repository_seconds"],
-              "Horizon": run.metadata["horizon"], "Wall time (s)": run.metadata["wall_seconds"]})
-    st.caption("Neither mean certifies the infinite-horizon mean. High coverage alone does not certify a close ranking. Headline BB84 objective is pooled; no extra sifting factor.")
-    if st.button("Re-evaluate at 2× horizon"):
-        old = run
-        try:
-            run = evaluate_and_save(converted(run.config, double_horizon=True))
-            st.write({"coverage_change": run.summary["coverage"]-old.summary["coverage"],
-                      "rate_change_bits_per_slot": run.summary["rate_bits_per_slot"]-old.summary["rate_bits_per_slot"]})
-            st.session_state.horizon_change = (old.metadata["run_id"], run.metadata["run_id"],
-                run.summary["coverage"]-old.summary["coverage"],
-                run.summary["rate_bits_per_slot"]-old.summary["rate_bits_per_slot"])
-            st.rerun()
-        except Exception as error:
-            st.error(f"Re-evaluation failed: {error}")
-    if "horizon_change" in st.session_state:
-        st.write({"Last horizon comparison (old ID, new ID, coverage change, rate change bits/slot)":
-                  st.session_state.horizon_change})
-    if st.button("Re-evaluate in full model"):
-        try:
-            evaluate_and_save(converted(run.config, model="full_real_x"))
-            st.rerun()
-        except Exception as error:
-            st.error(f"Re-evaluation failed: {error}")
-    st.download_button("Export submitted config JSON", config_json(run.config), "submitted-config.json", "application/json")
-    st.download_button("Download per-time CSV", per_time_csv(run), "per-time.csv", "text/csv")
-    with st.expander("Run diagnostics and provenance"):
-        st.json(run.metadata)
-
-time_tab, state_tab, compare_tab = st.tabs(["Time", "State", "Compare"])
-with compare_tab:
-    retained_paths = [p for p in st.session_state.get("saved_selection", []) if p in labels]
-    selected_paths = st.multiselect("Saved runs to overlay / compare (up to 12)", list(labels),
-                                    format_func=labels.get, max_selections=12,
-                                    default=retained_paths, key="compare-paths")
-    st.session_state.saved_selection = selected_paths
-    selected = []
-    for path in selected_paths:
-        try:
-            selected.append(load_run(path))
-        except Exception as error:
-            st.error(f"Cannot load {path}: {error}")
-    if selected:
-        st.dataframe(pd.DataFrame(comparison_rows(selected)), hide_index=True, use_container_width=True)
-        st.dataframe(pd.DataFrame(parameter_differences(selected)), hide_index=True, use_container_width=True)
-        st.download_button("Download summary CSV", summary_csv(selected), "summary.csv", "text/csv")
-        try:
-            plan = comparison_plan([r.config for r in selected])
-            plan_signature = canonical({"scenario": scenario_key(plan[0]),
-                                        "horizon": plan[0]["numerics"]["t_trunc"],
-                                        "candidates": sorted({candidate_key(c) for c in plan}),
-                                        "source": source_fingerprint()})
-            pending = sum(not st.session_state.service.is_cached(c) for c in plan)
-            st.write(f"{len(plan)//2} distinct manual candidates; {pending} pending backend calls, {len(plan)} result rows.")
-            if st.button("Evaluate candidates in both models"):
-                completed = []
-                progress = st.progress(0.0)
-                for i, config in enumerate(plan):
-                    try:
-                        completed.append(evaluate_and_save(config))
-                    except Exception as error:
-                        st.error(f"Candidate {config['name']} / {config['prediction_model']} failed: {error}")
-                    progress.progress((i+1)/len(plan))
-                st.session_state.recent_comparison = completed
-                st.session_state.expected_candidates = {candidate_key(c) for c in plan}
-                st.session_state.comparison_signature = plan_signature
-            completed = st.session_state.recent_comparison
-            same_selection = st.session_state.get("comparison_signature") == plan_signature
-            if completed and same_selection:
-                st.dataframe(pd.DataFrame(comparison_rows(completed)), hide_index=True)
-                try:
-                    loss = selection_loss(completed, st.session_state.expected_candidates)
-                    st.write(f"Selection loss within these {loss['candidates']} candidates")
-                    st.json(loss)
-                    st.caption("Near-tied winners use the stated ranking tolerance; ranges retain all winners. Relative loss is undefined when the best full-model rate is zero.")
-                except ValueError as error:
-                    st.warning(str(error))
-        except ValueError as error:
-            st.info(f"Exploratory overlay only: {error}")
-    else:
-        st.caption("Evaluate or reload runs, then select saved protocols here. Selection loss requires one physical scenario and horizon.")
-
-with time_tab:
-    if run is not None:
+    overlays = []
+    with saved_area:
+        paths = st.multiselect("Saved runs to overlay", run_paths(), format_func=saved_label,
+                              max_selections=12, key="saved-overlays")
+        for path in paths:
+            try:
+                overlays.append(storage.load_run(path))
+            except (ValueError, OSError, KeyError) as error:
+                st.warning(f"Cannot load {path.name}: {error}")
+        if overlays:
+            st.dataframe([{"Name": r.config["name"], "SKR": r.summary["rate_bits_per_slot"],
+                           "SKF": r.summary["pooled_secret_fraction"], "Coverage": r.summary["coverage"],
+                           "Horizon": r.metadata["horizon"]} for r in overlays], hide_index=True)
+        st.download_button("Configuration JSON", storage.config_json(run.config), "config.json", "application/json")
+        st.download_button("Per-time CSV", storage.per_time_csv(run), "per-time.csv", "text/csv")
+        st.download_button("Arrays NPZ", storage.arrays_npz(run), "arrays.npz", "application/octet-stream")
+        st.download_button("Summary CSV", storage.summary_csv([run, *overlays]), "summary.csv", "text/csv")
+        st.caption(f"Saved under {storage.DEFAULT_DIRECTORY}")
+        if experiment:
+            st.download_button("Study history JSON", storage.config_json(experiment.history()), "history.json", "application/json")
+            st.download_button("Study trials CSV", storage.csv_text([e.row() for e in experiment.entries]), "trials.csv", "text/csv")
+    with main_result:
+        st.subheader("Results")
+        st.caption(f"{run.config['name']} · submitted horizon {run.metadata['horizon']} · {run.metadata['wall_seconds']:.3f}s")
+        summary = run.summary
+        cards = st.columns(5)
+        for column, label, field in zip(cards,
+            ("SKR (bits/slot)", "SKF", "Average waiting time", "Average Φ+ fidelity", "Covered probability"),
+            ("rate_bits_per_slot", "pooled_secret_fraction", "mean_wait_repository_slots", "average_fidelity", "coverage")):
+            value = summary[field]
+            column.metric(label, "—" if value is None else (f"{value:.3%}" if field == "coverage" else f"{value:.6g}"))
+        if summary["status"] == "no_completion":
+            st.info("No completion inside this horizon; conditional state metrics are undefined.")
+        elif run.metadata["diagnostics"]["provisional"]:
+            st.warning("Provisional rate and waiting-time estimate: insufficient covered probability.")
         log_pmf = st.checkbox("Logarithmic PMF axis")
-        overlay = [run] + [r for r in selected if r.metadata["run_id"] != run.metadata["run_id"]]
-        st.caption(f"Quality curves mask pmf ≤ {DISPLAY_THRESHOLD:g} for display only. All positive bins enter metrics and exports. Mixed unit overlays use slots.")
-        figures = time_figures(overlay, log_pmf)
-        for i, figure in enumerate(figures):
-            st.plotly_chart(figure, use_container_width=True, key=f"time-{i}")
-        st.download_button("Download self-contained HTML figures", figures_html(figures+[state_figure(run),
-                           tree_figure(run.config["protocol"]["tree"], run.config["links"],
-                                       run.config["protocol"]["distillation_rounds"])]),
-                           "figures.html", "text/html")
-    else:
-        st.info("Submit Evaluate to create the first result.")
+        histogram = st.selectbox("Fidelity view", ("Completion time", "Probability distribution")) == "Probability distribution"
+        figures = main_figures([run, *[r for r in overlays if r.metadata["run_id"] != run.metadata["run_id"]]], log_pmf, histogram)
+        for column, fig in zip(st.columns(2), figures):
+            column.plotly_chart(fig, use_container_width=True)
+        if experiment and experiment.mode == "optimize":
+            with st.expander("Selected protocol", expanded=True):
+                protocol_tree(run.config["protocol"]["tree"], run.config["links"],
+                              run.config["protocol"]["distillation_rounds"], editable=False,
+                              key=f"result-tree-{run.metadata['run_id']}")
+        if st.button("Run at 2× horizon", disabled=ss.job is not None):
+            try:
+                with st.spinner("Checking longer horizon…"):
+                    doubled = ss.service.evaluate(converted(run.config, double_horizon=True))
+                    storage.save_run(doubled)
+                ss.horizon_change = {"old_rate": summary["rate_bits_per_slot"], "new_rate": doubled.summary["rate_bits_per_slot"],
+                                     "old_coverage": summary["coverage"], "new_coverage": doubled.summary["coverage"]}
+                ss.last = doubled
+                # Preserve study history while allowing the doubled run to remain selected.
+                ss.experiment = None
+                st.rerun()
+            except (ValueError, RuntimeError, OSError) as error:
+                st.error(str(error))
+        if "horizon_change" in ss:
+            st.caption(str(ss.horizon_change))
+    with more:
+        details = time_figures([run, *overlays]) + [state_figure(run)]
+        for fig in details:
+            st.plotly_chart(fig, use_container_width=True)
+        populated = np.flatnonzero(run.pmf > DISPLAY_THRESHOLD).tolist()
+        inspect = st.selectbox("Inspect state", ["Average", *populated])
+        coordinates = summary["pooled_coordinates"] if inspect == "Average" else run.x[inspect]
+        if coordinates is not None:
+            st.plotly_chart(matrix_figure(coordinates), use_container_width=True)
+            st.plotly_chart(go.Figure(go.Bar(x=["Φ+", "Ψ+", "Ψ−", "Φ−"], y=bell_populations(coordinates))), use_container_width=True)
+            st.write(dict(zip(("II", "IZ", "ZI", "ZZ", "XX", "YY"), map(float, coordinates))))
+        st.caption(f"Quality display threshold: PMF > {DISPLAY_THRESHOLD:g}. Metrics retain all positive mass.")
+        st.json({"diagnostics": run.metadata["diagnostics"], "configuration": run.config,
+                 "SKF from average state": summary["pooled_secret_fraction"],
+                 "SKF with completion-time bins": summary["time_resolved_secret_fraction"]})
+        if experiment:
+            st.dataframe([e.row() for e in experiment.entries], hide_index=True)
+    with saved_area:
+        st.download_button("HTML figures", storage.figures_html(figures+details), "figures.html", "text/html")
+elif ss.job is None:
+    with main_result:
+        st.info("Choose a protocol and run an experiment.")
 
-with state_tab:
-    if run is not None:
-        st.plotly_chart(state_figure(run), use_container_width=True, key="state-curves")
-        st.write({"Pooled secret fraction": run.summary["pooled_secret_fraction"],
-                  "Ideal asymptotic processing separated by completion-time bins": run.summary["time_resolved_secret_fraction"]})
-        st.caption("Completion-time separation is a diagnostic of this result; it supplies no syndrome resolution, postselection protocol, or finite-key claim.")
-        if run.summary["pooled_coordinates"] is not None:
-            choice = st.selectbox("Inspect state", ["Pooled"]+np.flatnonzero(run.pmf > 0).tolist(),
-                                  format_func=lambda v: v if v == "Pooled" else f"Completion at slot {v} (pmf={run.pmf[v]:.3g})")
-            x = np.asarray(run.summary["pooled_coordinates"]) if choice == "Pooled" else run.x[choice]
-            st.write(dict(zip(("II", "IZ=zR", "ZI=zL", "ZZ", "XX", "YY"), x.tolist())))
-            matrix = coordinates_to_matrix(x)
-            st.write({"Trace": float(np.trace(matrix).real), "Minimum eigenvalue": float(np.linalg.eigvalsh(matrix).min())})
-            st.plotly_chart(matrix_figure(x), use_container_width=True, key="matrix")
-            st.write({"Bell populations (phi+, psi+, psi-, phi-)": bell_populations(x).tolist()})
-            st.caption("Bell populations describe overlaps, not the full state when local biases are present. The pooled matrix is rho(x̄), weighted by completion mass.")
+# Yield between completed evaluations so Cancel is processed on the next rerun.
+if ss.job is not None:
+    try:
+        with st.spinner("Evaluating next trial…"):
+            entry = ss.job.step(ss.service)
+            storage.save_experiment(ss.job)
+        best = ss.job.best
+        if best or entry.run is not None:
+            ss.preferred_trial = (ss.job.id, best.index if best else entry.index)
+        if entry.run is not None and ss.last is None:
+            ss.last = entry.run
+        if ss.job.finished:
+            ss.job = None
+        st.rerun()
+    except (ValueError, OSError, RuntimeError) as error:
+        ss.job.cancelled = True
+        ss.job = None
+        st.error(f"Experiment stopped; completed trials remain in this session: {error}")
