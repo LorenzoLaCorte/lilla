@@ -1,0 +1,1080 @@
+{
+  "scenario": {
+    "links": 3,
+    "p_gen": 0.2,
+    "p_swap": 0.9,
+    "initial_fidelity": 0.99,
+    "t2_equals_2t1": true,
+    "tree": [
+      [
+        0,
+        1
+      ],
+      2
+    ],
+    "horizon": 1024,
+    "cutoffs": [
+      null,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      16
+    ],
+    "outcomes": "all_corrected",
+    "distillation": "none"
+  },
+  "cutoff_one_thresholds": {
+    "full_real_x": 7.9559544967010645,
+    "local_channel_twirl": 8.348960939739335
+  },
+  "threshold_gap_slots": 0.3930064430382707,
+  "probes": [
+    {
+      "t1_slots": 7.5,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7467019794489533,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8697676785511992,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": -0.025921947400169176,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.0500666244841268,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.29169367041903216,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.3342060339577775,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.4414509223182177,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.4972484620040857,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.5356025438608873,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.6010023311869038,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.641201675020469,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7195509466337979,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6929777929593461,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.780347655247879,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7334834957381196,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8343222728632544,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7441655517923325,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8544707671096725,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 8.0,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7383318162079694,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8559846282142078,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 0.0024071827560612213,
+          "rate_bits_per_slot": 6.572272595383675e-05,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.019748802280531996,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.26139153789103375,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.30107983099007296,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.41281687444933235,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.46551318520818963,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.509442012641384,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5716805914282966,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.619817225160849,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.6949314520708397,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6753441671667848,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.759225488652344,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7206333525809245,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.817201488112671,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7337423963353844,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.839151880183526,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 7.9559544967010645,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7391008531177063,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8572025369590095,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 7.565059689795817e-13,
+          "rate_bits_per_slot": 2.0648636244940767e-14,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.022320868593171728,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.26398986439672967,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.3039154077638674,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.41528922821279235,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.4682482517576103,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.5117139022669,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5742212521042249,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.6216928287006503,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.697081084498128,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6769046270260785,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7610786769912555,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7217885310085338,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8187107876025221,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7346899440409682,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8405045418228606,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 8.25,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7338649524811516,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8490618743358418,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 0.015764958835871923,
+          "rate_bits_per_slot": 0.0004304268409348546,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.0054896778131383606,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.24689394664181463,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.28527502714728514,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.3989643197914131,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.4502056286919336,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.4966681740818314,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5574144678073301,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.6092089621503929,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.682804015296085,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6664720176125606,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7487391289224309,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7140056387870404,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8086354290476052,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7282712595062352,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.831466778064541,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 8.348960939739335,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7320520747774332,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8463177185295793,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 0.020913346547084655,
+          "rate_bits_per_slot": 0.0005709920197922635,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": 3.2229774404868294e-13,
+          "rate_bits_per_slot": 8.826897936768572e-15,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.2412704752609045,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.27915198070255154,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.39356484143491044,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.4442466730050978,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.4916690027376882,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5518397036034004,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.6050290060441192,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.6780388862286162,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6629553187518427,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7446043822011944,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7113518169443628,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8052459791925397,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7260651251655832,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8284221444567743,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 8.5,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7292404040325864,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8421264024929312,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 0.028624480255643125,
+          "rate_bits_per_slot": 0.0007815272299856529,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": 0.008216013505551567,
+          "rate_bits_per_slot": 0.00022431982062806412,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.23281057548062767,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.2699483068984919,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.3854145637779143,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.43525984212430635,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.48410192450088874,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5434100096568989,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.5986724398554781,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.6708058486132953,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.6575858342363096,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7383128383179262,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.7072722807792962,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8000757396972256,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7226580178174957,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.823773792134918,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    },
+    {
+      "t1_slots": 9.0,
+      "rows": [
+        {
+          "cutoff": null,
+          "model": "full_real_x",
+          "signed_fraction": -0.7195939826393081,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": null,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8282385984914205,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999998214,
+          "mean_wait": 10.455940704626999
+        },
+        {
+          "cutoff": 1,
+          "model": "full_real_x",
+          "signed_fraction": 0.05295540388034892,
+          "rate_bits_per_slot": 0.0014458285264140353,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 1,
+          "model": "local_channel_twirl",
+          "signed_fraction": 0.034091153439056665,
+          "rate_bits_per_slot": 0.0009307824797619719,
+          "coverage": 0.9999999999984853,
+          "mean_wait": 36.62633771079956
+        },
+        {
+          "cutoff": 2,
+          "model": "full_real_x",
+          "signed_fraction": -0.20582493960094717,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 2,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.24065163657427402,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999991824,
+          "mean_wait": 22.625648408377725
+        },
+        {
+          "cutoff": 3,
+          "model": "full_real_x",
+          "signed_fraction": -0.3591996440023095,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 3,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.4064172127023685,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999994235,
+          "mean_wait": 17.720844351604025
+        },
+        {
+          "cutoff": 4,
+          "model": "full_real_x",
+          "signed_fraction": -0.45959511786715346,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 4,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.5161770360130397,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999995275,
+          "mean_wait": 15.306432031203729
+        },
+        {
+          "cutoff": 6,
+          "model": "full_real_x",
+          "signed_fraction": -0.5778505800437235,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 6,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.6472145098919972,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999996789,
+          "mean_wait": 12.999604110540231
+        },
+        {
+          "cutoff": 8,
+          "model": "full_real_x",
+          "signed_fraction": -0.639826171339179,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 8,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7176656903926117,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997268,
+          "mean_wait": 11.94312130909459
+        },
+        {
+          "cutoff": 12,
+          "model": "full_real_x",
+          "signed_fraction": -0.6935613398580835,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 12,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.7830016813354487,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.999999999999766,
+          "mean_wait": 11.042653227163825
+        },
+        {
+          "cutoff": 16,
+          "model": "full_real_x",
+          "signed_fraction": -0.7110825037231778,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        },
+        {
+          "cutoff": 16,
+          "model": "local_channel_twirl",
+          "signed_fraction": -0.8083883085047163,
+          "rate_bits_per_slot": 0.0,
+          "coverage": 0.9999999999997856,
+          "mean_wait": 10.708296935639163
+        }
+      ]
+    }
+  ]
+}

@@ -51,6 +51,9 @@ python -m src.visualization.cli --config src/visualization/presets/default.json 
 
 ## Reproduce Results
 
+For the new standalone postselection-placement and Pauli/AD protocol/source
+optimization studies, see the [overnight commands and output guide](src/optimization/PAULI_AD.md).
+
 1) To reproduce (Li, Coopmans & Elkouss 2021) results, refer to the [original repository](https://github.com/BoxiLi/repeater-cut-off-optimization)
 2) To reproduce (La Corte, Goodenough, Maity, Santra & Elkouss 2025) results, once the environment has been set up, run:
 ```bash

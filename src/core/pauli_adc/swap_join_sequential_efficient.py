@@ -13,6 +13,8 @@ translation is retained as a duration-dependent finite sum.
 import numpy as np
 from scipy.signal import lfilter
 
+from src.core.pauli_adc.state import _minimum_real_x_eigenvalue, polish_x_func
+
 from src.core.pauli_adc.swap_join import (
     AttemptTerms,
     _validate_attempt_inputs,
@@ -150,7 +152,21 @@ def renewal_sum_sequential_efficient_weighted(
         raise ValueError("weighted real-X renewal inputs must have shape (T, 6)")
     if np.any(first[:, 0] < -1.0e-12):
         raise ValueError("weighted real-X traces must be nonnegative")
-    weighted = _convolve_with_resolvent(first, inverse)
+    # An invariant conditional state needs only one scalar convolution. This
+    # preserves noiseless/rank-one states exactly even in rare bins, instead of
+    # adding independent FFT errors to six proportional columns.
+    populated = first[:, 0] >= np.finfo(float).tiny
+    constant_state = None
+    if np.any(populated):
+        states = first[populated] / first[populated, :1]
+        reference = first[np.argmax(first[:, 0])] / np.max(first[:, 0])
+        if np.allclose(states, reference, atol=64*np.finfo(float).eps, rtol=64*np.finfo(float).eps):
+            constant_state = polish_x_func(reference)
+    if constant_state is not None:
+        trace = _convolve_with_resolvent(first[:, 0], inverse)
+        weighted = trace[:, None]*constant_state
+    else:
+        weighted = _convolve_with_resolvent(first, inverse)
     pmf = np.array(weighted[:, 0], copy=True)
     scale = np.max(np.abs(pmf), initial=0.0)
     roundoff_floor = (
@@ -168,6 +184,24 @@ def renewal_sum_sequential_efficient_weighted(
     pmf[unreliable] = 0.0
     weighted[unreliable] = 0.0
     weighted[:, 0] = pmf
+    # FFT error is absolute in probability-weighted coefficients. Conditioning
+    # first can turn machine-sized errors into apparent PSD failures in rare
+    # but legitimate completion bins. Repair only weighted PSD roundoff within
+    # the same FFT error budget used above; retain their mass and the strict
+    # normalized-state validation at the protocol boundary.
+    minimum = _minimum_real_x_eigenvalue(weighted)
+    if np.any(minimum < -roundoff_floor):
+        raise ValueError("FFT renewal produced a material nonphysical weighted state")
+    repair = (pmf > 0.0) & (minimum < 0.0)
+    if np.any(repair):
+        normalized = weighted[repair] / pmf[repair, None]
+        tolerance = max(1e-10, float(np.max(-_minimum_real_x_eigenvalue(normalized)))
+                        + 64*np.finfo(float).eps)
+        corrected = polish_x_func(normalized, atol=tolerance)*pmf[repair, None]
+        if np.max(abs(corrected-weighted[repair])) > 8*roundoff_floor:
+            raise ValueError("FFT weighted-state repair exceeds its roundoff budget")
+        weighted[repair] = corrected
+        weighted[:, 0] = pmf
     return pmf, weighted
 
 
@@ -328,24 +362,49 @@ def _bilinear_operation(
                 (a0 * b0, a1 * b3, a2 * b0, a3 * b3, a4 * b4, -a5 * b5)
             )
         if bell_outcomes == "phi_plus":
-            sign, factor = 1.0, 0.25
+            factor = 0.25
         elif bell_outcomes == "phi_pair":
-            sign, factor = 1.0, 0.5
+            factor = 0.5
         elif bell_outcomes == "psi_pair":
-            sign, factor = -1.0, 0.5
+            factor = 0.5
         else:
             raise ValueError(
                 "outcomes must be one of phi_plus, phi_pair, psi_pair, "
                 "or all_corrected"
             )
-        return factor * np.column_stack(
+        # Compute branch diagonals as sums of nonnegative population products.
+        # The equivalent correlator expression n1*n2 +/- zR1*zL2 loses
+        # relative precision when a selected parity has very small probability.
+        # Cumulative-window subtraction can leave signed residue even in an
+        # exactly empty row, so use the operation's input scale, not that row's
+        # nearly zero trace, to bound arithmetic roundoff.
+        population_tolerance = 64*np.finfo(float).eps*max(
+            np.max(np.abs(left), initial=0.), np.max(np.abs(right), initial=0.),
+            np.finfo(float).tiny)
+
+        def populations(values):
+            n, zr, zl, zz = values[:, :4].T
+            diagonal = .25*np.column_stack((n+zr+zl+zz, n-zr+zl-zz,
+                                            n+zr-zl-zz, n-zr-zl+zz))
+            if np.any(diagonal < -population_tolerance):
+                raise ValueError("selected swap input has materially negative populations")
+            return np.maximum(diagonal, 0.)  # Signed roundoff only, checked above.
+
+        a, b = populations(left), populations(right)
+        if bell_outcomes == "psi_pair":
+            b = b[:, ::-1]  # Odd inner parity plus the right-end X correction.
+        d00 = a[:, 0]*b[:, 0] + a[:, 1]*b[:, 2]
+        d01 = a[:, 0]*b[:, 1] + a[:, 1]*b[:, 3]
+        d10 = a[:, 2]*b[:, 0] + a[:, 3]*b[:, 2]
+        d11 = a[:, 2]*b[:, 1] + a[:, 3]*b[:, 3]
+        return np.column_stack(
             (
-                a0 * b0 + sign * a1 * b2,
-                sign * a0 * b1 + a1 * b3,
-                a2 * b0 + sign * a3 * b2,
-                sign * a2 * b1 + a3 * b3,
-                a4 * b4,
-                -a5 * b5,
+                (2*factor)*(d00+d01+d10+d11),
+                (2*factor)*(d00-d01+d10-d11),
+                (2*factor)*(d00+d01-d10-d11),
+                (2*factor)*(d00-d01-d10+d11),
+                factor*a4*b4,
+                -factor*a5*b5,
             )
         )
 

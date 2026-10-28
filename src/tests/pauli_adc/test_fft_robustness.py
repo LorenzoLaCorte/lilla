@@ -6,9 +6,10 @@ import pytest
 from numpy.testing import assert_allclose
 
 from src.core import repeater_algorithm as algorithm
-from src.core.pauli_adc.state import RealXState
+from src.core.pauli_adc.state import RealXState, normalize_weighted_x_func, _minimum_real_x_eigenvalue
 from src.core.repeater_algorithm import RepeaterChainEvaluation
 from src.types.protocol_types import SwapTreeVertex
+from src.core.pauli_adc import swap_join_sequential_efficient as efficient_join
 
 
 def _simulator(use_fft=True):
@@ -151,3 +152,61 @@ def test_small_genuine_failure_probability_is_not_skipped(monkeypatch):
     pmf, _ = _simulator().nested_protocol(parameters)
     assert len(calls) == 1 and calls[0][1] > 0
     assert pmf[2] == pytest.approx(parameters["p_swap"]*(1-parameters["p_swap"]), rel=1e-5, abs=0)
+
+
+def test_subnormal_conditioning_keeps_probability_without_manufacturing_a_state():
+    state = np.array([1., .5, .5, 1., np.sqrt(.75), -np.sqrt(.75)])
+    pmf = np.array([0., 1e-320, 1e-200])
+    weighted = pmf[:, None]*state
+    # At subnormal precision the same rank-one state can round outside the PSD cone.
+    assert _minimum_real_x_eigenvalue(weighted[1]/pmf[1]) < -1e-9
+    snapshot_p, snapshot_w = pmf.copy(), weighted.copy()
+    normalized = normalize_weighted_x_func(weighted, pmf)
+    assert_allclose(normalized[1], [1, 0, 0, 0, 0, 0], atol=0)
+    assert_allclose(normalized[2], state, atol=1e-14)
+    assert_allclose(pmf, snapshot_p, atol=0, rtol=0)
+    assert_allclose(weighted, snapshot_w, atol=0, rtol=0)
+
+
+def test_tiny_normal_probability_still_rejects_nonphysical_correlators():
+    pmf = np.array([0., 1e-200])
+    weighted = pmf[:, None]*np.array([1., 0., 0., 1., 1.001, -1.001])
+    with pytest.raises(ValueError, match="not positive semidefinite"):
+        normalize_weighted_x_func(weighted, pmf)
+
+
+def test_rare_selected_parity_in_deep_protocol_stays_physical():
+    # Overnight failure at ordinary (not subnormal) probabilities: subtraction
+    # in a rare Psi branch amplified signed population roundoff after AD.
+    parameters = _parameters(512)
+    parameters.update(protocol=('d4', 'd5', 's4', 'd5', 'd6', 's5', 'd3', 'd6', 's3',
+                                'd6', 'd7', 's6', 'd2', 'd7', 's2', 'd1', 'd7', 's1',
+                                'd0', 's0', 'd7'),
+                      p_gen=[.2]*8, real_x_coordinates=[[1, 0, 0, 1, 1, -1]]*8,
+                      pauli_mode_decay_rates=[[0., 0., 0.]]*9,
+                      amplitude_damping_rate=[1/25]*9, bell_outcomes='psi_pair')
+    pmf, states = _simulator().asymmetric_heterogeneous_protocol(parameters, 8)
+    assert 0 < pmf.sum() < 1e-30  # Physical outputs do not imply sufficient coverage.
+    assert np.min(_minimum_real_x_eigenvalue(states[pmf >= np.finfo(float).tiny])) >= -1e-10
+
+
+@pytest.mark.parametrize("material", [False, True])
+def test_fft_weighted_psd_repair_is_bounded_and_preserves_trace(monkeypatch, material):
+    size = 32
+    first = np.zeros((size, 6))
+    first[1] = .25*np.array([1, 0, 0, 1, 1, -1])
+    first[2] = .1*np.array([1, 0, 0, .5, .5, -.5])
+    output = first.copy()
+    probability = .1 if material else 1e-10
+    coherence = 2. if material else 1+1e-8
+    output[5] = probability*np.array([1, 0, 0, 1, coherence, -coherence])
+    monkeypatch.setattr(efficient_join, "_convolve_with_resolvent", lambda *args: output.copy())
+    if material:
+        with pytest.raises(ValueError, match="material nonphysical weighted"):
+            efficient_join.renewal_sum_sequential_efficient_weighted(np.zeros(size), first)
+    else:
+        pmf, weighted = efficient_join.renewal_sum_sequential_efficient_weighted(np.zeros(size), first)
+        assert_allclose(pmf, output[:, 0], atol=0, rtol=0)
+        states = normalize_weighted_x_func(weighted, pmf)  # Original strict check still passes.
+        assert _minimum_real_x_eigenvalue(states[5]) >= -1e-14
+        assert np.max(abs(weighted-output)) < 1e-17

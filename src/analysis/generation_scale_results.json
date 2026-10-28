@@ -1,0 +1,880 @@
+{
+  "case": {
+    "links": 2,
+    "p_gen": 0.02,
+    "p_swap": 0.9,
+    "fidelity": 0.95,
+    "t1_slots": 300,
+    "t2_slots": 600,
+    "horizon": 32768
+  },
+  "n_candidates": 35,
+  "n_covered": 35,
+  "best_rates": {
+    "physical": 0.002298919200303078,
+    "werner": 0.0012480628474654904
+  },
+  "winners": {
+    "physical": [
+      {
+        "cutoff": 20,
+        "distillation": "none"
+      }
+    ],
+    "werner": [
+      {
+        "cutoff": 40,
+        "distillation": "root"
+      }
+    ]
+  },
+  "physical_rate_of_werner_winners": [
+    0.0008799213697760877
+  ],
+  "regret_range": [
+    0.0014189978305269902,
+    0.0014189978305269902
+  ],
+  "rows": [
+    {
+      "candidate": {
+        "cutoff": null,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999998732,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.15235461692021085,
+          "eZ": 0.10647795598494353,
+          "mean_wait_repository_slots": 83.05274972334837
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999998732,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.12612622725026812,
+          "eZ": 0.1561053808818732,
+          "mean_wait_repository_slots": 83.05274972334837
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": null,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999996941,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.2105817943784099,
+          "eZ": 0.12430186093182438,
+          "mean_wait_repository_slots": 110.4615794704556
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999996919,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.16126217279493898,
+          "eZ": 0.15423407857464239,
+          "mean_wait_repository_slots": 115.19964185139935
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": null,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.999999999999694,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.21058179437840985,
+          "eZ": 0.12430186093182427,
+          "mean_wait_repository_slots": 110.46157947045907
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999999692,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.16126217279493904,
+          "eZ": 0.1542340785746425,
+          "mean_wait_repository_slots": 115.19964185139561
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": null,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999995346,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.25223786826941935,
+          "eZ": 0.12390899585655418,
+          "mean_wait_repository_slots": 131.6973898716901
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999995358,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.18264698147536979,
+          "eZ": 0.13479108575396598,
+          "mean_wait_repository_slots": 139.74796707558383
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": null,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999994954,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.2287006712784978,
+          "eZ": 0.036509956029456,
+          "mean_wait_repository_slots": 156.78813189149832
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999994678,
+          "rate_bits_per_slot": 0.00021752045876778037,
+          "eX": 0.16119709159896134,
+          "eZ": 0.05963894277024506,
+          "mean_wait_repository_slots": 169.29125614497315
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 10,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999997403,
+          "rate_bits_per_slot": 0.0020339988158215266,
+          "eX": 0.10174223126540671,
+          "eZ": 0.016271319066263112,
+          "mean_wait_repository_slots": 199.3840360324166
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999997403,
+          "rate_bits_per_slot": 0.0011562107794000323,
+          "eX": 0.07169534885058776,
+          "eZ": 0.07860686834760028,
+          "mean_wait_repository_slots": 199.3840360324166
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 10,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999963282,
+          "rate_bits_per_slot": 0.0004377738374137948,
+          "eX": 0.14184283499887645,
+          "eZ": 0.016587724690859007,
+          "mean_wait_repository_slots": 660.4513161416785
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999961129,
+          "rate_bits_per_slot": 0.0004734768359382317,
+          "eX": 0.07352274193125796,
+          "eZ": 0.050381762084538984,
+          "mean_wait_repository_slots": 703.4117014063853
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 10,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999963283,
+          "rate_bits_per_slot": 0.0004377738374137964,
+          "eX": 0.14184283499887645,
+          "eZ": 0.016587724690858896,
+          "mean_wait_repository_slots": 660.4513161416759
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999961131,
+          "rate_bits_per_slot": 0.000473476835938232,
+          "eX": 0.07352274193125785,
+          "eZ": 0.05038176208453893,
+          "mean_wait_repository_slots": 703.4117014063846
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 10,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999269222009,
+          "rate_bits_per_slot": 0.00010135383733412285,
+          "eX": 0.17781158743195613,
+          "eZ": 0.016585051725276856,
+          "mean_wait_repository_slots": 2002.1212627763578
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999995047269473,
+          "rate_bits_per_slot": 0.0002090629369313478,
+          "eX": 0.07523984529613026,
+          "eZ": 0.019975175702845183,
+          "mean_wait_repository_slots": 2264.957168729085
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 10,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999995864413939,
+          "rate_bits_per_slot": 0.00014725838265881603,
+          "eX": 0.1726534978351697,
+          "eZ": 0.0005551743594923719,
+          "mean_wait_repository_slots": 2237.266058465729
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999977614396008,
+          "rate_bits_per_slot": 0.00021906775110497702,
+          "eX": 0.07243576361285164,
+          "eZ": 0.008628595132628702,
+          "mean_wait_repository_slots": 2526.586869743098
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 20,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999997524,
+          "rate_bits_per_slot": 0.002298919200303078,
+          "eX": 0.10759708281783287,
+          "eZ": 0.029774577043399697,
+          "mean_wait_repository_slots": 136.63580421970545
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999997524,
+          "rate_bits_per_slot": 0.0012246597136719478,
+          "eX": 0.07799192445703873,
+          "eZ": 0.09034005236651016,
+          "mean_wait_repository_slots": 136.63580421970545
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 20,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.99999999999838,
+          "rate_bits_per_slot": 0.0006507445516647665,
+          "eX": 0.1477555141360966,
+          "eZ": 0.030768315886784137,
+          "mean_wait_repository_slots": 303.61334640427174
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999982978,
+          "rate_bits_per_slot": 0.0007802203124468678,
+          "eX": 0.08097284750161515,
+          "eZ": 0.06396603853502447,
+          "mean_wait_repository_slots": 322.2304125371335
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 20,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999983801,
+          "rate_bits_per_slot": 0.0006507445516647731,
+          "eX": 0.14775551413609672,
+          "eZ": 0.03076831588678408,
+          "mean_wait_repository_slots": 303.6133464042687
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999998298,
+          "rate_bits_per_slot": 0.0007802203124468839,
+          "eX": 0.0809728475016151,
+          "eZ": 0.06396603853502453,
+          "mean_wait_repository_slots": 322.23041253712705
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 20,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999962728,
+          "rate_bits_per_slot": 0.00019056483560541754,
+          "eX": 0.1834891244718289,
+          "eZ": 0.03063006453936007,
+          "mean_wait_repository_slots": 602.4586057029001
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999960079,
+          "rate_bits_per_slot": 0.0005448984034366293,
+          "eX": 0.08358237256945367,
+          "eZ": 0.03485027310903477,
+          "mean_wait_repository_slots": 673.8162741649312
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 20,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999960312,
+          "rate_bits_per_slot": 0.00046215378749884194,
+          "eX": 0.17444927252300235,
+          "eZ": 0.0019385379883937182,
+          "mean_wait_repository_slots": 675.0044566267198
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999955752,
+          "rate_bits_per_slot": 0.0006710517810720236,
+          "eX": 0.07731004165937805,
+          "eZ": 0.012806800201164925,
+          "mean_wait_repository_slots": 757.7620162241426
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 40,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999997949,
+          "rate_bits_per_slot": 0.00175854801867673,
+          "eX": 0.1176876293337526,
+          "eZ": 0.051584954121461246,
+          "mean_wait_repository_slots": 104.76299012060487
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999997949,
+          "rate_bits_per_slot": 0.0006660158952534037,
+          "eX": 0.08884376049061699,
+          "eZ": 0.10924272809612912,
+          "mean_wait_repository_slots": 104.76299012060487
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 40,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999991954,
+          "rate_bits_per_slot": 0.00036155363862619595,
+          "eX": 0.1587641719531221,
+          "eZ": 0.054396408923207684,
+          "mean_wait_repository_slots": 176.64954728882898
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999991608,
+          "rate_bits_per_slot": 0.0006582957019883282,
+          "eX": 0.09477901358009722,
+          "eZ": 0.08656370675074504,
+          "mean_wait_repository_slots": 186.6665561363627
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 40,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999991956,
+          "rate_bits_per_slot": 0.00036155363862620956,
+          "eX": 0.15876417195312198,
+          "eZ": 0.054396408923207795,
+          "mean_wait_repository_slots": 176.64954728882233
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999999161,
+          "rate_bits_per_slot": 0.0006582957019883536,
+          "eX": 0.09477901358009738,
+          "eZ": 0.08656370675074498,
+          "mean_wait_repository_slots": 186.6665561363556
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 40,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999984786,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.19448912089831732,
+          "eZ": 0.053631532556031425,
+          "mean_wait_repository_slots": 265.094626987734
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999983854,
+          "rate_bits_per_slot": 0.0007127307110087962,
+          "eX": 0.09954820784155233,
+          "eZ": 0.05921506872272719,
+          "mean_wait_repository_slots": 291.9995810340814
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 40,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999983353,
+          "rate_bits_per_slot": 0.0008799213697760877,
+          "eX": 0.18023068749533744,
+          "eZ": 0.00627263684229884,
+          "mean_wait_repository_slots": 300.5977874237429
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999981801,
+          "rate_bits_per_slot": 0.0012480628474654904,
+          "eX": 0.08896906162199902,
+          "eZ": 0.02154539984676318,
+          "mean_wait_repository_slots": 334.07689472116374
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 80,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.999999999999836,
+          "rate_bits_per_slot": 0.0003991589275716168,
+          "eX": 0.13232654746907574,
+          "eZ": 0.0794894730631962,
+          "mean_wait_repository_slots": 89.78338959805835
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999999836,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.10458712375275198,
+          "eZ": 0.13329427923848847,
+          "mean_wait_repository_slots": 89.78338959805835
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 80,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999995342,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.17667366759431496,
+          "eZ": 0.08622048495894308,
+          "mean_wait_repository_slots": 129.65839600341826
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999995199,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.11720173185326566,
+          "eZ": 0.11707560212750023,
+          "mean_wait_repository_slots": 136.38475310469934
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 80,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999995344,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.1766736675943149,
+          "eZ": 0.08622048495894313,
+          "mean_wait_repository_slots": 129.65839600341087
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999995202,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.11720173185326577,
+          "eZ": 0.11707560212750023,
+          "mean_wait_repository_slots": 136.38475310469235
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 80,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999992012,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.21348081802479524,
+          "eZ": 0.08433902620898465,
+          "mean_wait_repository_slots": 167.97575764331145
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999991654,
+          "rate_bits_per_slot": 4.940576106493872e-05,
+          "eX": 0.1267199780370939,
+          "eZ": 0.09185313754730717,
+          "mean_wait_repository_slots": 182.18756477924867
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 80,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999991328,
+          "rate_bits_per_slot": 0.0008508619918112997,
+          "eX": 0.1947589785873079,
+          "eZ": 0.016809580005434144,
+          "mean_wait_repository_slots": 194.56410376683547
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999990675,
+          "rate_bits_per_slot": 0.001229682678036249,
+          "eX": 0.11293147985906127,
+          "eZ": 0.03713306363947749,
+          "mean_wait_repository_slots": 213.3195225896137
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 160,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999998556,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.14649913360857014,
+          "eZ": 0.10085426217996729,
+          "mean_wait_repository_slots": 84.17052976492587
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999998556,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.11982897222101496,
+          "eZ": 0.15148136329071044,
+          "mean_wait_repository_slots": 84.17052976492587
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 160,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999996466,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.1974622415669381,
+          "eZ": 0.11380817013236405,
+          "mean_wait_repository_slots": 114.1380497322702
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999996408,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.14351743487392965,
+          "eZ": 0.14387840713127287,
+          "mean_wait_repository_slots": 119.47370916659447
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 160,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999996466,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.19746224156693815,
+          "eZ": 0.11380817013236405,
+          "mean_wait_repository_slots": 114.13804973227003
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999996404,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.14351743487392954,
+          "eZ": 0.1438784071312728,
+          "mean_wait_repository_slots": 119.47370916660888
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 160,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999994379,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.2369789012136409,
+          "eZ": 0.11219955570783036,
+          "mean_wait_repository_slots": 138.91544568238697
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999999425,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.1600495098368313,
+          "eZ": 0.12178325568484438,
+          "mean_wait_repository_slots": 148.66054146770628
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 160,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999993924,
+          "rate_bits_per_slot": 0.00029167680031355186,
+          "eX": 0.21607978055000432,
+          "eZ": 0.030992253727656738,
+          "mean_wait_repository_slots": 163.57753342123408
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999993558,
+          "rate_bits_per_slot": 0.0005753351042702949,
+          "eX": 0.14400313825608035,
+          "eZ": 0.05404684598219711,
+          "mean_wait_repository_slots": 177.33580632115593
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 320,
+        "distillation": "none"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.999999999999865,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.15200230524294317,
+          "eZ": 0.10632405967906938,
+          "mean_wait_repository_slots": 83.09520126377387
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.999999999999865,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.12574733513095654,
+          "eZ": 0.1559935959376031,
+          "mean_wait_repository_slots": 83.09520126377387
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 320,
+        "distillation": "left"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999996813,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.20899384315464697,
+          "eZ": 0.12374050242557588,
+          "mean_wait_repository_slots": 110.73921034506685
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999996766,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.15884122909752824,
+          "eZ": 0.15372623580495165,
+          "mean_wait_repository_slots": 115.56185891477548
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 320,
+        "distillation": "right"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999996811,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.20899384315464703,
+          "eZ": 0.12374050242557588,
+          "mean_wait_repository_slots": 110.73921034507038
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999996767,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.15884122909752824,
+          "eZ": 0.15372623580495165,
+          "mean_wait_repository_slots": 115.56185891477183
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 320,
+        "distillation": "both"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999995077,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.25038038054912126,
+          "eZ": 0.12324844505377114,
+          "mean_wait_repository_slots": 132.28886403171916
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999995017,
+          "rate_bits_per_slot": 0.0,
+          "eX": 0.17958197424571265,
+          "eZ": 0.134022088273674,
+          "mean_wait_repository_slots": 140.5626129889152
+        }
+      }
+    },
+    {
+      "candidate": {
+        "cutoff": 320,
+        "distillation": "root"
+      },
+      "metrics": {
+        "physical": {
+          "status": "covered",
+          "coverage": 0.9999999999994665,
+          "rate_bits_per_slot": 6.92409747202514e-06,
+          "eX": 0.22751998139561813,
+          "eZ": 0.03633927235514561,
+          "mean_wait_repository_slots": 157.21979694710348
+        },
+        "werner": {
+          "status": "covered",
+          "coverage": 0.9999999999994361,
+          "rate_bits_per_slot": 0.00024155175550653985,
+          "eX": 0.15962966859604844,
+          "eZ": 0.05952607785788916,
+          "mean_wait_repository_slots": 169.80371967129838
+        }
+      }
+    }
+  ]
+}

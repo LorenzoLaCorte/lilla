@@ -1,0 +1,2618 @@
+{
+  "results": [
+    {
+      "memory": "no_memory_noise",
+      "t1_slots": null,
+      "t2_slots": null,
+      "n_candidates": 35,
+      "n_covered": 35,
+      "best_physical_rate": 0.06817177476272439,
+      "best_proxy_prediction": 0.052972776318463456,
+      "physical_winners": [
+        {
+          "cutoff": null,
+          "distillation": "none"
+        },
+        {
+          "cutoff": 32,
+          "distillation": "none"
+        }
+      ],
+      "proxy_winners": [
+        {
+          "cutoff": null,
+          "distillation": "both"
+        }
+      ],
+      "physical_rate_of_proxy_winners": [
+        0.03091292711287646
+      ],
+      "regret_range": [
+        0.03725884764984792,
+        0.03725884764984792
+      ],
+      "rows": [
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.06817177476272439,
+              "eX": 0.09500000000000008,
+              "eZ": -7.771561172376096e-16,
+              "mean_wait_repository_slots": 8.024691358216506
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.03867047275586761,
+              "eX": 0.06444444444444486,
+              "eZ": 0.06444444444444486,
+              "mean_wait_repository_slots": 8.024691358216506
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999079,
+              "rate_bits_per_slot": 0.04416115166696625,
+              "eX": 0.1355,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.684274438545103
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998178,
+              "rate_bits_per_slot": 0.04281048127125177,
+              "eX": 0.06547901821060981,
+              "eZ": 0.0344418052256531,
+              "mean_wait_repository_slots": 10.160569930431969
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999082,
+              "rate_bits_per_slot": 0.044161151666969344,
+              "eX": 0.13550000000000018,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 9.684274438544424
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998178,
+              "rate_bits_per_slot": 0.042810481271251734,
+              "eX": 0.06547901821060975,
+              "eZ": 0.03444180522565321,
+              "mean_wait_repository_slots": 10.160569930431972
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999065,
+              "rate_bits_per_slot": 0.03091292711287646,
+              "eX": 0.17195000000000038,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 10.929208563662069
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997223,
+              "rate_bits_per_slot": 0.052972776318463456,
+              "eX": 0.06651113455690266,
+              "eZ": 0.0023724758944030366,
+              "mean_wait_repository_slots": 11.763171849120358
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997962,
+              "rate_bits_per_slot": 0.0305841644175579,
+              "eX": 0.17194999999999977,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 11.046691455005195
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996674,
+              "rate_bits_per_slot": 0.04746256686251963,
+              "eX": 0.06855830460125151,
+              "eZ": 0.004722543547354907,
+              "mean_wait_repository_slots": 12.561376330404874
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.03879134658228616,
+              "eX": 0.09500000000000036,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 14.10256410285398
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.022004410423446107,
+              "eX": 0.06444444444444386,
+              "eZ": 0.06444444444444386,
+              "mean_wait_repository_slots": 14.10256410285398
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985576,
+              "rate_bits_per_slot": 0.012910495679089818,
+              "eX": 0.13549999999999962,
+              "eZ": -4.440892098500626e-16,
+              "mean_wait_repository_slots": 33.12566170157032
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985201,
+              "rate_bits_per_slot": 0.012323793694649008,
+              "eX": 0.06547901821061008,
+              "eZ": 0.034441805225653155,
+              "mean_wait_repository_slots": 35.29585933435981
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985576,
+              "rate_bits_per_slot": 0.012910495679089818,
+              "eX": 0.13549999999999968,
+              "eZ": -5.551115123125783e-16,
+              "mean_wait_repository_slots": 33.12566170157032
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985203,
+              "rate_bits_per_slot": 0.01232379369464915,
+              "eX": 0.06547901821061025,
+              "eZ": 0.03444180522565343,
+              "mean_wait_repository_slots": 35.29585933435936
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999963638,
+              "rate_bits_per_slot": 0.004700006942803822,
+              "eX": 0.17195000000000138,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 71.88368694799455
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999889444,
+              "rate_bits_per_slot": 0.0076683973633781925,
+              "eX": 0.066511134556903,
+              "eZ": 0.0023724758944034807,
+              "mean_wait_repository_slots": 81.25920471139892
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999936934,
+              "rate_bits_per_slot": 0.004300699855379694,
+              "eX": 0.17195000000000016,
+              "eZ": 8.326672684688674e-16,
+              "mean_wait_repository_slots": 78.55787176296283
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999175624,
+              "rate_bits_per_slot": 0.0066741157828443705,
+              "eX": 0.06855830460125079,
+              "eZ": 0.00472254354735413,
+              "mean_wait_repository_slots": 89.32946076536696
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.04848539648932462,
+              "eX": 0.0949999999999998,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 11.282932417251985
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.027503365000012703,
+              "eX": 0.06444444444444464,
+              "eZ": 0.06444444444444464,
+              "mean_wait_repository_slots": 11.282932417251985
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991799,
+              "rate_bits_per_slot": 0.020819700822462876,
+              "eX": 0.13550000000000018,
+              "eZ": 2.7755575615628914e-16,
+              "mean_wait_repository_slots": 20.54153976140198
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991648,
+              "rate_bits_per_slot": 0.01992262194758933,
+              "eX": 0.06547901821060992,
+              "eZ": 0.03444180522565249,
+              "mean_wait_repository_slots": 21.833415795185296
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991799,
+              "rate_bits_per_slot": 0.02081970082246285,
+              "eX": 0.13550000000000023,
+              "eZ": 1.6653345369377348e-16,
+              "mean_wait_repository_slots": 20.541539761402003
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991648,
+              "rate_bits_per_slot": 0.01992262194758932,
+              "eX": 0.06547901821061003,
+              "eZ": 0.03444180522565271,
+              "mean_wait_repository_slots": 21.83341579518531
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999982911,
+              "rate_bits_per_slot": 0.009932678100039321,
+              "eX": 0.17194999999999938,
+              "eZ": 3.3306690738754696e-16,
+              "mean_wait_repository_slots": 34.01437400136559
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999982435,
+              "rate_bits_per_slot": 0.016359631234525,
+              "eX": 0.06651113455690316,
+              "eZ": 0.0023724758944045354,
+              "mean_wait_repository_slots": 38.08935924203863
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.999999999998242,
+              "rate_bits_per_slot": 0.009224604025879338,
+              "eX": 0.1719500000000001,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 36.62529326809828
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999980264,
+              "rate_bits_per_slot": 0.014315362008525791,
+              "eX": 0.06855830460125201,
+              "eZ": 0.0047225435473540744,
+              "mean_wait_repository_slots": 41.64722929200375
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.057960903556900666,
+              "eX": 0.0950000000000003,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 9.438387227274088
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.03287835104343144,
+              "eX": 0.0644444444444448,
+              "eZ": 0.0644444444444448,
+              "mean_wait_repository_slots": 9.438387227274088
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995498,
+              "rate_bits_per_slot": 0.0306462845553831,
+              "eX": 0.1354999999999999,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 13.954993842475233
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995114,
+              "rate_bits_per_slot": 0.0294057917267865,
+              "eX": 0.06547901821061014,
+              "eZ": 0.0344418052256536,
+              "mean_wait_repository_slots": 14.792286252771373
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995498,
+              "rate_bits_per_slot": 0.030646284555383107,
+              "eX": 0.13549999999999995,
+              "eZ": 1.1102230246251565e-16,
+              "mean_wait_repository_slots": 13.95499384247522
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995112,
+              "rate_bits_per_slot": 0.0294057917267856,
+              "eX": 0.06547901821061025,
+              "eZ": 0.034441805225653654,
+              "mean_wait_repository_slots": 14.792286252771808
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991873,
+              "rate_bits_per_slot": 0.01794620763158828,
+              "eX": 0.17195000000000032,
+              "eZ": -4.440892098500626e-16,
+              "mean_wait_repository_slots": 18.8259176905561
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991078,
+              "rate_bits_per_slot": 0.029906316600956977,
+              "eX": 0.0665111345569031,
+              "eZ": 0.0023724758944037028,
+              "mean_wait_repository_slots": 20.83599526727271
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991775,
+              "rate_bits_per_slot": 0.016978684729738115,
+              "eX": 0.17194999999999983,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 19.898704352414345
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999990945,
+              "rate_bits_per_slot": 0.026348666853695347,
+              "eX": 0.06855830460125162,
+              "eZ": 0.004722543547353852,
+              "mean_wait_repository_slots": 22.627147220676076
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.06468346921604508,
+              "eX": 0.09500000000000025,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 8.45745378908984
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.036691729719229474,
+              "eX": 0.06444444444444491,
+              "eZ": 0.06444444444444491,
+              "mean_wait_repository_slots": 8.45745378908984
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997125,
+              "rate_bits_per_slot": 0.039113156880420025,
+              "eX": 0.13550000000000034,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 10.934139465464746
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996919,
+              "rate_bits_per_slot": 0.03763398309772469,
+              "eX": 0.06547901821060959,
+              "eZ": 0.034441805225653765,
+              "mean_wait_repository_slots": 11.558141150844598
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997129,
+              "rate_bits_per_slot": 0.03911315688042329,
+              "eX": 0.1355000000000004,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 10.934139465463836
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996918,
+              "rate_bits_per_slot": 0.03763398309772394,
+              "eX": 0.06547901821060964,
+              "eZ": 0.03444180522565371,
+              "mean_wait_repository_slots": 11.558141150844826
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995451,
+              "rate_bits_per_slot": 0.025822889428648667,
+              "eX": 0.17195000000000027,
+              "eZ": 3.3306690738754696e-16,
+              "mean_wait_repository_slots": 13.083502086915422
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999994671,
+              "rate_bits_per_slot": 0.04351604817915255,
+              "eX": 0.06651113455690344,
+              "eZ": 0.002372475894403425,
+              "mean_wait_repository_slots": 14.319495846537441
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995228,
+              "rate_bits_per_slot": 0.024869203326884953,
+              "eX": 0.17195,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 13.585229220618922
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999994718,
+              "rate_bits_per_slot": 0.038593705213736215,
+              "eX": 0.0685583046012509,
+              "eZ": 0.004722543547354685,
+              "mean_wait_repository_slots": 15.447989786555032
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.06763770613065809,
+              "eX": 0.09499999999999997,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 8.088054475944919
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.03836752206171346,
+              "eX": 0.06444444444444469,
+              "eZ": 0.06444444444444469,
+              "mean_wait_repository_slots": 8.088054475944919
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997753,
+              "rate_bits_per_slot": 0.04335175050673138,
+              "eX": 0.1355000000000004,
+              "eZ": 2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.865085198778981
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997643,
+              "rate_bits_per_slot": 0.04188578826310993,
+              "eX": 0.06547901821060981,
+              "eZ": 0.034441805225653765,
+              "mean_wait_repository_slots": 10.384880092971786
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997754,
+              "rate_bits_per_slot": 0.04335175050673235,
+              "eX": 0.13550000000000023,
+              "eZ": 2.7755575615628914e-16,
+              "mean_wait_repository_slots": 9.86508519877876
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997642,
+              "rate_bits_per_slot": 0.041885788263109035,
+              "eX": 0.0654790182106097,
+              "eZ": 0.03444180522565371,
+              "mean_wait_repository_slots": 10.384880092972011
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996501,
+              "rate_bits_per_slot": 0.03007416285594135,
+              "eX": 0.17195,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 11.234022684131522
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996294,
+              "rate_bits_per_slot": 0.05121465167397042,
+              "eX": 0.06651113455690272,
+              "eZ": 0.002372475894403925,
+              "mean_wait_repository_slots": 12.166984462295956
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996869,
+              "rate_bits_per_slot": 0.029449061671237408,
+              "eX": 0.17195000000000027,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 11.47248192494666
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996417,
+              "rate_bits_per_slot": 0.045701037947198285,
+              "eX": 0.06855830460125112,
+              "eZ": 0.004722543547354796,
+              "mean_wait_repository_slots": 13.045549745630272
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.06815699525076498,
+              "eX": 0.09500000000000014,
+              "eZ": 1.1102230246251565e-16,
+              "mean_wait_repository_slots": 8.026431473394164
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.03866208907044111,
+              "eX": 0.06444444444444442,
+              "eZ": 0.06444444444444442,
+              "mean_wait_repository_slots": 8.026431473394164
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.999999999999797,
+              "rate_bits_per_slot": 0.04413855375906337,
+              "eX": 0.1354999999999998,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.689232560713378
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998017,
+              "rate_bits_per_slot": 0.042775533404218344,
+              "eX": 0.06547901821060975,
+              "eZ": 0.03444180522565349,
+              "mean_wait_repository_slots": 10.168871176930924
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997972,
+              "rate_bits_per_slot": 0.04413855375906444,
+              "eX": 0.13549999999999984,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 9.68923256071315
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998018,
+              "rate_bits_per_slot": 0.0427755334042193,
+              "eX": 0.06547901821060981,
+              "eZ": 0.0344418052256536,
+              "mean_wait_repository_slots": 10.168871176930695
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996839,
+              "rate_bits_per_slot": 0.03088937942671992,
+              "eX": 0.17195000000000044,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 10.937540151346019
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997117,
+              "rate_bits_per_slot": 0.052904864598268736,
+              "eX": 0.06651113455690294,
+              "eZ": 0.0023724758944035917,
+              "mean_wait_repository_slots": 11.778271731546768
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997062,
+              "rate_bits_per_slot": 0.030531640547305398,
+              "eX": 0.17195000000000016,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 11.06569518288556
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996835,
+              "rate_bits_per_slot": 0.04738105678284962,
+              "eX": 0.06855830460125151,
+              "eZ": 0.004722543547354574,
+              "mean_wait_repository_slots": 12.582985784793967
+            }
+          }
+        }
+      ]
+    },
+    {
+      "memory": "pure_dephasing",
+      "t1_slots": null,
+      "t2_slots": 60,
+      "n_candidates": 35,
+      "n_covered": 35,
+      "best_physical_rate": 0.05174057403258269,
+      "best_proxy_prediction": 0.023199565692025685,
+      "physical_winners": [
+        {
+          "cutoff": 8,
+          "distillation": "none"
+        }
+      ],
+      "proxy_winners": [
+        {
+          "cutoff": 4,
+          "distillation": "none"
+        }
+      ],
+      "physical_rate_of_proxy_winners": [
+        0.050265913310978336
+      ],
+      "regret_range": [
+        0.0014746607216043553,
+        0.0014746607216043553
+      ],
+      "rows": [
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.049508202897882686,
+              "eX": 0.14716971266129275,
+              "eZ": -7.771561172376096e-16,
+              "mean_wait_repository_slots": 8.024691358216506
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.015479615003454418,
+              "eX": 0.12055014365768663,
+              "eZ": 0.06444444444444486,
+              "mean_wait_repository_slots": 8.024691358216506
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999079,
+              "rate_bits_per_slot": 0.02347113254608281,
+              "eX": 0.22697412261680738,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.684274438545103
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998178,
+              "rate_bits_per_slot": 0.010706140928619571,
+              "eX": 0.17769996556865963,
+              "eZ": 0.0344418052256531,
+              "mean_wait_repository_slots": 10.160569930431969
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999082,
+              "rate_bits_per_slot": 0.023471132546084465,
+              "eX": 0.22697412261680738,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 9.684274438544424
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998178,
+              "rate_bits_per_slot": 0.010706140928619563,
+              "eX": 0.17769996556865963,
+              "eZ": 0.03444180522565321,
+              "mean_wait_repository_slots": 10.160569930431972
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999065,
+              "rate_bits_per_slot": 0.012583412339392547,
+              "eX": 0.28522525693731504,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 10.929208563662069
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997223,
+              "rate_bits_per_slot": 0.018276474836098743,
+              "eX": 0.2204045135702682,
+              "eZ": 0.0023724758944030366,
+              "mean_wait_repository_slots": 11.763171849120358
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997962,
+              "rate_bits_per_slot": 0.011847749699166661,
+              "eX": 0.29031016082877914,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 11.046691455005195
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996674,
+              "rate_bits_per_slot": 0.01503920953310373,
+              "eX": 0.22422210114334395,
+              "eZ": 0.004722543547354907,
+              "mean_wait_repository_slots": 12.561376330404874
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.03694598920670699,
+              "eX": 0.10317075649525415,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 14.10256410285398
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.01966237327811583,
+              "eX": 0.07323165033234424,
+              "eZ": 0.06444444444444386,
+              "mean_wait_repository_slots": 14.10256410285398
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985576,
+              "rate_bits_per_slot": 0.011758834084162494,
+              "eX": 0.15025610638652198,
+              "eZ": -4.440892098500626e-16,
+              "mean_wait_repository_slots": 33.12566170157032
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985201,
+              "rate_bits_per_slot": 0.010508481245482072,
+              "eX": 0.08306679439268644,
+              "eZ": 0.034441805225653155,
+              "mean_wait_repository_slots": 35.29585933435981
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985576,
+              "rate_bits_per_slot": 0.011758834084162494,
+              "eX": 0.15025610638652198,
+              "eZ": -5.551115123125783e-16,
+              "mean_wait_repository_slots": 33.12566170157032
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985203,
+              "rate_bits_per_slot": 0.010508481245482192,
+              "eX": 0.08306679439268655,
+              "eZ": 0.03444180522565343,
+              "mean_wait_repository_slots": 35.29585933435936
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999963638,
+              "rate_bits_per_slot": 0.004100076816671417,
+              "eX": 0.19182389930695115,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 71.88368694799455
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999889444,
+              "rate_bits_per_slot": 0.00652485810330851,
+              "eX": 0.09278253283576049,
+              "eZ": 0.0023724758944034807,
+              "mean_wait_repository_slots": 81.25920471139892
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999936934,
+              "rate_bits_per_slot": 0.00375143510115832,
+              "eX": 0.19183540902406648,
+              "eZ": 8.326672684688674e-16,
+              "mean_wait_repository_slots": 78.55787176296283
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999175624,
+              "rate_bits_per_slot": 0.005650022250993116,
+              "eX": 0.0947110087105017,
+              "eZ": 0.00472254354735413,
+              "mean_wait_repository_slots": 89.32946076536696
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.044565434737921863,
+              "eX": 0.10909204789878085,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 11.282932417251985
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.02254664263626275,
+              "eX": 0.07959967839868815,
+              "eZ": 0.06444444444444464,
+              "mean_wait_repository_slots": 11.282932417251985
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991799,
+              "rate_bits_per_slot": 0.01771260001841963,
+              "eX": 0.1607731297397783,
+              "eZ": 2.7755575615628914e-16,
+              "mean_wait_repository_slots": 20.54153976140198
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991648,
+              "rate_bits_per_slot": 0.015063561764407067,
+              "eX": 0.09560625870518019,
+              "eZ": 0.03444180522565249,
+              "mean_wait_repository_slots": 21.833415795185296
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991799,
+              "rate_bits_per_slot": 0.017712600018419608,
+              "eX": 0.16077312973977814,
+              "eZ": 1.6653345369377348e-16,
+              "mean_wait_repository_slots": 20.541539761402003
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991648,
+              "rate_bits_per_slot": 0.01506356176440707,
+              "eX": 0.09560625870518025,
+              "eZ": 0.03444180522565271,
+              "mean_wait_repository_slots": 21.83341579518531
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999982911,
+              "rate_bits_per_slot": 0.007839748540212875,
+              "eX": 0.20577862140231323,
+              "eZ": 3.3306690738754696e-16,
+              "mean_wait_repository_slots": 34.01437400136559
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999982435,
+              "rate_bits_per_slot": 0.012397048417766326,
+              "eX": 0.11125809505206735,
+              "eZ": 0.0023724758944045354,
+              "mean_wait_repository_slots": 38.08935924203863
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.999999999998242,
+              "rate_bits_per_slot": 0.007278043241260013,
+              "eX": 0.20583183467100102,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 36.62529326809828
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999980264,
+              "rate_bits_per_slot": 0.01074414107803367,
+              "eX": 0.11311869537606278,
+              "eZ": 0.0047225435473540744,
+              "mean_wait_repository_slots": 41.64722929200375
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.050265913310978336,
+              "eX": 0.11868560748193402,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 9.438387227274088
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.023199565692025685,
+              "eX": 0.089917031914727,
+              "eZ": 0.0644444444444448,
+              "mean_wait_repository_slots": 9.438387227274088
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995498,
+              "rate_bits_per_slot": 0.0232877208356126,
+              "eX": 0.1777001969112567,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 13.954993842475233
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995114,
+              "rate_bits_per_slot": 0.018021380434572017,
+              "eX": 0.11581916470339815,
+              "eZ": 0.0344418052256536,
+              "mean_wait_repository_slots": 14.792286252771373
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995498,
+              "rate_bits_per_slot": 0.02328772083561262,
+              "eX": 0.17770019691125666,
+              "eZ": 1.1102230246251565e-16,
+              "mean_wait_repository_slots": 13.95499384247522
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995112,
+              "rate_bits_per_slot": 0.018021380434571476,
+              "eX": 0.1158191647033982,
+              "eZ": 0.034441805225653654,
+              "mean_wait_repository_slots": 14.792286252771808
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991873,
+              "rate_bits_per_slot": 0.012017072917226666,
+              "eX": 0.22757931203141563,
+              "eZ": -4.440892098500626e-16,
+              "mean_wait_repository_slots": 18.8259176905561
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991078,
+              "rate_bits_per_slot": 0.018768892424294352,
+              "eX": 0.1402244047465135,
+              "eZ": 0.0023724758944037028,
+              "mean_wait_repository_slots": 20.83599526727271
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991775,
+              "rate_bits_per_slot": 0.011348087697525329,
+              "eX": 0.22781777641439677,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 19.898704352414345
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999990945,
+              "rate_bits_per_slot": 0.016227173019601974,
+              "eX": 0.14203395823449577,
+              "eZ": 0.004722543547353852,
+              "mean_wait_repository_slots": 22.627147220676076
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.05174057403258269,
+              "eX": 0.13181925988023485,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 8.45745378908984
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.020512277581440204,
+              "eX": 0.10404156343772852,
+              "eZ": 0.06444444444444491,
+              "mean_wait_repository_slots": 8.45745378908984
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997125,
+              "rate_bits_per_slot": 0.025291977662056233,
+              "eX": 0.20076426242188122,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 10.934139465464746
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996919,
+              "rate_bits_per_slot": 0.016459622006901733,
+              "eX": 0.14358740703605682,
+              "eZ": 0.034441805225653765,
+              "mean_wait_repository_slots": 11.558141150844598
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997129,
+              "rate_bits_per_slot": 0.025291977662058356,
+              "eX": 0.20076426242188122,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 10.934139465463836
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996918,
+              "rate_bits_per_slot": 0.016459622006901414,
+              "eX": 0.14358740703605677,
+              "eZ": 0.03444180522565371,
+              "mean_wait_repository_slots": 11.558141150844826
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995451,
+              "rate_bits_per_slot": 0.013740012126571355,
+              "eX": 0.25572885966675823,
+              "eZ": 3.3306690738754696e-16,
+              "mean_wait_repository_slots": 13.083502086915422
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999994671,
+              "rate_bits_per_slot": 0.020966098999996078,
+              "eX": 0.1779948379528037,
+              "eZ": 0.002372475894403425,
+              "mean_wait_repository_slots": 14.319495846537441
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995228,
+              "rate_bits_per_slot": 0.013129751599104185,
+              "eX": 0.25663718085788223,
+              "eZ": 5.551115123125783e-17,
+              "mean_wait_repository_slots": 13.585229220618922
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999994718,
+              "rate_bits_per_slot": 0.01791674157942457,
+              "eX": 0.17993638991710298,
+              "eZ": 0.004722543547354685,
+              "mean_wait_repository_slots": 15.447989786555032
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.05033461257562443,
+              "eX": 0.14332888768226854,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 8.088054475944919
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.01683701344590726,
+              "eX": 0.11641954450329034,
+              "eZ": 0.06444444444444469,
+              "mean_wait_repository_slots": 8.088054475944919
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997753,
+              "rate_bits_per_slot": 0.024181829516356147,
+              "eX": 0.2207003117442477,
+              "eZ": 2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.865085198778981
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997643,
+              "rate_bits_per_slot": 0.012461805813068142,
+              "eX": 0.16855373633238901,
+              "eZ": 0.034441805225653765,
+              "mean_wait_repository_slots": 10.384880092971786
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997754,
+              "rate_bits_per_slot": 0.024181829516356702,
+              "eX": 0.2207003117442477,
+              "eZ": 2.7755575615628914e-16,
+              "mean_wait_repository_slots": 9.86508519877876
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997642,
+              "rate_bits_per_slot": 0.012461805813067892,
+              "eX": 0.16855373633238896,
+              "eZ": 0.03444180522565371,
+              "mean_wait_repository_slots": 10.384880092972011
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996501,
+              "rate_bits_per_slot": 0.013051546009864317,
+              "eX": 0.2784852481587946,
+              "eZ": 0.0,
+              "mean_wait_repository_slots": 11.234022684131522
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996294,
+              "rate_bits_per_slot": 0.019329905791391266,
+              "eX": 0.2095951109252679,
+              "eZ": 0.002372475894403925,
+              "mean_wait_repository_slots": 12.166984462295956
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996869,
+              "rate_bits_per_slot": 0.012458175326353788,
+              "eX": 0.2811948760364017,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 11.47248192494666
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996417,
+              "rate_bits_per_slot": 0.016172895046104245,
+              "eX": 0.21223394712760812,
+              "eZ": 0.004722543547354796,
+              "mean_wait_repository_slots": 13.045549745630272
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.049549489841797814,
+              "eX": 0.1470050509259483,
+              "eZ": 1.1102230246251565e-16,
+              "mean_wait_repository_slots": 8.026431473394164
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.015539538709160227,
+              "eX": 0.12037305888332445,
+              "eZ": 0.06444444444444442,
+              "mean_wait_repository_slots": 8.026431473394164
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.999999999999797,
+              "rate_bits_per_slot": 0.023502912355389764,
+              "eX": 0.22673426922660983,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 9.689232560713378
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998017,
+              "rate_bits_per_slot": 0.010803946704726057,
+              "eX": 0.17721030235658208,
+              "eZ": 0.03444180522565349,
+              "mean_wait_repository_slots": 10.168871176930924
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997972,
+              "rate_bits_per_slot": 0.023502912355390308,
+              "eX": 0.22673426922660983,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 9.68923256071315
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998018,
+              "rate_bits_per_slot": 0.010803946704726314,
+              "eX": 0.17721030235658214,
+              "eZ": 0.0344418052256536,
+              "mean_wait_repository_slots": 10.168871176930695
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996839,
+              "rate_bits_per_slot": 0.0126033396359855,
+              "eX": 0.28498186704929285,
+              "eZ": -1.1102230246251565e-16,
+              "mean_wait_repository_slots": 10.937540151346019
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997117,
+              "rate_bits_per_slot": 0.018339094611315915,
+              "eX": 0.21984912828858655,
+              "eZ": 0.0023724758944035917,
+              "mean_wait_repository_slots": 11.778271731546768
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997062,
+              "rate_bits_per_slot": 0.011893640325472375,
+              "eX": 0.2897426679988094,
+              "eZ": -2.220446049250313e-16,
+              "mean_wait_repository_slots": 11.06569518288556
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996835,
+              "rate_bits_per_slot": 0.015119780452627565,
+              "eX": 0.22347575129214797,
+              "eZ": 0.004722543547354574,
+              "mean_wait_repository_slots": 12.582985784793967
+            }
+          }
+        }
+      ]
+    },
+    {
+      "memory": "pure_relaxation",
+      "t1_slots": 30,
+      "t2_slots": 60,
+      "n_candidates": 35,
+      "n_covered": 35,
+      "best_physical_rate": 0.027110963143756276,
+      "best_proxy_prediction": 0.015645871999399135,
+      "physical_winners": [
+        {
+          "cutoff": 1,
+          "distillation": "none"
+        }
+      ],
+      "proxy_winners": [
+        {
+          "cutoff": 4,
+          "distillation": "root"
+        }
+      ],
+      "physical_rate_of_proxy_winners": [
+        0.011029148011783839
+      ],
+      "regret_range": [
+        0.01608181513197244,
+        0.01608181513197244
+      ],
+      "rows": [
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.14716971266129275,
+              "eZ": 0.09904121134711102,
+              "mean_wait_repository_slots": 8.024691358216506
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998981,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.12055014365768663,
+              "eZ": 0.14979407629381214,
+              "mean_wait_repository_slots": 8.024691358216506
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997728,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.20381455684802063,
+              "eZ": 0.11724285156535702,
+              "mean_wait_repository_slots": 10.497390916823694
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997775,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1530690988990192,
+              "eZ": 0.1480091826302558,
+              "mean_wait_repository_slots": 10.959589969448112
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997725,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.20381455684802074,
+              "eZ": 0.11724285156535702,
+              "mean_wait_repository_slots": 10.497390916824369
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997776,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1530690988990191,
+              "eZ": 0.14800918263025586,
+              "mean_wait_repository_slots": 10.95958996944789
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996526,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.24488647023576277,
+              "eZ": 0.11806123889641934,
+              "mean_wait_repository_slots": 12.419096423589783
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999996626,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.17271988375726144,
+              "eZ": 0.12914465461317626,
+              "mean_wait_repository_slots": 13.206554992223975
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": null,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996024,
+              "rate_bits_per_slot": 0.0020710825083568806,
+              "eX": 0.2212723533709633,
+              "eZ": 0.0325667301786719,
+              "mean_wait_repository_slots": 14.683679116287067
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995823,
+              "rate_bits_per_slot": 0.005078528039788427,
+              "eX": 0.1507254482434267,
+              "eZ": 0.05506929345176792,
+              "mean_wait_repository_slots": 15.909067062410603
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.027110963143756276,
+              "eX": 0.10317075649525415,
+              "eZ": 0.019513301815623274,
+              "mean_wait_repository_slots": 14.10256410285398
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998249,
+              "rate_bits_per_slot": 0.015242630064363797,
+              "eX": 0.07323165033234424,
+              "eZ": 0.08142212140800786,
+              "mean_wait_repository_slots": 14.10256410285398
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985707,
+              "rate_bits_per_slot": 0.007765153337444186,
+              "eX": 0.14351848807752593,
+              "eZ": 0.02057699480170777,
+              "mean_wait_repository_slots": 33.73432161841697
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985465,
+              "rate_bits_per_slot": 0.008622846451146653,
+              "eX": 0.07561381074745022,
+              "eZ": 0.05418421505894244,
+              "mean_wait_repository_slots": 35.89946139332521
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999985707,
+              "rate_bits_per_slot": 0.0077651533374441875,
+              "eX": 0.14351848807752604,
+              "eZ": 0.02057699480170777,
+              "mean_wait_repository_slots": 33.73432161841697
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999985465,
+              "rate_bits_per_slot": 0.008622846451146651,
+              "eX": 0.07561381074745027,
+              "eZ": 0.05418421505894244,
+              "mean_wait_repository_slots": 35.89946139332522
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999959232,
+              "rate_bits_per_slot": 0.002371486255680122,
+              "eX": 0.17941638251577396,
+              "eZ": 0.02053152293177829,
+              "mean_wait_repository_slots": 74.54682741622463
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999785708,
+              "rate_bits_per_slot": 0.005262741813054101,
+              "eX": 0.07756880996010651,
+              "eZ": 0.024129334287919413,
+              "mean_wait_repository_slots": 84.06441501435181
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 1,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999821544,
+              "rate_bits_per_slot": 0.003906526464075364,
+              "eX": 0.1731055792202228,
+              "eZ": 0.0008307536763126344,
+              "mean_wait_repository_slots": 83.33251366200388
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999997429992,
+              "rate_bits_per_slot": 0.005770617781005583,
+              "eX": 0.0736757278051896,
+              "eZ": 0.009620355374169609,
+              "mean_wait_repository_slots": 93.96583219618974
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.026031059668973587,
+              "eX": 0.10909204789878085,
+              "eZ": 0.03297981370776204,
+              "mean_wait_repository_slots": 11.282932417251985
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998288,
+              "rate_bits_per_slot": 0.01351098425821432,
+              "eX": 0.07959967839868815,
+              "eZ": 0.09311704854531905,
+              "mean_wait_repository_slots": 11.282932417251985
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991749,
+              "rate_bits_per_slot": 0.008144416405409862,
+              "eX": 0.1496594320145928,
+              "eZ": 0.03495612646829205,
+              "mean_wait_repository_slots": 21.161108266069977
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991035,
+              "rate_bits_per_slot": 0.01015381720305982,
+              "eX": 0.08334085231934596,
+              "eZ": 0.06795383539035049,
+              "mean_wait_repository_slots": 22.446355378892232
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991749,
+              "rate_bits_per_slot": 0.008144416405409867,
+              "eX": 0.1496594320145928,
+              "eZ": 0.034956126468292215,
+              "mean_wait_repository_slots": 21.16110826606997
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991036,
+              "rate_bits_per_slot": 0.010153817203059945,
+              "eX": 0.0833408523193459,
+              "eZ": 0.06795383539035055,
+              "mean_wait_repository_slots": 22.446355378892
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999982678,
+              "rate_bits_per_slot": 0.0025174004343870887,
+              "eX": 0.18537011858154284,
+              "eZ": 0.03473793536835573,
+              "mean_wait_repository_slots": 36.02634957598681
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.99999999999808,
+              "rate_bits_per_slot": 0.008398599099647725,
+              "eX": 0.08629007674220457,
+              "eZ": 0.03917868073979508,
+              "mean_wait_repository_slots": 40.1879481743962
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 2,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999980774,
+              "rate_bits_per_slot": 0.007554213208024782,
+              "eX": 0.17525964923884413,
+              "eZ": 0.002472517419469633,
+              "mean_wait_repository_slots": 40.431671351305425
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999978689,
+              "rate_bits_per_slot": 0.010914819464266742,
+              "eX": 0.07903330551847093,
+              "eZ": 0.014055644405593593,
+              "mean_wait_repository_slots": 45.31647365693821
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.018409316530773885,
+              "eX": 0.11868560748193402,
+              "eZ": 0.053401661705819115,
+              "mean_wait_repository_slots": 9.438387227274088
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998687,
+              "rate_bits_per_slot": 0.006512494370253031,
+              "eX": 0.089917031914727,
+              "eZ": 0.11080513980543671,
+              "mean_wait_repository_slots": 9.438387227274088
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995332,
+              "rate_bits_per_slot": 0.003260414407062163,
+              "eX": 0.1603694413665709,
+              "eZ": 0.05742092867933213,
+              "mean_wait_repository_slots": 14.625940234022323
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.999999999999513,
+              "rate_bits_per_slot": 0.00689989292651048,
+              "eX": 0.09677609028796058,
+              "eZ": 0.08946533106599908,
+              "mean_wait_repository_slots": 15.453201002314987
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995332,
+              "rate_bits_per_slot": 0.0032604144070621675,
+              "eX": 0.1603694413665709,
+              "eZ": 0.05742092867933207,
+              "mean_wait_repository_slots": 14.62594023402232
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.999999999999513,
+              "rate_bits_per_slot": 0.006899892926510427,
+              "eX": 0.09677609028796025,
+              "eZ": 0.08946533106599885,
+              "mean_wait_repository_slots": 15.45320100231505
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999991533,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.19617817680463873,
+              "eZ": 0.05665512461824351,
+              "mean_wait_repository_slots": 20.518237162140867
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999991004,
+              "rate_bits_per_slot": 0.008319930469424879,
+              "eX": 0.10195762995345597,
+              "eZ": 0.062435192550285845,
+              "mean_wait_repository_slots": 22.571412967041255
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 4,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999990712,
+              "rate_bits_per_slot": 0.011029148011783839,
+              "eX": 0.181280346003785,
+              "eZ": 0.006995497092471159,
+              "mean_wait_repository_slots": 23.300963900601484
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999989855,
+              "rate_bits_per_slot": 0.015645871999399135,
+              "eX": 0.09075585180232393,
+              "eZ": 0.02268797428061764,
+              "mean_wait_repository_slots": 25.868452618519306
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.004993807987065554,
+              "eX": 0.13181925988023485,
+              "eZ": 0.07807468216334007,
+              "mean_wait_repository_slots": 8.45745378908984
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999998821,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.10404156343772852,
+              "eZ": 0.1320567920427692,
+              "mean_wait_repository_slots": 8.45745378908984
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996968,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1768033478525734,
+              "eZ": 0.08613161615469028,
+              "mean_wait_repository_slots": 11.715843125465758
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.99999999999968,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.11743126735971698,
+              "eZ": 0.11713548124342199,
+              "mean_wait_repository_slots": 12.324333274923351
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996968,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1768033478525733,
+              "eZ": 0.08613161615469028,
+              "mean_wait_repository_slots": 11.715843125465769
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.99999999999968,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.11743126735971676,
+              "eZ": 0.11713548124342194,
+              "mean_wait_repository_slots": 12.324333274923362
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999994875,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.2137815611575819,
+              "eZ": 0.08479851695348012,
+              "mean_wait_repository_slots": 14.735792671086653
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999994625,
+              "rate_bits_per_slot": 0.00034724572897468437,
+              "eX": 0.12719937123469865,
+              "eZ": 0.09249551078051227,
+              "mean_wait_repository_slots": 15.976518222994732
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 8,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999994197,
+              "rate_bits_per_slot": 0.009670563924467128,
+              "eX": 0.19481747356118428,
+              "eZ": 0.016925161691287327,
+              "mean_wait_repository_slots": 17.03618732886798
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999993765,
+              "rate_bits_per_slot": 0.01406557911553938,
+              "eX": 0.1128724870822354,
+              "eZ": 0.03706441101953439,
+              "mean_wait_repository_slots": 18.684854126605778
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.14332888768226854,
+              "eZ": 0.09527770808714997,
+              "mean_wait_repository_slots": 8.088054475944919
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999039,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.11641954450329034,
+              "eZ": 0.1466936028160128,
+              "mean_wait_repository_slots": 8.088054475944919
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997446,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.19435920754992358,
+              "eZ": 0.10938348265354592,
+              "mean_wait_repository_slots": 10.716386622273388
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997373,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.13992124328439653,
+              "eZ": 0.14002342936918616,
+              "mean_wait_repository_slots": 11.2211139801866
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997449,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1943592075499237,
+              "eZ": 0.10938348265354603,
+              "mean_wait_repository_slots": 10.716386622272928
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997373,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.13992124328439642,
+              "eZ": 0.14002342936918616,
+              "mean_wait_repository_slots": 11.221113980186585
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996037,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.23377718075633253,
+              "eZ": 0.10900798775162424,
+              "mean_wait_repository_slots": 12.860254410967569
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995856,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.15583619094914647,
+              "eZ": 0.11881993923729911,
+              "mean_wait_repository_slots": 13.770055828952987
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 16,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999995931,
+              "rate_bits_per_slot": 0.004361555577322507,
+              "eX": 0.21249330302212438,
+              "eZ": 0.02873925500250263,
+              "mean_wait_repository_slots": 15.074671582749772
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995641,
+              "rate_bits_per_slot": 0.007816763462420677,
+              "eX": 0.13868135683493943,
+              "eZ": 0.05113208871255648,
+              "mean_wait_repository_slots": 16.37997354577363
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "none"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1470050509259483,
+              "eZ": 0.09896569178681175,
+              "mean_wait_repository_slots": 8.026431473394164
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999999037,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.12037305888332445,
+              "eZ": 0.14973858978075272,
+              "mean_wait_repository_slots": 8.026431473394164
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "left"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999997672,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.20287796248920376,
+              "eZ": 0.11688579801374432,
+              "mean_wait_repository_slots": 10.51113821813893
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997503,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.15156104426667527,
+              "eZ": 0.14766181644107146,
+              "mean_wait_repository_slots": 10.978502568622618
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "right"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.999999999999767,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.2028779624892036,
+              "eZ": 0.11688579801374421,
+              "mean_wait_repository_slots": 10.511138218139388
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999997504,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.15156104426667522,
+              "eZ": 0.1476618164410714,
+              "mean_wait_repository_slots": 10.9785025686224
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "both"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996326,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.24377094557996343,
+              "eZ": 0.11762856074679379,
+              "mean_wait_repository_slots": 12.449429083239519
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.999999999999626,
+              "rate_bits_per_slot": 0.0,
+              "eX": 0.1707792780071335,
+              "eZ": 0.12861181578094044,
+              "mean_wait_repository_slots": 13.250825691129922
+            }
+          }
+        },
+        {
+          "candidate": {
+            "cutoff": 32,
+            "distillation": "root"
+          },
+          "metrics": {
+            "physical_phase_error": {
+              "status": "covered",
+              "coverage": 0.9999999999996183,
+              "rate_bits_per_slot": 0.0021816380900643627,
+              "eX": 0.2206148679120335,
+              "eZ": 0.03247030114533911,
+              "mean_wait_repository_slots": 14.703842576538568
+            },
+            "werner_proxy": {
+              "status": "covered",
+              "coverage": 0.9999999999995893,
+              "rate_bits_per_slot": 0.0052262554522569124,
+              "eX": 0.14984671745774608,
+              "eZ": 0.05500073015418011,
+              "mean_wait_repository_slots": 15.933408362256483
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

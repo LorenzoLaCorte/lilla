@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "horizon": 128,
+      "direct_seconds": 0.12351962499815272,
+      "efficient_seconds": 0.0014532499990309589,
+      "speedup": 84.99544130777004,
+      "max_pmf_error": 4.163336342344337e-17,
+      "max_populated_coordinate_error": 1.9539925233402755e-14,
+      "direct_rate": 0.026347330248990674,
+      "efficient_rate": 0.026347330248990795,
+      "direct_coverage": 0.9964394202530583,
+      "efficient_coverage": 0.9964394202530593
+    },
+    {
+      "horizon": 256,
+      "direct_seconds": 0.27426979200026835,
+      "efficient_seconds": 0.0019254159997217357,
+      "speedup": 142.44703068838436,
+      "max_pmf_error": 7.0637939941775585e-15,
+      "max_populated_coordinate_error": 3.492872657773205e-12,
+      "direct_rate": 0.026356552978620537,
+      "efficient_rate": 0.026356552978510167,
+      "direct_coverage": 0.9999886954475727,
+      "efficient_coverage": 0.9999886954471212
+    },
+    {
+      "horizon": 512,
+      "direct_seconds": 0.6273325419970206,
+      "efficient_seconds": 0.0020821670004806947,
+      "speedup": 301.2882933271889,
+      "max_pmf_error": 1.0358033875057515e-14,
+      "max_populated_coordinate_error": 1.70374170327392e-09,
+      "direct_rate": 0.02635658193853464,
+      "efficient_rate": 0.026356581938188635,
+      "direct_coverage": 0.9999999998859904,
+      "efficient_coverage": 0.9999999998853272
+    },
+    {
+      "horizon": 1024,
+      "direct_seconds": 1.5518364580020716,
+      "efficient_seconds": 0.0026657079979486298,
+      "speedup": 582.1479543882048,
+      "max_pmf_error": 1.169724039851161e-14,
+      "max_populated_coordinate_error": 2.1364523483669018e-09,
+      "direct_rate": 0.0263565819388255,
+      "efficient_rate": 0.026356581937942283,
+      "direct_coverage": 0.9999999999999999,
+      "efficient_coverage": 0.9999999999990586
+    }
+  ]
+}

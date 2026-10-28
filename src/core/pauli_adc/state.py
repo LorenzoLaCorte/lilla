@@ -323,9 +323,11 @@ def normalize_weighted_x_func(weighted_coordinates, pmf, *, atol=1.0e-10):
     normalized = np.tile(
         np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0]), (len(pmf), 1)
     )
-    # Every positive bin may feed a later protocol level.  Replacing a tiny
-    # positive bin by a dummy state would therefore lose physical information
-    # even if its contribution is negligible at the present level.
-    populated = pmf > 0.0
+    # Preserve every normally representable positive bin, including genuinely
+    # rare early completions. Subnormal traces have lost relative precision:
+    # dividing independently rounded correlators by e.g. 1e-320 can manufacture
+    # an O(1e-4) PSD violation. Leave only those bins at the physical placeholder;
+    # the PMF itself is retained. Their total mass is at most T * float.tiny.
+    populated = pmf >= np.finfo(float).tiny
     normalized[populated] = weighted[populated] / pmf[populated, np.newaxis]
     return polish_x_func(normalized, atol=max(atol * 10.0, 1.0e-10))
