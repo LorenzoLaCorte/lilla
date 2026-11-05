@@ -1,0 +1,30 @@
+{
+  "jobs": 288,
+  "statuses": {
+    "complete": 288
+  },
+  "requests": 37354,
+  "cached_requests": 10618,
+  "distinct_within_job_evaluations": 26736,
+  "distinct_hardware_candidate_pairs": 17304,
+  "candidate_statuses": {
+    "converged": 25780,
+    "unconverged": 956
+  },
+  "unresolved_reasons": {
+    "coverage": 560,
+    "confirmation": 396
+  },
+  "positive_evaluations": 7974,
+  "stage_winners": 672,
+  "positive_stage_winners": 374,
+  "q_profile_rows": 1581,
+  "q_profile_statuses": {
+    "converged": 1527,
+    "unconverged": 54
+  },
+  "start": "2026-10-29T20:05:32.145980+00:00",
+  "end": "2026-10-30T05:18:24.810723+00:00",
+  "worker_seconds": 66052.14285673999,
+  "wall_seconds": 33172.664743
+}

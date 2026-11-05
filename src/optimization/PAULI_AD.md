@@ -54,6 +54,51 @@ python -m src.scripts.gp_pauliAD --summarize-only --output results/pauliAD/overn
 
 ### Hardware follow-up to the first overnight report
 
+**Recommended next run: metropolitan links.** The completed C batch had no
+positive-key candidates. The new `metro97` / `metro99` regimes use 5 km
+elementary links (20/40 km chains), 1.5 dB passive channel loss and an
+assumed 10 us local overhead in addition to midpoint heralding propagation.
+The resulting 35 us slot and calibrated `p_gen=0.0036793` yield about
+105 elementary successes/s. Physical memory times remain 2.4/1.71 s at
+scale 1; only their slot representation changes.
+
+```bash
+source venv/bin/activate
+caffeinate -i python -m src.scripts.gp_pauliAD \
+  --preset hardware --hardware-regimes metro97 metro99 \
+  --metro-link-km 5 --nodes 5 9 --memory-scales 0.5 1 2 \
+  --relaxation-models ad unital --seeds 7 --gp-calls 60 \
+  --max-dists 2 --max-total-dists 2 \
+  --workers 2 --case-timeout 7200 \
+  --output results/pauliAD/metropolitan-followup
+```
+
+This is 288 jobs. `--dry-run` prints commands; `--resume` replays the same
+plan after interruption. The batch completed on 30 October 2026; see the
+[results report](../analysis/pauliAD-overnight-report.md). Use a fresh output
+directory for a new optimization replicate. Different distances need a new
+output directory. C/D defaults and existing saved plans remain unchanged.
+Metro regimes require `--memory-profiles network`; the historical coherence
+benchmark's units are not reused for the shorter slot.
+
+The [metropolitan reference note](../analysis/metropolitan-reference.md)
+documents the measured fibre-loss reference, generation-prefactor assumption,
+source-fidelity references, threshold brackets and positive-key pilot. Both
+the 0.97 memory-source reference and optimistic 0.99 photonic-source reference
+are explicitly distinguished from an integrated memory link. The isotropic
+visibilities are 0.96 and 0.986667, respectively. Perfect and source-AD controls
+are unchanged. All 48 pilot baselines converged, and 38 yielded positive key;
+at scale 1 eight links reach 0.495 bits/s for F0=0.97 with two terminal rounds,
+and 3.368 bits/s for F0=0.99 with swaps alone (AD model).
+
+Reproduce those fixed baseline checks, without optimization:
+
+```bash
+python -m src.analysis.metropolitan_reference
+```
+
+The following documents the original C/D preset, which remains available.
+
 The new `hardware` preset addresses the report's four questions. It reuses
 `reproduce_results.py`'s C/D generation probabilities, swap success (0.85)
 and source visibilities (0.960/0.958). Slots are 250/100 microseconds,

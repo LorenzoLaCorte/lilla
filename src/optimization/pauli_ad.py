@@ -173,25 +173,38 @@ class Evaluation:
         self.backend = RepeaterChainEvaluation(state_type=RealXState, efficient=True,
                                                use_fft=True, use_gpu=False, w_twirling=False)
 
+    def initial_coordinates(self, choice):
+        return source(choice["q"], self.hardware.visibility, self.hardware.source_damping)
+
+    def memory_rates(self):
+        return np.asarray(self.hardware.pauli_rates), np.asarray(self.hardware.ad_rates)
+
+    def operation_output(self, coordinates):
+        """Prediction-model hook; the physical evaluator preserves all coordinates."""
+        return coordinates
+
     def at_horizon(self, choice, horizon):
         h = self.hardware
         protocol, policies = choice["protocol"], choice["policies"]
         checkAsymProtocol(tuple(protocol), h.links)
         if len(policies) != h.links-1 or any(p not in POLICIES for p in policies):
             raise ValueError("one acceptance policy per physical swap boundary is required")
-        initial = source(choice["q"], h.visibility, h.source_damping)
+        initial = self.initial_coordinates(choice)
+        cutoff = choice.get("cutoff", h.cutoff)
+        if cutoff is not None and (isinstance(cutoff, bool) or int(cutoff) != cutoff or cutoff < 1):
+            raise ValueError("candidate cutoff must be a positive integer or None")
         times = np.arange(horizon)
         segments = {}
         for i, probability in enumerate(h.p_gen):
             pmf = np.zeros(horizon)
             pmf[1:] = probability*(1-probability)**(times[1:]-1)
             segments[i] = (pmf, np.tile(initial, (horizon, 1)), i, i+1)
-        rates, ad = np.asarray(h.pauli_rates), np.asarray(h.ad_rates)
+        rates, ad = self.memory_rates()
         for step in protocol:
             i = int(step[1:])
             left = segments[i]
             params = dict(p_gen=h.p_gen, p_swap=h.p_swap, p_distillation=h.p_distillation,
-                          cutoff=h.cutoff if h.cutoff is not None else horizon,
+                          cutoff=cutoff if cutoff is not None else horizon,
                           cut_type="memory_time", real_x_werner_twirling=False)
             if step[0] == "s":
                 j = min(x for x in segments if x > i)
@@ -201,6 +214,7 @@ class Evaluation:
                               _real_x_node_pauli_rates=rates[endpoints],
                               _real_x_node_adc_rates=ad[endpoints])
                 p, x = self.backend.compute_unit(params, *left[:2], *right[:2], unit_kind="swap")
+                x = self.operation_output(x)
                 del segments[i]
                 segments[j] = (p, x, left[2], right[3])
             else:
@@ -208,6 +222,7 @@ class Evaluation:
                 params.update(_real_x_node_pauli_rates=rates[endpoints],
                               _real_x_node_adc_rates=ad[endpoints])
                 p, x = self.backend.compute_unit(params, *left[:2], unit_kind="dist")
+                x = self.operation_output(x)
                 segments[i] = (p, x, left[2], left[3])
         p, x, _, _ = next(iter(segments.values()))
         return self.metrics(p, x), p, x

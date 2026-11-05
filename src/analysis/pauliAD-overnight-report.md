@@ -1,280 +1,504 @@
 ---
-title: "What the first Pauli–AD optimization batch teaches us"
-date: "27 October 2026"
+title: "Metropolitan repeater chains: postselection, distillation and source optimization"
+date: "30 October 2026"
 header-includes:
   - \usepackage{needspace}
   - \usepackage{etoolbox}
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
   - \BeforeBeginEnvironment{longtable}{\Needspace{5\baselineskip}}
 ---
 
-**The strongest contribution candidate is choosing where in the tree to
-postselect, rather than a general advantage of partially entangled sources.**
-The results below are ranked by scientific interest and estimated novelty.
-Novelty assessments reflect a targeted primary-source literature check, not
-established priority.
+**The metropolitan batch reaches positive key and gives a constructive
+postselection result: selecting Psi only at the first swapping level enables
+eight-link key from fixed partially entangled sources where every uniform
+acceptance policy gives zero.** The effect also occurs under unital noise,
+so its main mechanism is source concentration and avoiding unnecessary
+retries, rather than a benefit unique to amplitude damping.
 
-**Scope.** Four/eight elementary links (five/nine nodes), homogeneous hardware,
-$p_{\mathrm{gen}}=0.2$, ideal instantaneous swap/distillation hardware, and
-amplitude damping during waiting: $T_2=2T_1$. Sources are
-$|\psi_q\rangle=\sqrt{1-q}|00\rangle+\sqrt q|11\rangle$; Bell means $q=1/2$,
-PE here means $q=1/4$. The grid is $T_1\in\{25,74,200,600\}$ slots, with
-optimizer seeds 7 and 42. Our metric is
+The strongest practical gains come from choosing distillation count and
+placement for the delivered source state. Allowing recurrence turns several
+zero-rate Bell-source cases into positive-rate cases. In contrast, free
+optimization of the source parameter $q$ gives only small matched gains,
+at most **0.184%** in this batch. Asymmetric hardware does not produce a
+per-swap postselection advantage among the candidates evaluated.
+
+These conclusions concern an optimistic hybrid hardware model, pooled
+asymptotic BB84 key, and a bounded protocol family. They do not establish
+global protocol optima, a scaling law or literature priority. The earlier
+[ideal-hardware report](pauliAD-ideal-hardware-report.md) and
+[long-distance all-zero report](pauliAD-long-distance-report.md) are archived
+separately with their original evidence.
+
+## Experiment and audit
+
+All **288 jobs** completed from **29 October, 21:05 to 30 October, 06:18 CET**,
+about **9 h 13 min** with two workers. Summed subprocess elapsed time was
+18 h 21 min; this is not measured CPU time. There were no failed jobs or
+timeouts.
+
+| Quantity | Result |
+|---|---:|
+| Trial requests, including cached repeats | 37,354 |
+| Distinct candidate evaluations, summed within each job | 26,736 |
+| Distinct hardware/candidate descriptions across jobs | 17,304 |
+| Converged evaluations | 25,780 (96.4%) |
+| Unresolved horizons | 956 (3.6%) |
+| Backend physicality/evaluation failures | 0 |
+| Positive-key converged evaluations | 7,974 |
+| Positive reported stage winners | 374 / 672 |
+
+These are computational counts, not independent experimental observations.
+There is one optimizer seed, 7. Perfect and source-AD controls repeat across
+the two nominal fidelity regimes because their actual input states are
+identical. Bayesian searches used 60 proposals per stage plus anchors and
+matched controls; repeated controls are not extra replication.
+
+### Hardware and conventions
+
+The [reference note](metropolitan-reference.md) documents the literature,
+generation-prefactor calibration and pilot checks. Both regimes use:
+
+| Parameter | Value |
+|---|---|
+| Elementary span / chain span | 5 km / 20 km or 40 km |
+| Channel loss | 1.5 dB over the combined midpoint photon paths |
+| Attempt duration | 35 microseconds, including assumed 10-microsecond local overhead |
+| Generation success per attempt | 0.0036793, about 105 successes/s per elementary link |
+| Swap hardware success | 0.85 |
+| Memory times | $(T_1,T_2)=s(2.4,1.71)$ seconds |
+| Memory scales | 0.5, 1, 2 |
+| Recurrence budget | At most two rounds per vertex and two in total |
+
+The memory reference is informed by [Bradley et al.](https://doi.org/10.1038/s41534-022-00637-w).
+The passive fibre loss is supported by
+[Agarwal et al.](https://doi.org/10.1103/PhysRevX.4.041038), without using
+amplification. The combined memory/interface performance is an assumption,
+not a demonstrated integrated device. The 0.97 fidelity reference has a
+remote-atom precedent in [Saha et al.](https://doi.org/10.1038/s41467-025-57557-4);
+0.99 is an optimistic photonic reference supported by
+[Craddock et al.](https://doi.org/10.1103/PRXQuantum.5.030330).
+
+AD waiting noise assumes relaxation toward $|0\rangle$, with
+$\kappa=1/T_1$, $\Gamma_X=\Gamma_Y=1/T_2-1/(2T_1)$ and $\Gamma_Z=0$.
+The unital control has the same longitudinal/transverse decay times but
+zero AD and Pauli mode rates $(1/T_2,1/T_2,1/T_1)$. Decay times alone do not
+identify the relaxation fixed point.
+
+Sources are
 
 $$
-R=\mathrm{SKR}=\frac{\max\{0,1-h_2(e_X)-h_2(e_Z)\}}{\mathbb E[T]}.
+\rho_{q,v}=v|\psi_q\rangle\langle\psi_q|+(1-v)I/4,
+\qquad |\psi_q\rangle=\sqrt{1-q}|00\rangle+\sqrt q|11\rangle.
 $$
 
-Rejection, regeneration and distillation preparation are included in $T$.
-There are no cutoffs, preparation damping, classical-message delays or
-normalization by memory count. Distillation uses the existing recurrence,
-without Werner twirling. Placement experiments fix a balanced tree and no
-distillation; protocol searches also vary the tree and allow one recurrence
-round per tree vertex; their acceptance policy remains uniform. Rates below
-are bits/slot.
+The labels `metro97` and `metro99` refer to the **Bell-reference fidelity**
+$F_{\rm ref}=(1+3v)/4$, hence $v=0.96$ and $0.986667$. They are not the
+actual initial fidelity of every PE or control state. For example,
+at $q=1/4$ the initial $\Phi^+$ fidelities are approximately 0.90569 and
+0.92391. The comparisons hold visibility fixed, not initial entanglement.
 
-## 1. The useful postselection level depends on the source and noise regime
+Perfect Bell sources and independent generation AD probabilities 5% and
+15% per qubit are additional controls; their Bell fidelities are 1,
+0.95125 and 0.86125. Source AD is applied at delivery without extra latency.
+Preparation probability and cost are independent of $q$.
+Generation probability is also held fixed across the two reference
+fidelities; this is a controlled source-quality comparison, not a model of
+an experimental rate–fidelity tradeoff.
 
-**Novelty estimate: medium as a specific network-rate result.** Entanglement
-concentration through swapping is established: [Song et al. (2014)](https://arxiv.org/abs/1306.4451)
-study recovery under amplitude damping, and [Davies et al., Sec. IV](https://arxiv.org/html/2509.16689v1#S4)
-show outcome-dependent concentration for PE inputs. Our additional result is
-the optimized *placement* and its throughput after noisy waiting and retries.
-Heralded AD recovery using an extra reversal operation is also studied by
-[Jeong et al. (2026)](https://arxiv.org/abs/2602.21563).
+The objective uses the pooled delivered state:
 
-![Optimal level schedules and their rate advantage over the best uniform policy. “All” accepts all corrected outcomes; $\Psi$ accepts the odd-parity pair. Each ratio uses the same source and tree on both sides.](pauliAD-overnight-report/1-placement.png){width=100%}
+$$
+e_X=(1-c_{XX})/2,\quad e_Z=(1-c_{ZZ})/2,\quad
+\mathrm{SKF}=\max\{0,1-h_2(e_X)-h_2(e_Z)\},\quad
+\mathrm{SKR}=\frac{\mathrm{SKF}}{\mathbb E[T]}.
+$$
 
-For **four Bell links at $T_1=74$**, the exact optimum among all 27 schedules
-accepts all first-level outcomes and selects $\Psi$ only at the root:
-$R=0.00027212\to0.00039563$ (**+45.4%**). SKF rises
-$0.002677\to0.007820$, outweighing the waiting-time increase
-$9.84\to19.77$ slots. This confirms and certifies the earlier notebook example.
+All rates below are **bits/second**, using the 35-microsecond slot.
+Swap failures, outcome rejection, recurrence acceptance and copy preparation
+are already included in $\mathbb E[T]$; no extra postselection factor is
+multiplied into SKR. Operations are instantaneous and have no gate errors;
+there are no cutoffs, finite-key effects, additional classical delays or
+memory-count normalization.
+Recurrence can use parallel copies, so these are not comparisons at fixed
+total memory resources.
 
-For **PE links**, select $\Psi$ at the first level and accept all outcomes
-afterwards. Four links at $T_1=200$ gain **2.00×** over the best uniform policy.
-Eight links at $T_1=600$ gain **12.16×**:
-$R=0.00055142\to0.00670679$, SKF $0.08849\to0.25552$, and wait
-$160.48\to38.10$ slots. Here avoiding later rejection improves both quality
-and delay. The interpretation is concentration early for imbalanced sources,
-versus filtering accumulated waiting noise late for Bell sources; this is a
-mechanistic explanation, not a separately isolated causal test.
+## 1. Postselection placement: concentrate PE sources early, then accept all
 
-The 12× comparison is against the **same PE source**. Bell sources accepting
-all outcomes already reach $0.04128$ at that eight-link point. It does not
-establish PE superiority, or a scaling law from two chain lengths.
+Placement fixes a balanced tree and no distillation. It compares all
+corrected outcomes, Phi-pair and Psi-pair acceptance in three classes:
+uniform throughout, one choice per level, and one choice per physical swap.
 
-## 2. Terminal distillation can dominate postselection, even with fresh perfect Bell links
+![Requested Bell/PE layout for the high-fidelity regime under AD: Bell on the first row, PE on the second; best level schedules on the left and same-source rate gains on the right. A dash means no positive-key schedule found or an inapplicable third level for four links. Activation from a zero baseline is shown in absolute units, not as an infinite ratio.](pauliAD-metropolitan-report/1-placement-metro99-ad.png){width=100%}
 
-**Novelty estimate: medium for this quantitative regime; low for the general
-swap-then-distill idea.** [Haldar et al., Fig. 7 and distillation discussion](https://arxiv.org/html/2401.13168v3)
-already compare both orders. [La Corte et al., Sec. V.A](https://arxiv.org/html/2502.02208v1#S5.SS1)
-find early distillation in their studied Werner-source regimes. Our AD-memory
-example illustrates a different optimum; it does not contradict their
-parameter-specific conclusions.
+For fixed **$q=1/4$ PE sources**, every positive best-level schedule accepts
+Psi at the first swapping level and all corrected outcomes afterwards.
+For four links this means `[psi_pair, all_corrected, psi_pair]` in physical
+swap-boundary order. Policies are indexed spatially, not by execution order.
 
-![Matched four-link Bell protocols: the same balanced tree, source and acceptance, with or without one terminal recurrence. Labels give the rate ratio with/without recurrence. These are saved trial evaluations, not new simulations.](pauliAD-overnight-report/2-terminal-distillation.png){width=100%}
+### Four links: almost exactly twice the throughput
 
-At $T_1=74$, appending one end-to-end recurrence to the balanced Bell protocol
-gives $R=0.00027212\to0.02541359$ (**93.39×**). SKF rises
-$0.002677\to0.44044$, while mean wait increases only
-$9.84\to17.33$ slots. It also beats the best no-distillation postselection
-schedule by **64.24×**. At $T_1=200$, the matched gain is 27.1%; at $600$,
-terminal recurrence instead lowers SKR by 4.79%, despite improving SKF.
+At $F_{\rm ref}=0.99$, $s=1$ and AD:
 
-Fresh links start perfect, so waiting creates the errors that later
-purification removes. The useful choice depends on how much key fraction
-there is to recover. This is the strongest practical warning against
-optimizing postselection in isolation. Extra parallel-copy resources are
-allowed by the evaluator, so this is not a memory-normalized advantage.
+| Fixed PE strategy | SKF | Mean wait (ms) | SKR (bits/s) |
+|---|---:|---:|---:|
+| Best uniform: Psi at every swap | 0.35079 | 152.98 | 2.29310 |
+| Psi at first level, then all | 0.35094 | 76.50 | 4.58761 |
 
-## 3. One policy per level captures every best per-swap rate found
+The output quality is almost unchanged; avoiding rejection at the final
+swap halves the waiting time. This is principally a throughput gain from
+placing concentration where it is useful, not a dramatic fidelity gain.
+Across $s=0.5,1,2$, AD rates change from 1.1985, 2.2931, 2.9529 under the
+best uniform policy to **2.3985, 4.5876, 5.9073** under the hybrid schedule.
 
-**Novelty estimate: low-to-medium, as a restricted search-space reduction
-conjecture.** [Li et al. (2021)](https://arxiv.org/abs/2005.04946) found little
-benefit from nonuniform cutoffs in their symmetric chains. Here nonuniform
-postselection can matter greatly, but variation *between levels* appears
-sufficient on the tested homogeneous balanced trees.
+For the lower-visibility regime, four-link PE key appears only at $s=2$
+on this grid. AD gives $0.09328\to0.19380$ bits/s (2.078x), and unital noise
+gives $0.03307\to0.07366$ (2.227x). The large ratios there accompany small
+absolute rates near the key boundary.
 
-![Per-level versus per-swap best rates, and sizes of the three policy spaces. Overlapping points include the two optimizer seeds. Equality for eight links is a search observation, not an exhaustive certificate.](pauliAD-overnight-report/3-level-compression.png){width=100%}
+### Eight links: a genuine positive-key extension relative to uniform PE policies
 
-The best level and per-swap rates agree at every tested setting: 16 distinct
-size/lifetime/source points, each searched with two seeds. For four links,
-all 27 per-swap schedules were evaluated, so equality is established
-numerically on those eight parameter points. For eight links, the 27 level
-schedules were exhaustive, but per-swap GP searched only a fraction of 2187
-schedules and was seeded with the level optimum. Equality there is weaker
-evidence.
+At $F_{\rm ref}=0.99$ and $s=2$:
 
-**Working hypothesis:** use one policy per nesting level before searching
-spatial asymmetry. This reduces the eight-link policy space by 81×. Symmetry
-of the hardware alone is not a proof that a symmetry-breaking policy cannot
-win; heterogeneous or unbalanced chains remain untested.
+| Waiting model | PE strategy | SKF | Mean wait (ms) | SKR (bits/s) |
+|---|---|---:|---:|---:|
+| AD | Uniform Psi | 0 | 519.92 | 0 |
+| AD | First-level Psi, then all | 0.05300 | 124.87 | **0.42445** |
+| Unital | Uniform Psi | 0 | 519.16 | 0 |
+| Unital | First-level Psi, then all | 0.03290 | 124.69 | **0.26390** |
 
-## 4. Optimizing $q$ gives small matched gains; larger apparent gains can come from the tree
+All three uniform policies converged and have zero rate. A converged
+hybrid policy has positive rate. Therefore the advantage over the entire
+uniform class is established numerically at these points, even though one
+level schedule and most node schedules remain untested or unresolved.
+It is a constructive advantage, not a certificate that the hybrid schedule
+is globally optimal. No lifetime threshold was located between grid points.
+The uniform Psi rows are the representatives returned by the margin tie
+breaker, not unique rate winners among zero-rate policies. Uniformly
+accepting all outcomes is faster still, about 44.07 ms, but also gives
+zero key: concentration at the first level is essential, not merely the
+removal of later rejection.
 
-**Novelty estimate: low as a physical principle; useful as a negative result
-and an attribution check.** [Wang et al.](https://arxiv.org/abs/1309.3818)
-establish PE robustness for single-pair correlation measures. They do not
-imply a repeater SKR advantage. The present contribution is testing that
-tradeoff under multilevel waiting and protocol optimization.
+The mechanism is visible already without noise. For two identical pure
+PE pairs, accepting the Psi outcomes gives a Bell pair after correction,
+with probability $2q(1-q)=3/8$ at $q=1/4$. Once the first level has
+concentrated the source, selecting Psi again at later levels often spends
+another factor of acceptance probability without a compensating quality
+gain. The actual evaluator includes the mixed inputs, noisy waiting and
+all failed retries; the noiseless argument is intuition, not its calculation.
+The unital result shows that this mechanism is not specific to AD.
 
-![Left: rate change from the original joint winner to its Bell-source control with exactly the same operations. Negative values mean Bell sources improve that protocol. Right: a larger apparent search gain is explained by a different tree.](pauliAD-overnight-report/4-q-attribution.png){width=100%}
+![Absolute placement rates for the high-fidelity regime. Bell and PE sources are separated by rows; columns show four/eight links. Solid curves are AD, dashed curves unital. Per-level and per-node best rates overlap. Positive PE activation does not imply superiority over Bell sources.](pauliAD-metropolitan-report/1-rates-metro99.png){width=100%}
 
-All positive-key **reported joint winners** use $q\geq0.495$. For four links
-at $T_1=600$, $q\simeq0.4952$ gives only **0.0771%** over the matched Bell
-protocol, consistently across seeds. No positive joint winner uses uniform
-Bell-outcome rejection.
+### What increases with network size, and what does not
 
-For eight links, $T_1=200$, seed 7, the reported joint rate exceeds the Bell
-search winner by **13.88%**. Both reported winners actually use Bell sources,
-all outcomes, and one terminal recurrence: the difference is the swap tree.
-The original joint candidate had $q=0.4969$; resetting it to $1/2$ raises its
-rate further, from $0.02680256$ to $0.02685390$. Thus the large gain cannot
-be credited to PE sources. Different seeds also find different trees, so
-the best-found rates should not be called global optima.
+The *advantage over the same PE source's uniform policies* changes from
+about 2x at four links to enabling key at eight. Absolute performance still
+worsens substantially. At AD, $s=2$, $F_{\rm ref}=0.99$:
 
-## Evidence limits and next decision
+| Source / policy | Four-link SKR | Eight-link SKR |
+|---|---:|---:|
+| Bell, all corrected | 20.7025 | 6.1882 |
+| PE, best uniform | 2.9529 | 0 |
+| PE, first-level Psi then all | 5.9073 | 0.4244 |
 
-The batch completed 48 jobs and 8120 distinct backend evaluations. Of these,
-7928 converged; 136 lacked convergence and 56 failed physicality checks.
-They were excluded, not treated as zero key. All reported winners passed
-coverage and successive-horizon checks. Two seeds are search replicates,
-not a statistical confidence interval. The coarse four-point lifetime grid
-demonstrates no new positive-key boundary or threshold scaling law.
+The hybrid PE SKF falls from 0.45157 to 0.05300, while its mean wait rises
+from 76.44 to 124.87 ms. Much of its rate collapse comes from quality loss,
+not only longer waiting. Bell rates fall less sharply. Thus this is not a
+claim that PE sources outperform Bell, or that postselection improves the
+best achievable network when $q$ is freely selectable.
 
-**Priority for follow-up:** refine the source-dependent level schedules
-around the key boundary, then compare them jointly with terminal recurrence
-at fixed resource assumptions. A broad claim that PE sources improve the
-optimized network, or that per-level policies are always optimal, is not
-supported by this batch. The two leading findings merit further study;
-none of these novelty estimates establishes a first-in-literature claim.
+No Bell-source placement improvement was found at any tested homogeneous
+setting; its selected positive-rate policy accepts all outcomes. Level and
+node rates agree at all 48 placement jobs. All 27 four-link schedules
+converged in each of the 24 four-link jobs. Eight-link node searches remain
+partial; 16/24 level searches fully converged, while all uniform baselines
+were covered.
 
-**Provenance.** All plots use existing files in
-`results/pauliAD/overnight/`; no evaluator was run for this report. Exact
-numbers, matched trial IDs, figure data and input hashes are saved in
-`pauliAD-overnight-report/`, beside this document. Regenerate figures from
-the repository root:
+**Contribution assessment:** the strongest postselection result is its
+placement and positive-region extension at fixed PE sources under stochastic
+waiting and retries. Concentration itself is established physics; these
+finite-network rate comparisons are a specific contribution candidate,
+not a first-in-literature claim or a size-scaling law.
 
-```bash
-python -m src.analysis.plot_pauli_ad_overnight
+## 2. Bell-source distillation: count and placement depend on the input state
+
+Both protocol searches optimize the tree and uniform acceptance; one allows
+swaps only, the other allows recurrence. Among the 96 Bell-source jobs,
+62 have positive best-with-recurrence rate versus 40 positive swaps-only
+baselines: **22 job-level key activations**, including duplicated controls.
+All positive selected protocols accept all swap outcomes.
+
+![Best Bell-source protocols versus swaps-only across all delivery models. Solid lines allow recurrence, dashed lines use swaps only; K labels the total selected recurrence count. Four/eight links occupy separate rows. The plot uses AD; a companion unital figure is saved in the evidence directory. Perfect and source-AD controls are identical across the two nominal fidelity regimes and shown once.](pauliAD-metropolitan-report/2-distillation-ad.png){width=100%}
+
+At reference memories ($s=1$), AD gives:
+
+| Bell delivery model | Four links: swaps / best | Selected K | Eight links: swaps / best | Selected K |
+|---|---:|---:|---:|---:|
+| Perfect | 27.5912 / 27.5912 | 0 | 11.7120 / 11.7120 | 0 |
+| Mixed, $F_0=0.97$ | 4.8687 / 9.4759 | 1 | 0 / 0.4954 | 2 |
+| Mixed, $F_0=0.99$ | 18.1977 / 18.1977 | 0 | 3.3682 / 5.7731 | 1 |
+| Source AD 5% | 0 / 7.3060 | 2 | 0 / 0 | — |
+| Source AD 15% | 0 / 0 | — | 0 / 0 | — |
+
+Among positive selected protocols, 26 use $K=0$, 20 use $K=1$ and 16 use
+$K=2$. For zero-key jobs, the margin-based tie breaker does not identify
+a meaningful rate-optimal count. At the weakest memories, even perfect
+eight-link sources benefit from one terminal round:
+**5.1531 to 5.6507 bits/s**, +9.66%, on the same balanced tree. The unital
+control gives +11.0%. Waiting errors alone can make recurrence worthwhile.
+
+### Strong gains and key activation survive realistic generation
+
+Four mixed Bell links with $F_0=0.97$, AD and $s=0.5$ improve from
+**1.8756 to 7.1051 bits/s**, a factor of 3.788, by adding one terminal round.
+SKF rises $0.05202\to0.32677$ while mean wait rises
+$27.73\to45.99$ ms. This gain is matched on the same balanced tree and
+all-corrected acceptance, rather than being attributed to a different tree.
+The corresponding unital rate ratio is 3.839.
+
+At eight links, $F_0=0.99$, AD and $s=0.5$, one terminal round enables
+**2.7310 bits/s from a zero swaps-only baseline**. Its errors change from
+$(e_X,e_Z)=(0.12993,0.10839)$ to $(0.17596,0.01761)$.
+Fidelity actually decreases slightly, $0.81588\to0.81523$, while SKF
+becomes 0.20100. Lower bit error outweighs higher phase error in the key
+formula. Fidelity alone would rank this change incorrectly for SKR.
+
+### More recurrence is not always better
+
+![Best sampled rates separated by total recurrence count for the two mixed-source fidelities under AD. The count curves include optimized placements and are not globally optimal certificates. One terminal round often beats two; with four high-fidelity links, no recurrence is best.](pauliAD-metropolitan-report/2-counts.png){width=100%}
+
+For four mixed 0.97 sources, one terminal round is selected at every memory
+scale. For four mixed 0.99 sources, no recurrence is selected. For eight
+mixed 0.99 sources, one terminal round is selected throughout; it gives
+2.7310, 5.7731 and 7.8046 bits/s across $s=0.5,1,2$.
+For eight mixed 0.97 sources, the selected count changes from no positive
+key at $s=0.5$, to two rounds at $s=1$, to one at $s=2$.
+The earlier two-round pilot at $s=2$ gave 0.9559 bits/s; the search finds
+1.2893 with one round. Optimizing the count matters beyond proving feasibility.
+
+### Generation damping changes where purification belongs
+
+Four source-AD-5% links are zero-key without recurrence at every scale.
+Their best AD-memory rates become 4.1213, 7.3060 and 12.7887 bits/s.
+At $s=2$, the selected sequence is
+
+```
+s0, s2, d1, d3, s1
 ```
 
-Literature checked on 27 October 2026.
+It first makes the two half-chain links, distills each once, and then performs
+the final swap. On this same source, memory setting and balanced tree,
+the saved terminal-recurrence anchors give a direct placement comparison:
 
-## Hardware follow-up prepared on 28 October 2026
+| Recurrence placement | Total K | SKF | Mean wait (ms) | SKR (bits/s) |
+|---|---:|---:|---:|---:|
+| One terminal round | 1 | 0.42880 | 52.20 | 8.21487 |
+| Two terminal rounds | 2 | 0.55369 | 77.29 | 7.16377 |
+| One round on each half-link | 2 | 0.57831 | 45.22 | **12.78865** |
 
-The original figures above remain the results of the ideal-hardware batch.
-The new `--preset hardware` addresses the same four questions with lower
-generation probabilities, imperfect swap success, source imperfections and
-independent longitudinal/transverse memory decay. Its results must be read
-from its own output directory; they do not replace the evidence above.
+Moving the two rounds onto half-links improves both quality and latency:
+**78.5% more SKR than two terminal rounds**, and 55.7% more than the best
+of the zero/one/two-terminal-round anchors. Retry costs are incurred on
+shorter links and the parallel-copy resource structure changes. This is a
+matched, concrete placement benefit, not an inference from unrelated GP
+winners; it still does not establish global optimality.
 
-**Hardware and units.** We reuse the actual values in
-`src/scripts/reproduce_results.py`, including its modified scenario-C
-visibility, rather than copying the slightly different paper table:
+With the higher-fidelity mixed 0.97 source, the selected
+protocol instead distills only the final link once, giving 10.8380 bits/s.
+The source-AD state starts at fidelity 0.95125 yet achieves the larger
+best-found rate after purification. This is a warning against describing
+source quality with fidelity alone. The protocols differ and searches are
+not exhaustive, so it is not an equal-protocol or globally optimal source
+dominance claim.
 
-| Regime | Link length | $p_{\rm gen}$ | $p_{\rm swap}$ | Source visibility $v$ | Slot duration |
-|---|---:|---:|---:|---:|---:|
-| C | 50 km | 0.00092 | 0.85 | 0.960 | 250 microseconds |
-| D | 20 km | 0.00260 | 0.85 | 0.958 | 100 microseconds |
+Source AD 15% remains zero-key throughout the bounded searches. It may
+require a different recurrence basis, a larger resource budget or another
+source/memory regime; this batch does not establish that none can work.
 
-We adopt propagation speed $2\times10^8$ m/s and one slot $L_0/c$.
-These are hybrid hardware-informed benchmarks, not a calibrated simulation
-of one experimental device. Visibility means
-$\rho=v|\psi_q\rangle\langle\psi_q|+(1-v)I/4$; for Bell sources,
-$F_0=(1+3v)/4$, hence $F_0=0.970$ in C.
+**Contribution assessment:** the broad recurrence tradeoff is known. The
+useful result is a hardware- and state-dependent count/placement map with
+actual retry costs, including key activation. The full input-state structure
+and phase/bit-error balance explain more than initial fidelity alone.
 
-**Memory reference.** [Bradley et al., npj Quantum Information 8, 122
-(2022)](https://doi.org/10.1038/s41534-022-00637-w) measure nuclear-memory
-decay during repeated optical entangling operations. Their corrected
-longitudinal and transverse times are approximately 2.4 s and 1.71 s.
-The corrections condition on charge/resonance checks; their overhead is
-not simulated here, so this is an optimistic reference. We use these as
-effective $T_1,T_2$, giving $(9600,6840)$ slots in C and $(24000,17100)$ in D.
-A scale $s$ multiplies both lifetimes; $s<1$ tests stronger waiting noise.
-The AD model uses
+## 3. Asymmetric hardware: no observed advantage from per-swap acceptance
 
-$$
-\kappa=\frac{1}{T_1},\qquad
-\Gamma_X=\Gamma_Y=\frac{1}{T_2}-\frac{1}{2T_1},\qquad \Gamma_Z=0.
-$$
+The defects are a fivefold slower rightmost elementary link, or fourfold
+shorter $T_1,T_2$ at one internal node, tested separately. Swapping stays
+balanced and distillation is absent. Uniform, per-level and per-swap best
+rates agree at **all 48 asymmetric jobs**, including 24 positive-rate jobs.
+Every positive winner accepts all corrected outcomes.
 
-Those measured decay times **do not establish ground-state amplitude
-damping**. Therefore `--relaxation-models ad unital` also tests unbiased
-relaxation with the same $T_1,T_2$: no AD and Pauli mode-decay rates
-$(1/T_2,1/T_2,1/T_1)$. This separates effects of lifetime from effects of the
-relaxation fixed point. The source AD tests remain explicitly imposed
-source-channel assumptions under either waiting-memory model.
+![Asymmetric high-fidelity chains. All three acceptance classes give the plotted same rate; colours distinguish a slow source link from a weak internal memory, and solid/dashed lines distinguish AD/unital noise. The loss in throughput is much larger for the specified slow-link defect. This is not a universal sensitivity ranking.](pauliAD-metropolitan-report/3-asymmetry.png){width=100%}
 
-For comparison, `--memory-profiles benchmark` matches the old homogeneous
-scalar decay of $c_{XX}$: $\exp(-t/t_{\rm coh})=\exp(-2t/T_2)$, hence
-$T_2=2t_{\rm coh}$ and **assumed** $T_1=10T_2$. In C this gives
-$T_2=2.8\times10^6$, $T_1=2.8\times10^7$ slots. This matches one decay
-coefficient, not the full old depolarizing channel, and is not a new
-measurement. Old heterogeneous per-node coherence times use a different
-convention and should not be substituted into this scalar conversion.
+For AD and the mixed 0.99 source:
 
-**The four evaluations.**
+| Links / scale | Homogeneous | Slow rightmost link | Weak internal memory |
+|---|---:|---:|---:|
+| 4 / $s=1$ | 18.1977 | 4.0157 | 16.1799 |
+| 8 / $s=1$ | 3.3682 | 0 | 2.5093 |
+| 8 / $s=2$ | 6.1882 | 1.5269 | 5.6816 |
 
-1. **Placement:** fixed balanced tree, no distillation, both Bell and
-   $q=1/4$ sources with benchmark visibility. Search uniform, per-level and
-   per-swap acceptance over the memory grid. The new placement figure has
-   Bell sources on the first row and PE sources on the second; each row
-   shows the best level schedule and its same-source SKR gain over uniform
-   acceptance. A companion plot gives absolute SKR, including zero-baseline
-   cases that cannot appear as ratios. Zero-key schedules are left blank.
-2. **Distillation:** Bell sources only. Compare the best swaps-only protocol
-   with the best protocol found allowing recurrence, optimizing tree and
-   uniform acceptance in both. Test perfect delivery, benchmark mixed
-   delivery, and independent source AD probabilities 0.05 and 0.15 per
-   qubit. The main plot labels the winning total count $K$; a second plot
-   separates the best sampled rates for $K=0,1,2$. Counts include leaves
-   and internal vertices. This is broader than adding terminal recurrence
-   to one fixed tree, but remains a bounded best-found search.
-3. **Asymmetry:** retain the balanced topology but break hardware symmetry:
-   either slow the rightmost elementary link by a factor of five, or
-   shorten one internal node's two memory lifetimes by a factor of four.
-   Compare per-level and per-swap policies, using the uniform baseline.
-   The defects are separate tests, so their effects can be distinguished.
-4. **Source optimization:** compare the optimized Bell protocol with the
-   optimized $q$ protocol under the same hardware, including noisy waiting
-   and source AD. On both winning protocols, evaluate a one-dimensional
-   $q$ grid including $1/2$, with extra resolution near $1/2$. Save both
-   reoptimized and fixed-protocol comparisons: a better tree must not be
-   credited to the source. Plot SKR against memory scale and against $q$.
+These rates include all retries. The slow-link defect extends synchronization
+waits; it can remove positive key. The weak-memory defect damages stored
+states without slowing all-corrected swap acceptance itself. Their factors
+and spatial effects differ, so the table is not an equal-cost comparison
+of hardware upgrades.
 
-Source damping is applied to every freshly delivered link; it does not add
-an extra timed storage stage. Preparation probability/time remain independent
-of $q$. Distillation hardware has no extra failure by default, but the
-backend's state-dependent recurrence acceptance and preparation/retry costs
-are included. Local operations remain instantaneous and free of gate errors;
-there are no cutoffs, classical delays or finite-key effects. These limits
-are essential when interpreting hardware-informed rates.
+All 27 node schedules converged in every four-link asymmetric job. Uniform
+acceptance is therefore numerically optimal within each finite fixed-tree
+family, including 18 positive-rate settings. At eight links, all 3 uniform
+and 27 level schedules converged, but node GP searched only a subset of
+2187 possibilities. The six positive eight-link asymmetric cases do not
+have a global node-policy certificate.
 
-**Run.** A first batch covers both chain sizes, both relaxation assumptions,
-three memory scales and all four questions (144 jobs with default source
-tests). Additional seeds, regime D and finer scales can follow separately.
+**Interpretation:** this is stronger than the earlier all-zero comparison,
+but it does not establish a general level-compression theorem. Here the
+best uniform policy already rejects nothing, so the study never exposes
+a positive-rate setting whose optimum genuinely needs spatially different
+Bell-outcome choices. Its contribution is a restricted negative result.
+
+## 4. Optimizing q: real but small gains close to Bell
+
+Of 96 source-search jobs, 62 return a positive joint winner. All those
+winners have $q\in[0.49,0.5]$. The 31 positive unital winners all use
+exactly $q=0.5$; among the 31 positive AD winners, 11 use $q<0.5$.
+There is **no observed key activation from optimizing q**. These counts
+include duplicated controls across regimes.
+
+![Bell versus optimized-q source searches under AD. The curves nearly overlap; q is labelled only for positive-key joint winners. These are reoptimized comparisons. Perfect sources have the same near-Bell pattern; source AD 15% is zero throughout. Full tables include both controls and both waiting-memory models.](pauliAD-metropolitan-report/4-source-rates.png){width=100%}
+
+The largest matched gain occurs for four links, $F_{\rm ref}=0.99$, AD
+and $s=0.5$, on the same balanced swaps-only protocol accepting all outcomes:
+
+| Source q | SKF | Mean wait (ms) | Fidelity | SKR (bits/s) |
+|---:|---:|---:|---:|---:|
+| 0.5 | 0.382076 | 27.7344 | 0.914336 | 13.776257 |
+| 0.490801 | 0.382780 | 27.7344 | 0.914261 | 13.801627 |
+
+The increase is **0.1842%**, or 0.02537 bits/s. Waiting is unchanged because
+generation costs and all-corrected hardware acceptance are independent of
+q in this model. $e_Z$ falls from 0.050643 to 0.050198, while $e_X$ rises
+from 0.060343 to 0.060640. A small reduction in excited-state population
+helps the key entropy balance without improving fidelity.
+
+![Fully matched q profile for the preceding example. The left panel shows the wider q tradeoff; the right resolves the small gain near Bell. Tree, recurrence count and acceptance are fixed within the comparison.](pauliAD-metropolitan-report/4-matched-q.png){width=100%}
+
+For perfect four-link sources at $s=0.5$, the matched gain is 0.1608% at
+$q=0.49393$; it falls to 0.0393% at $s=1$ and 0.0102% at $s=2$.
+For the mixed 0.99 source, the analogous gains are 0.1842%, 0.0407% and
+0.0094%. The largest observed eight-link gain is only about 0.0049%, for
+perfect sources at $s=1$. No positive source-AD-5% case gains from q tuning;
+their reported positive joint winners use Bell.
+
+The largest matched gain is well above its observed last-horizon numerical
+change: both compared rates change by only about $10^{-11}$ relatively on
+the final doubling. This supports a genuine small model-level effect, not
+truncation noise. It does not prove the global q optimum: only one GP seed
+and a finite q profile were explored.
+
+### Search variation can exceed the source effect
+
+With four source-AD-5% links, AD memories and $s=2$, the Bell-only protocol
+study finds 12.7887 bits/s, whereas the source study's joint winner reaches
+10.0026, also at $q=0.5$. The runs differ in search history and anchors;
+they find different recurrence placements. This roughly 28% rate spread
+must not be attributed to source imbalance. A superset search cannot be
+assumed to find every strong protocol discovered by a different run.
+
+Consequently, separate best-found search rates are complemented here by
+fixed-protocol q controls. The small matched improvements above survive
+that attribution check. Positive-region extension from strongly imbalanced
+sources does not. Zero-key jobs still sometimes select q near 0.1 through
+the margin tie breaker; those values are not evidence of source optimality.
+
+**Contribution assessment:** this is a useful negative result for network
+rate optimization: the observed benefit of free q tuning is much smaller
+than count/placement effects. [Wang et al.](https://arxiv.org/abs/1309.3818)
+study single-pair residual correlations, not stochastic repeater SKR;
+the result neither contradicts PE robustness nor proves Bell optimality
+outside this search family. Source preparation costs independent of q and
+the fixed recurrence basis remain important assumptions.
+The q optimizer also uses **uniform** swap acceptance, unlike the successful
+fixed-PE placement study. Joint optimization of q with per-level acceptance
+was not performed. Its absence limits any general conclusion about the
+best source across the combined protocol space.
+
+## Reliability, limits and next experiments
+
+Every reported winner passed coverage at least 0.999999 at two consecutive
+horizons and metric agreement at `rtol=1e-5, atol=1e-9`. The cap was
+1,048,576 slots, or 36.70 s with the metropolitan slot. A read-only audit
+rechecked every converged candidate's saved histories, errors, SKF and SKR.
+
+![Candidate convergence by study and size. No physicality failures occurred. The remaining horizon exclusions are mostly in eight-link protocol/source searches and cannot be treated as zero-rate results or ignored in optimality claims.](pauliAD-metropolitan-report/5-convergence.png){width=100%}
+
+| Study | Four links: converged / unresolved | Eight links: converged / unresolved |
+|---|---:|---:|
+| Placement | 648 / 0 | 2,027 / 9 |
+| Distillation | 2,102 / 0 | 5,779 / 369 |
+| Asymmetry | 648 / 0 | 2,038 / 0 |
+| Source optimization | 5,719 / 33 | 6,819 / 545 |
+
+Of 956 unresolved candidates, 560 failed coverage and 396 lacked a second
+covered horizon. Only two final truncated diagnostics had positive SKR,
+both duplicated versions of a low-q perfect-source case, about 0.330 bits/s
+versus a converged winner near 31.2. No unresolved final diagnostic exceeded
+its job's best converged rate. These diagnostics are not rigorous bounds
+on missing tails; excluded candidates remain unresolved.
+
+Of 1,581 stored q-profile rows, 1,527 converged and 54 did not. Failure to
+observe a better q or node schedule is not proof that none exists. In
+contrast, the eight-link PE activation compares a converged constructive
+policy against a fully evaluated uniform class; that conclusion does not
+require a global node-policy certificate.
+
+The evidence supports three different statements, which should stay separate:
+
+1. **A real fixed-source placement advantage:** PE concentration early and
+   no later rejection can enable key where uniform acceptance fails. Test
+   the neighborhood of the eight-link point to locate a lifetime boundary,
+   then repeat for more sizes before claiming scaling.
+2. **A larger practical Bell-source protocol advantage:** recurrence count
+   and placement enable key and produce substantial rate gains. Test
+   promising structures across more seeds and compare with an alternating-
+   basis or other recurrence before drawing broad source-quality conclusions.
+3. **A small matched q effect:** optimize q locally on strong, fixed protocols
+   and seed joint searches with the best Bell protocols from *all* relevant
+   runs. Then include per-level acceptance in that joint search. This
+   separates source physics from incomplete protocol search and tests the
+   combined space used only partially by the present studies.
+
+The existing balanced-tree asymmetric cases show no need for per-swap
+acceptance. A more discriminating follow-up would first locate a regime
+where postselection is actually advantageous for the constrained source,
+then introduce a spatial defect there. Adding more asymmetric zero-key or
+uniformly all-corrected optima would give weaker information.
+
+The strongest contribution candidate is therefore **state-aware protocol
+placement with modeled stochastic waiting and retry costs**. The present data do not
+show that PE sources beat freely chosen Bell sources, that the q advantage
+grows with size, or that per-level policies are universally optimal. Novelty
+assessments are conditional interpretations, not a new systematic priority
+search.
+
+## Reproducible evidence and earlier batches
+
+The original metropolitan results are unchanged. The
+[evidence directory](pauliAD-metropolitan-report/README.md) contains complete
+candidate and winner tables, q profiles, matched controls, count-specific
+comparisons, figures and hashes of 1,442 input files. All sources, sizes,
+memory scales and models are retained, including controls not shown in the
+illustrative figures. From the activated repository environment:
 
 ```bash
-source venv/bin/activate
-caffeinate -i python -m src.scripts.gp_pauliAD \
-  --preset hardware --hardware-regimes C --nodes 5 9 \
-  --memory-scales 0.5 1 2 --relaxation-models ad unital \
-  --seeds 7 --gp-calls 60 --max-dists 2 --max-total-dists 2 \
-  --workers 2 --case-timeout 7200 \
-  --output results/pauliAD/hardware-followup
+python -m src.analysis.plot_pauli_ad_metropolitan_report
 ```
 
-Add `--dry-run` to inspect the plan, or `--resume` to repeat exactly this
-plan after interruption. A fixed overnight completion time is not guaranteed.
-The default horizon grows from 16384 to 1048576 and retains the original
-two-horizon coverage/stability requirements. Unresolved candidates remain
-missing; `unresolved.csv` identifies them. A larger cap requires a new
-output directory, not replaying cached failures.
-
-Read `summary.txt`, `comparisons.csv`, `distillation_counts.csv` and
-`q_profiles.csv`, plus the numbered PNG/PDF figures. Rates and waits are
-saved in both slot and physical units. The full plan records every hardware
-array and command; each job retains its trial journal and convergence
-history. These analyses are prepared for execution; the short smoke runs
-are software checks, not extensive scientific results.
+This runs no optimizer or backend evaluation. The earlier
+[long-distance report](pauliAD-long-distance-report.md),
+[ideal-hardware report](pauliAD-ideal-hardware-report.md) and
+[metropolitan pilot/reference](metropolitan-reference.md) remain available.
+The first two concern different hardware grids; the pilot evaluates fixed
+anchors rather than optimized protocols. Their conclusions should not be
+silently substituted for this completed search.

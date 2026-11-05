@@ -8,8 +8,8 @@ import pytest
 
 from src.core.pauli_adc.state import coordinates_to_matrix
 from src.optimization.gp_pauliAD import run as protocol_run
-from src.optimization.pauli_ad import add_common_args, candidate, fixed_protocol, source
-from src.scripts.pauli_ad_hardware import cases, hardware, summarize
+from src.optimization.pauli_ad import Evaluation, Hardware, Numerics, add_common_args, candidate, fixed_protocol, source
+from src.scripts.pauli_ad_hardware import cases, hardware, metropolitan_link, summarize
 
 
 def options(tmp_path, **kwargs):
@@ -36,6 +36,41 @@ def test_reference_units_visibility_and_joint_to_local_mapping():
     # Match transverse two-qubit decay, not a false equivalence of full channels.
     assert np.exp(-2*t/legacy["t2_slots"][0]) == pytest.approx(np.exp(-t/1_400_000))
     assert legacy["t1_slots"][0] == 10*legacy["t2_slots"][0]
+
+
+def test_metropolitan_loss_attempt_time_and_fidelity_mapping(tmp_path):
+    link = metropolitan_link()
+    assert link["channel_loss_db"] == pytest.approx(1.5)
+    assert link["channel_transmission"] == pytest.approx(10**(-1.5/10))
+    assert link["probability"] == pytest.approx(link["p_gen_zero_loss"]*link["channel_transmission"])
+    assert link["slot_seconds"] == pytest.approx(35e-6)
+    longer = metropolitan_link(10.)
+    assert longer["probability"] < link["probability"]
+    assert longer["slot_seconds"] > link["slot_seconds"]
+    for regime, fidelity in (("metro97", .97), ("metro99", .99)):
+        h = hardware(regime, "network", 9, 1.)
+        assert (1+3*h["visibility"])/4 == pytest.approx(fidelity)
+        assert h["total_span_km"] == 40.
+        np.testing.assert_allclose(np.array(h["t1_slots"])*h["slot_seconds"], 2.4)
+        np.testing.assert_allclose(np.array(h["t2_slots"])*h["slot_seconds"], 1.71)
+        plan = cases(options(tmp_path, hardware_regimes=[regime], metro_link_km=5.))
+        assert all(c["channel_loss_db"] == 1.5 for c in plan)
+        assert all(c["p_gen"][0] == pytest.approx(link["probability"]) for c in plan)
+    with pytest.raises(ValueError, match="network memory"):
+        hardware("metro97", "benchmark", 5, 1.)
+    with pytest.raises(ValueError, match="positive"):
+        metropolitan_link(0.)
+
+
+def test_good_metropolitan_hardware_reaches_positive_key():
+    h = hardware("metro99", "network", 9, 2.)
+    t1, t2 = h["t1_slots"][0], h["t2_slots"][0]
+    rates = ((1/t2-.5/t1, 1/t2-.5/t1, 0.),)*9
+    evaluator = Evaluation(Hardware(9, tuple(h["p_gen"]), h["p_swap"], 1., rates, (1/t1,)*9, h["visibility"]),
+                           Numerics(2048, 131072))
+    result = evaluator.run(candidate(fixed_protocol(8), .5, ["all_corrected"]*7))
+    assert result["status"] == "converged"
+    assert result["skr"] > 0 and result["skf"] > .05
 
 
 @pytest.mark.parametrize("q,visibility,damping", [(.5, 1., .15), (.25, .96, .4), (.4, 1., 0.), (.5, .96, 1.)])

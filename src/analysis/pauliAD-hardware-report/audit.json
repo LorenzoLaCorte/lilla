@@ -1,0 +1,30 @@
+{
+  "jobs": 144,
+  "job_statuses": {
+    "complete": 144
+  },
+  "requests": 18696,
+  "cached_requests": 4437,
+  "distinct_within_job_evaluations": 14259,
+  "candidate_statuses": {
+    "converged": 12344,
+    "unconverged": 1915
+  },
+  "unresolved_reasons": {
+    "confirmation": 1081,
+    "coverage": 834
+  },
+  "winner_rows": 336,
+  "positive_winner_rows": 0,
+  "q_profile_rows": 804,
+  "q_profile_statuses": {
+    "converged": 716,
+    "unconverged": 88
+  },
+  "maximum_converged_margin": -1.4949623669677014e-07,
+  "maximum_unconverged_diagnostic_margin": -1.5285360169370464e-07,
+  "worker_seconds": 72680.23358755102,
+  "start": "2026-10-28T21:57:25.184220+00:00",
+  "end": "2026-10-29T08:03:55.541052+00:00",
+  "wall_seconds": 36390.356832
+}

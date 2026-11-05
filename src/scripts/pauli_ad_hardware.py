@@ -15,27 +15,61 @@ from src.scripts.reproduce_results import DEFAULT_HOMOGENEOUS_CASES
 
 SECTIONS = ("placement", "distillation", "asymmetry", "source")
 MEMORY_REFERENCE = "https://doi.org/10.1038/s41534-022-00637-w"
+FIBER_REFERENCE = "https://doi.org/10.1103/PhysRevX.4.041038"
+FIDELITY_REFERENCES = {
+    "metro97": "https://doi.org/10.1038/s41467-025-57557-4",
+    "metro99": "https://doi.org/10.1103/PRXQuantum.5.030330",
+}
 
 
-def hardware(regime, profile, nodes, scale, geometry="balanced"):
+def metropolitan_link(distance_km=5., fidelity=.97):
+    """Optimistic hybrid link, not a measured integrated memory interface.
+
+    Fit a distance-independent attempt prefactor to the old C/D benchmarks.
+    New passive fiber: 5 km / 1.5 dB including .2 dB connectors (Agarwal 2014).
+    The two midpoint arms have total photon path L; do not square the total
+    path transmission again. A local 10 us overhead is explicitly assumed.
+    """
+    if not np.isfinite(distance_km) or distance_km <= 0 or not 0 < fidelity <= 1:
+        raise ValueError("metropolitan length and fidelity must be positive and finite")
+    c = next(c for c in DEFAULT_HOMOGENEOUS_CASES if c.label.startswith("C_"))
+    d = next(c for c in DEFAULT_HOMOGENEOUS_CASES if c.label.startswith("D_"))
+    fitted_alpha = 10*np.log10(d.p_gen/c.p_gen)/(50.-20.)
+    prefactor = float(c.p_gen*10**(fitted_alpha*50/10))
+    alpha, insertion, local_seconds = .26, .2, 10e-6
+    loss = alpha*distance_km+insertion
+    return dict(distance_km=float(distance_km), fiber_loss_db_per_km=alpha,
+                insertion_loss_db=insertion, channel_loss_db=loss,
+                channel_transmission=10**(-loss/10), p_gen_zero_loss=prefactor,
+                calibration_loss_db_per_km=float(fitted_alpha), local_attempt_seconds=local_seconds,
+                slot_seconds=distance_km*1000/2e8+local_seconds,
+                probability=prefactor*10**(-loss/10), link_fidelity=fidelity,
+                fiber_reference=FIBER_REFERENCE)
+
+
+def hardware(regime, profile, nodes, scale, geometry="balanced", *, metro_link_km=5.):
     """Reuse benchmark probabilities/visibility; all lifetimes below are per qubit.
 
     Bradley et al. report effective longitudinal/transverse decay during network
     operation: 2.4 s and 1.71 s. Their relaxation is NOT evidence for zero-
     temperature AD; our non-unital AD model remains an explicit approximation.
     """
-    case = next(c for c in DEFAULT_HOMOGENEOUS_CASES if c.label.startswith(regime+"_"))
-    slot_seconds = {"C": 50_000., "D": 20_000.}[regime]/2e8
+    metro = regime in FIDELITY_REFERENCES
+    case = next(c for c in DEFAULT_HOMOGENEOUS_CASES if c.label.startswith(("C" if metro else regime)+"_"))
+    optical = metropolitan_link(metro_link_km, .97 if regime == "metro97" else .99) if metro else {}
+    slot_seconds = optical["slot_seconds"] if metro else {"C": 50_000., "D": 20_000.}[regime]/2e8
     if profile == "network":
         t1, t2 = 2.4/slot_seconds, 1.71/slot_seconds
     elif profile == "benchmark":
+        if metro:
+            raise ValueError("metropolitan regimes use the network memory profile; historical benchmark units apply only to C/D")
         # Match the scalar homogeneous Werner cXX decay exp(-t/t_coh):
         # two local transverse decays give exp(-2t/T2). T1 is an assumption.
         t2 = 2*case.t_coh
         t1 = 10*t2
     else:
         raise ValueError(f"unknown memory profile {profile}")
-    p_gen = [float(case.p_gen)]*(nodes-1)
+    p_gen = [float(optical["probability"] if metro else case.p_gen)]*(nodes-1)
     t1s, t2s = [float(t1*scale)]*nodes, [float(t2*scale)]*nodes
     if geometry in ("slow_link", "bottleneck"):
         p_gen[-1] /= 5
@@ -43,11 +77,15 @@ def hardware(regime, profile, nodes, scale, geometry="balanced"):
         # Internal node, not just an end memory; breaks exchange symmetry.
         t1s[-2] /= 4
         t2s[-2] /= 4
-    return dict(regime=regime, memory_profile=profile, memory_scale=scale,
+    result = dict(regime=regime, memory_profile=profile, memory_scale=scale,
                 slot_seconds=slot_seconds, p_gen=p_gen, p_swap=case.p_swap,
-                visibility=float(case.w0), t1_slots=t1s, t2_slots=t2s,
+                visibility=(4*optical["link_fidelity"]-1)/3 if metro else float(case.w0), t1_slots=t1s, t2_slots=t2s,
                 reference=MEMORY_REFERENCE if profile == "network" else "src/scripts/reproduce_results.py",
                 geometry=geometry)
+    if metro:
+        result.update({k: v for k, v in optical.items() if k not in ("probability", "slot_seconds")})
+        result.update(total_span_km=metro_link_km*(nodes-1), fidelity_reference=FIDELITY_REFERENCES[regime])
+    return result
 
 
 def cases(args):
@@ -73,7 +111,8 @@ def cases(args):
                                   for state, damping in [("perfect", 0.), ("benchmark", 0.),
                                       *[(f"ad{d:g}", d) for d in args.source_dampings]]]
                     for section, geometry, q, state, damping in specs:
-                        h = hardware(regime, profile, node, scale, geometry)
+                        h = hardware(regime, profile, node, scale, geometry,
+                                     metro_link_km=getattr(args, "metro_link_km", 5.))
                         visibility = h["visibility"] if state == "benchmark" else 1.
                         for seed in seeds:
                             name = (f"{section}_{regime}_{profile}_N{node}_scale{scale:g}_"
@@ -170,6 +209,7 @@ def summarize(plan, output):
         saved = json.loads(path.read_text())
         meta = {k: case[k] for k in ("name", "section", "nodes", "seed", "regime", "memory_profile",
                                     "memory_scale", "slot_seconds", "geometry", "source_state", "source_damping", "relaxation_model")}
+        meta.update({k: case[k] for k in ("distance_km", "total_span_km", "channel_loss_db", "link_fidelity", "p_gen_zero_loss") if k in case})
         def row(record):
             if record is None:
                 return dict(status="no_valid_result")

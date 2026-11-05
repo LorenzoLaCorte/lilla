@@ -275,7 +275,9 @@ def main():
     parser.add_argument("--max-horizon", type=int, default=None)
     parser.add_argument("--sections", nargs="+", choices=("placement", "distillation", "asymmetry", "source"),
                         default=["placement", "distillation", "asymmetry", "source"], help="Hardware follow-up questions")
-    parser.add_argument("--hardware-regimes", nargs="+", choices=("C", "D"), default=["C", "D"])
+    parser.add_argument("--hardware-regimes", nargs="+", choices=("C", "D", "metro97", "metro99"), default=["C", "D"])
+    parser.add_argument("--metro-link-km", type=float, default=5.,
+                        help="Metro regimes: elementary link length; default 5 km / 1.5 dB, with 10 us local attempt overhead")
     parser.add_argument("--memory-profiles", nargs="+", choices=("network", "benchmark"), default=["network"])
     parser.add_argument("--relaxation-models", nargs="+", choices=("ad", "unital"), default=["ad"],
                         help="Hardware preset: ground-state AD assumption or unbiased T1 relaxation control")
@@ -300,8 +302,10 @@ def main():
     if (any(not 0 < v < float("inf") for v in args.memory_scales)
             or any(not 0 < d < 1 for d in args.source_dampings)
             or any(not args.q_min <= q <= .5 for q in args.q_grid)
-            or args.max_total_dists < 0):
+            or args.max_total_dists < 0 or not 0 < args.metro_link_km < float("inf")):
         parser.error("invalid hardware memory scales, source damping, q grid or distillation cap")
+    if args.preset == "hardware" and any(r.startswith("metro") for r in args.hardware_regimes) and "benchmark" in args.memory_profiles:
+        parser.error("metro regimes require --memory-profiles network; historical benchmark units apply only to C/D")
     if args.output is None:
         args.output = ROOT / "results" / "pauliAD" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     args.output = args.output.resolve()
