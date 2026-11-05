@@ -195,7 +195,8 @@ def test_full_reset_retry_has_the_expected_geometric_law_and_state():
     sf2 = _constant_state_func(right, size)
 
     evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,  # Preserve the unit-duration retry oracle.
     )
     hardware_success = 0.6
     parameters = {
@@ -260,7 +261,8 @@ def test_tiny_but_positive_hardware_efficiency_is_not_dropped():
         "bell_outcomes": "all_corrected",
     }
     output_pmf, output_states = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,
     ).compute_unit(parameters, pmf, state_func, unit_kind="swap")
     assert_allclose(output_pmf[1:], efficiency, rtol=0.0, atol=1.0e-32)
     assert_allclose(output_states[1:], _constant_state_func(state, size - 1))

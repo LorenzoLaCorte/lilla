@@ -23,7 +23,8 @@ def test_secret_key_rate():
         "t_coh": 30,
         "t_trunc": 236
         }
-    pmf, w_func = repeater_sim(parameters)
+    # Published numerical benchmark omits classical communication.
+    pmf, w_func = repeater_sim(parameters, classical_communication=False)
     skr = secret_key_rate(pmf, w_func, extrapolation=True)
     print(f"Secret key rate: {skr}")
     assert_allclose(skr, .01074, rtol=1.e-3)
@@ -151,6 +152,9 @@ def test_algorithm(parameters, expect, simulator, efficient):
     """
     default_pmf, default_w_func = expect
     simulator.efficient = True
+    # Communication extends retry tails; pad enough for comparison to exact
+    # convolutions even when the reported horizon has low probability coverage.
+    simulator.zero_padding_size = 4096
     pmf, w_func = simulator.nested_protocol(parameters)
     cdf = np.cumsum(pmf)
     start_pos = next(x[0] for x in enumerate(cdf) if x[1] > 1.0e-2)

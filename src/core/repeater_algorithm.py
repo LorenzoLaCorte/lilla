@@ -7,7 +7,9 @@ import numpy as np
 from src.core.states import QuantumState
 from src.core.werner.state import WFunc, WernerState, polish_w_func
 from src.core.bell.state import BellState, LFunc, polish_l_func
-from src.core.pauli_fourier.state import MuFunc, PauliFourierState, polish_mu_func
+from src.core.pauli_fourier.state import (
+    MuFunc, PauliFourierState, polish_mu_func, lambda_to_mu, mu_to_lambda,
+)
 from src.core.pauli_adc.state import (
     # PATCH GUIDE — repeater integration
     # The evaluator imports the state contract plus direct and efficient joins
@@ -16,7 +18,7 @@ from src.core.pauli_adc.state import (
     XFunc,
     normalize_weighted_x_func,
 )
-from src.core.pauli_adc.swap_join import real_x_attempt_join, renewal_sum
+from src.core.pauli_adc.swap_join import AttemptTerms, real_x_attempt_join, renewal_sum
 from src.core.pauli_adc.swap_join_sequential_efficient import (
     real_x_attempt_join_sequential_efficient,
     renewal_sum_sequential_efficient_weighted,
@@ -66,8 +68,14 @@ class HashableParameters():
     
 
 class RepeaterChainEvaluation():
+    """Evaluate repeater protocols, including classical communication by default.
+
+    Set classical_communication=False to recover the zero-communication model.
+    All segment lengths and communication delays use elementary-link units.
+    """
     def __init__(self, state_type = None, use_fft = True,
-                 use_gpu = False, efficient = True, w_twirling = True):
+                 use_gpu = False, efficient = True, w_twirling = True,
+                 classical_communication = True):
         self.requested_state_type = state_type
         self.state_type = state_type
         self.use_fft = use_fft
@@ -75,8 +83,72 @@ class RepeaterChainEvaluation():
         self.gpu_threshold = 1000000
         self.efficient = efficient
         self.w_twirling = w_twirling
+        self.classical_communication = classical_communication
         self.zero_padding_size = None
         self._qutip = False
+
+    @staticmethod
+    def _delay(values, t_c):
+        """Delay along the time axis, dropping mass beyond the horizon."""
+        if t_c == 0:
+            return values
+        delayed = np.zeros_like(values)
+        if t_c < len(values):
+            delayed[t_c:] = values[:-t_c]
+        return delayed
+
+    def _communication_inputs(self, parameters, sf1, sf2, t_c, t_coh):
+        """Age both inputs by t_c, as in the journal paper's Table 1.
+
+        Real-X joins evaluate their finite sequential channel at dt+t_c
+        directly: composing its channels at dt and t_c is not equivalent.
+        Scalar legacy rates describe a whole link; lists describe its nodes.
+        """
+        t_c = t_c if self.classical_communication else 0
+        if not isinstance(t_c, (int, np.integer)) or t_c < 0:
+            raise ValueError("t_c must be a nonnegative integer")
+        if t_c == 0 or self.state_type == RealXState:
+            return t_c, sf1, sf2
+
+        def link_rates(value):
+            rates = np.asarray(value, dtype=float)
+            if rates.ndim == 0:
+                return (float(rates),) * 2
+            if len(rates) == 2:
+                return (rates[0] + rates[1],) * 2
+            return rates[0] + rates[1], rates[1] + rates[2]
+
+        if self.state_type == WernerState:
+            with np.errstate(divide="ignore"):
+                rates = link_rates(1.0 / np.asarray(t_coh))
+            return t_c, sf1 * np.exp(-t_c * rates[0]), sf2 * np.exp(-t_c * rates[1])
+
+        depolar = link_rates(parameters.get("depolarizing_rate", 0.0))
+        dephase = link_rates(parameters.get("dephasing_rate", 0.0))
+
+        def age(sf, index):
+            mu = (
+                lambda_to_mu(sf)
+                if self.state_type == BellState else np.array(sf, copy=True)
+            )
+            mu[:, 1:3] *= np.exp(-t_c * (depolar[index] + dephase[index]))
+            mu[:, 3] *= np.exp(-t_c * depolar[index])
+            if self.state_type == BellState:
+                return mu_to_lambda(mu)
+            return mu
+
+        return t_c, age(sf1, 0), age(sf2, 1)
+
+    def _delay_successful_join(self, join_links, t_c):
+        """Charge communication after cutoff acceptance, before operation retries."""
+        if t_c == 0:
+            return join_links
+
+        def join(*args, **kwargs):
+            result = join_links(*args, **kwargs)
+            return self._delay(result, t_c) if kwargs["ycut"] else result
+
+        return join
 
     def _resolve_state_type(self, parameters):
         if self.requested_state_type is not None:
@@ -153,6 +225,7 @@ class RepeaterChainEvaluation():
         cutoff,
         cut_type,
         hardware_success,
+        t_c=0,
     ):
         """Evaluate a real-X swap/distillation with full-reset retries."""
         use_efficient_join = self.efficient and cut_type == "memory_time"
@@ -191,6 +264,13 @@ class RepeaterChainEvaluation():
                 if operation == "dist"
                 else False
             ),
+            communication_time=t_c,
+        )
+        attempt = AttemptTerms(
+            cutoff_failure=attempt.cutoff_failure,
+            valid_success=self._delay(attempt.valid_success, t_c),
+            valid_failure=self._delay(attempt.valid_failure, t_c),
+            weighted_success=self._delay(attempt.weighted_success, t_c),
         )
 
         if not np.any(attempt.valid_success > 0.0):
@@ -462,6 +542,15 @@ class RepeaterChainEvaluation():
             if self.use_gpu and shape > self.gpu_threshold:
                 result = cp.asnumpy(result)
 
+            if self.classical_communication:
+                # Circular FFT tails must not populate times earlier than the
+                # first possible successful attempt, including its t_c delay.
+                populated = np.flatnonzero(first_func)
+                if len(populated):
+                    result[:populated[0]] = 0.0
+                else:
+                    result[:] = 0.0
+
         else:  # Use exact convolution (not using FFT)
             zero_state = np.zeros(trunc - len(convolved), dtype=convolved.dtype)
             convolved = np.concatenate([convolved, zero_state])
@@ -479,7 +568,7 @@ class RepeaterChainEvaluation():
     def swapping(self,
             parameters: SimParameters,
             pmf1: PMF, sf1, pmf2: PMF, sf2, p_swap,
-            cutoff, t_coh, cut_type):
+            cutoff, t_coh, cut_type, t_c=1):
         """
         Calculate the waiting time and average Werner parameter with time-out
         for entanglement swap.
@@ -510,6 +599,7 @@ class RepeaterChainEvaluation():
         state_out: array-like 1-D
             The Werner parameter as function of T of the entanglement swap.
         """
+        t_c, sf1, sf2 = self._communication_inputs(parameters, sf1, sf2, t_c, t_coh)
         if cut_type == "memory_time":
             shift = cutoff
         else:
@@ -520,6 +610,7 @@ class RepeaterChainEvaluation():
                 join_links = werner_join_efficient
             else:
                 join_links = werner_join
+            join_links = self._delay_successful_join(join_links, t_c)
 
             # P'_f
             pf_cutoff = join_links(
@@ -569,6 +660,7 @@ class RepeaterChainEvaluation():
                 join_links = bell_join_efficient
             else:
                 join_links = bell_join
+            join_links = self._delay_successful_join(join_links, t_c)
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 
@@ -624,6 +716,7 @@ class RepeaterChainEvaluation():
                 join_links = pauli_fourier_join_efficient
             else:
                 join_links = pauli_fourier_join
+            join_links = self._delay_successful_join(join_links, t_c)
             depolar_rate = parameters.get("depolarizing_rate", 0.0)
             dephase_rate = parameters.get("dephasing_rate", 0.0)
 
@@ -708,6 +801,7 @@ class RepeaterChainEvaluation():
                 cutoff=cutoff,
                 cut_type=cut_type,
                 hardware_success=p_swap,
+                t_c=t_c,
             )
 
         return pmf_swap, state_out
@@ -716,7 +810,7 @@ class RepeaterChainEvaluation():
     def distillation(self,
             parameters: SimParameters,
             pmf1, sf1, pmf2, sf2,
-            cutoff, t_coh, cut_type):
+            cutoff, t_coh, cut_type, t_c=1):
         """
         Calculate the waiting time and average Werner parameter
         with time-out for the distillation.
@@ -745,6 +839,7 @@ class RepeaterChainEvaluation():
         w_func: array-like 1-D
             The Werner parameter as function of T of the distillation.
         """
+        t_c, sf1, sf2 = self._communication_inputs(parameters, sf1, sf2, t_c, t_coh)
         if cut_type == "memory_time":
             shift = cutoff
         else:
@@ -755,6 +850,7 @@ class RepeaterChainEvaluation():
                 join_links = werner_join_efficient
             else:
                 join_links = werner_join
+            join_links = self._delay_successful_join(join_links, t_c)
 
             # P'_f  cutoff attempt when cutoff fails
             pf_cutoff = join_links(
@@ -812,6 +908,7 @@ class RepeaterChainEvaluation():
                 join_links = bell_join_efficient
             else:
                 join_links = bell_join
+            join_links = self._delay_successful_join(join_links, t_c)
             depolar_rate = parameters.get("depolarizing_rate", 0.)
             dephase_rate = parameters.get("dephasing_rate", 0.)
 
@@ -887,6 +984,7 @@ class RepeaterChainEvaluation():
                 join_links = pauli_fourier_join_efficient
             else:
                 join_links = pauli_fourier_join
+            join_links = self._delay_successful_join(join_links, t_c)
             depolar_rate = parameters.get("depolarizing_rate", 0.0)
             dephase_rate = parameters.get("dephasing_rate", 0.0)
 
@@ -992,6 +1090,7 @@ class RepeaterChainEvaluation():
                 cutoff=cutoff,
                 cut_type=cut_type,
                 hardware_success=parameters.get("p_distillation", 1.0),
+                t_c=t_c,
             )
 
         return pmf_dist, state_out
@@ -999,7 +1098,7 @@ class RepeaterChainEvaluation():
 
     def compute_unit(self,
             parameters, pmf1: PMF, sf1, pmf2: PMF = None, sf2 = None,
-            unit_kind="swap", step_size=1):
+            unit_kind="swap", step_size=1, t_c=1):
         """
         Calculate the the waiting time distribution and
         the Werner parameter of a protocol unit swap or distillation.
@@ -1016,6 +1115,10 @@ class RepeaterChainEvaluation():
             The state quality (e.g., Werner parameter) as function of T of the two input links.
         unit_kind: str
             "swap" or "dist"
+        t_c: int
+            Classical communication duration in elementary-link time units.
+            Protocol evaluators pass the maximum length of the input links.
+            Ignored when classical_communication is disabled.
 
         Returns
         -------
@@ -1107,12 +1210,12 @@ class RepeaterChainEvaluation():
             pmf, sf = self.swapping(
                 parameters,
                 pmf1, sf1, pmf2, sf2, p_swap,
-                cutoff=cutoff, t_coh=t_coh, cut_type=cut_type)
+                cutoff=cutoff, t_coh=t_coh, cut_type=cut_type, t_c=t_c)
         elif unit_kind == "dist":
             pmf, sf = self.distillation(
                 parameters,
                 pmf1, sf1, pmf2, sf2,
-                cutoff=cutoff, t_coh=t_coh, cut_type=cut_type)
+                cutoff=cutoff, t_coh=t_coh, cut_type=cut_type, t_c=t_c)
         else:
             raise ValueError("unit_kind must be 'swap' or 'dist'")
 
@@ -1227,7 +1330,7 @@ class RepeaterChainEvaluation():
         if all_level:
             full_result = [(pmf, sf)]
         
-        total_step_size = 1
+        segment_length = int(self.classical_communication)
 
         # Compute protocol units
         i = 0
@@ -1241,10 +1344,11 @@ class RepeaterChainEvaluation():
 
             if operation == 0:
                 pmf, sf = self.compute_unit(
-                    parameters, pmf, sf, unit_kind="swap", step_size=total_step_size)
+                    parameters, pmf, sf, unit_kind="swap", t_c=segment_length)
+                segment_length *= 2
             elif operation == 1:
                 pmf, sf = self.compute_unit(
-                    parameters, pmf, sf, unit_kind="dist", step_size=total_step_size)
+                    parameters, pmf, sf, unit_kind="dist", t_c=segment_length)
             
             if all_level:
                 full_result.append((pmf, sf))
@@ -1289,6 +1393,7 @@ class RepeaterChainEvaluation():
 
         # Each segment will keep a distribution for waiting time and Werner parameter
         segments = []
+        lengths = [int(self.classical_communication)] * S
 
         # GEN: Elementary link generation
         t_list: np.ndarray = np.arange(1, t_trunc)
@@ -1324,13 +1429,16 @@ class RepeaterChainEvaluation():
                 next_idx = find_right_segment(segments, idx)
                 next_segment = segments[next_idx]
                 pmf, w_func = self.compute_unit(
-                    parameters, *curr_segment, *next_segment, unit_kind="swap", step_size=1)
+                    parameters, *curr_segment, *next_segment, unit_kind="swap",
+                    t_c=max(lengths[idx], lengths[next_idx]))
+                lengths[next_idx] += lengths[idx]
+                lengths[idx] = 0
                 segments[idx] = None
                 segments[next_idx] = (pmf, w_func)
 
             elif operation == 'd':
                 pmf, w_func = self.compute_unit(
-                    parameters, *curr_segment, unit_kind="dist", step_size=1)
+                    parameters, *curr_segment, unit_kind="dist", t_c=lengths[idx])
                 segments[idx] = (pmf, w_func)
 
         return next((segm for segm in segments if segm is not None), (None, None))
@@ -1383,10 +1491,9 @@ class RepeaterChainEvaluation():
             protocol = (protocol,)
         cutoffs = parameters.get("cutoff")
 
-        # Each segment will keep
-        # - an integer for the segment length
-        # - a distribution for waiting time and Werner parameter
+        # Keep distributions, physical endpoints, and optional timing lengths.
         segments = []
+        lengths = [int(self.classical_communication)] * S
 
         # GEN: Elementary link generation
         # For each segment, generate its distribution
@@ -1444,7 +1551,9 @@ class RepeaterChainEvaluation():
 
                 pmf, w_func = self.compute_unit(
                     parameters, curr_segment[0], curr_segment[1], next_segment[0], next_segment[1], 
-                    unit_kind="swap", step_size=1)
+                    unit_kind="swap", t_c=max(lengths[idx], lengths[next_idx]))
+                lengths[next_idx] += lengths[idx]
+                lengths[idx] = 0
                 segments[idx] = None
                 segments[next_idx] = (pmf, w_func, curr_segment[2], next_segment[3])
             
@@ -1464,14 +1573,16 @@ class RepeaterChainEvaluation():
                     )
 
                 pmf, w_func = self.compute_unit(
-                    parameters, curr_segment[0], curr_segment[1], unit_kind="dist", step_size=1)
+                    parameters, curr_segment[0], curr_segment[1], unit_kind="dist",
+                    t_c=lengths[idx])
                 segments[idx] = (pmf, w_func, curr_segment[2], curr_segment[3])
 
         final_segment = next((segm for segm in segments if segm is not None), (None, None))
         return (final_segment[0], final_segment[1])
 
 
-def repeater_sim(parameters, all_level=False, state_type=None, w_twirling=True):
+def repeater_sim(parameters, all_level=False, state_type=None, w_twirling=True,
+                 classical_communication=True):
     """
     Functional wrapper for nested (Li et al. 2021) or asymmetric (La Corte et al. 2025) protocol evaluation.
     A first typecheck on the protocol is done to identify the evaluation to run, i.e.
@@ -1488,6 +1599,9 @@ def repeater_sim(parameters, all_level=False, state_type=None, w_twirling=True):
     all_level: bool
         If true, Return a list of the result of all the levels.
         [(t_pmf0, w_func0), (t_pmf1, w_func1) ...]
+    classical_communication: bool
+        Include length-dependent communication delays and input decoherence.
+        Defaults to True; False reproduces the zero-communication model.
 
     Returns
     -------
@@ -1498,7 +1612,10 @@ def repeater_sim(parameters, all_level=False, state_type=None, w_twirling=True):
     --> TODO: refactor asymmetric protocol in input to be a binary tree
     TODO: remove all_level
     """
-    simulator = RepeaterChainEvaluation(state_type=state_type, w_twirling=w_twirling)
+    simulator = RepeaterChainEvaluation(
+        state_type=state_type, w_twirling=w_twirling,
+        classical_communication=classical_communication,
+    )
 
     # Redirect to symmetric (nested) or asymmetric protocol
     if isinstance(parameters["protocol"], Iterable) and all(isinstance(i, int) for i in parameters["protocol"]):

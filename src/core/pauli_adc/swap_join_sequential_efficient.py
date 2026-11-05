@@ -259,8 +259,9 @@ def _aggregate_sequential_state_sum(
     endpoints,
     pauli_rates,
     adc_rates,
+    communication_time=0,
 ):
-    """Compute ``sum_u p[u] N(t-u) x[u]`` over one finite age window.
+    """Compute ``sum_u p[u] N(t-u+t_c) x[u]`` over one finite age window.
 
     Each exponential kernel is evaluated by one causal first-order filter.
     The matrices are applied only after filtering, so no pair enumeration is
@@ -286,7 +287,9 @@ def _aggregate_sequential_state_sum(
             aggregate = lfilter(
                 [1.0], [1.0, -q], innovation, axis=0
             )
-        result += np.einsum("ti,ji->tj", aggregate, matrix, optimize=True)
+        result += np.exp(-decay_rate * communication_time) * np.einsum(
+            "ti,ji->tj", aggregate, matrix, optimize=True
+        )
     return result
 
 
@@ -384,8 +387,12 @@ def real_x_attempt_join_sequential_efficient(
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
     werner_twirl=False,
+    communication_time=0,
 ):
-    """Evaluate one sequential-noise attempt without readiness-pair enumeration."""
+    """Evaluate one attempt, aging both inputs through communication.
+
+    Returned kernels use readiness time; the evaluator adds the time delay.
+    """
     if cut_type != "memory_time":
         raise NotImplementedError(
             "the sequential efficient real-X join currently supports "
@@ -412,6 +419,8 @@ def real_x_attempt_join_sequential_efficient(
         node_adc_rates=node_adc_rates,
     )
     cutoff = int(cutoff)
+    if not isinstance(communication_time, (int, np.integer)) or communication_time < 0:
+        raise ValueError("communication_time must be a nonnegative integer")
     if operation == "swap":
         endpoints1 = (0, 1)
         endpoints2 = (1, 2)
@@ -425,6 +434,7 @@ def real_x_attempt_join_sequential_efficient(
         endpoints=endpoints1,
         pauli_rates=pauli_rates,
         adc_rates=adc_rates,
+        communication_time=communication_time,
     )
     early2 = _aggregate_sequential_state_sum(
         pmf2,
@@ -433,10 +443,25 @@ def real_x_attempt_join_sequential_efficient(
         endpoints=endpoints2,
         pauli_rates=pauli_rates,
         adc_rates=adc_rates,
+        communication_time=communication_time,
     )
 
     weighted1 = pmf1[:, np.newaxis] * state_func1
     weighted2 = pmf2[:, np.newaxis] * state_func2
+    if communication_time:
+        # Evaluate N(dt+t_c) in the early sums above and N(t_c) here.
+        # Finite sequential Pauli/ADC channels cannot be composed as a semigroup.
+        def age(weighted, endpoints):
+            channel = sum(
+                np.exp(-rate * communication_time) * matrix
+                for rate, matrix in _link_exponential_matrices(
+                    pauli_rates, adc_rates, endpoints
+                )
+            )
+            return weighted @ channel.T
+
+        weighted1 = age(weighted1, endpoints1)
+        weighted2 = age(weighted2, endpoints2)
     cutoff_failure = _cutoff_failure_kernel(pmf1, pmf2, cutoff)
     left_early = early1 - weighted1
     quantum_weighted = _bilinear_operation(

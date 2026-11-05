@@ -91,14 +91,13 @@ def test_heterogeneus_repeater_sim_manual(t_coh_A, t_coh_B, t_coh_C):
     # Run the simulation
     pmf1, w_func1 = repeater_sim(parameters)
 
-    # Consider t=1
-    # w_AB (t) should be costant 0.9, as it is for sure generated last 
-    # w_BC (t) starts from near 1 and decays accordingly to
-        # exp ( - deltaT * (1/t_coh_B + 1/t_coh_C) )
-    # The two multiplied (SWAP) should give the same result as the simulation
-    w_BC_cmp = w0_BC * np.exp(-np.arange(999) * (1/t_coh_B + 1/t_coh_C))
-    w_BC_cmp = np.insert(w_BC_cmp, 0, 0) # Add the initial zero
-    w_func_cmp = w0_AB * w_BC_cmp
+    # Completion at t includes t_c=1. AB is ready at t-1 and ages for one
+    # unit; BC is ready at 1 and ages for t-1 units (waiting plus communication).
+    w_func_cmp = np.zeros(1000)
+    w_func_cmp[2:] = (
+        w0_AB * w0_BC * np.exp(-(1/t_coh_A + 1/t_coh_B))
+        * np.exp(-np.arange(1, 999) * (1/t_coh_B + 1/t_coh_C))
+    )
 
     check_validity(pmf1, pmf1, w_func1, w_func_cmp)
 

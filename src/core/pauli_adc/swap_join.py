@@ -127,9 +127,9 @@ def _memory_channel(pauli_rates, adc_rate, dt):
 
 def _apply_waiting_noise(
  # PATCH GUIDE — older-link rule
- # Only older link waits.  Swap uses endpoint pairs (A,M) and (M,B); distillation
- # uses the same pair (A,B) for both copies.  With t1=5,t2=2, dt=3, only the
- # state ready at t=2 is damped for three units before the operation at t=5.
+ # The older link waits |t1-t2|+communication_time; the newer waits only
+ # communication_time.  Swap uses endpoint pairs (A,M) and (M,B);
+ # distillation uses the same pair (A,B) for both copies.
     t1,
     t2,
     state1,
@@ -138,42 +138,32 @@ def _apply_waiting_noise(
     operation,
     node_pauli_rates,
     node_adc_rates,
+    communication_time=0,
 ):
     state1 = np.asarray(state1, dtype=float).copy()
     state2 = np.asarray(state2, dtype=float).copy()
-    dt = abs(t1 - t2)
-    if dt == 0:
+    if t1 == t2 and communication_time == 0:
         return state1, state2
 
     if operation == "swap":
-        if t1 < t2:
-            endpoint_indices = (0, 1)
-            target = 1
-        else:
-            endpoint_indices = (1, 2)
-            target = 2
+        endpoint_pairs = ((0, 1), (1, 2))
     elif operation == "dist":
-        endpoint_indices = (0, 1)
-        target = 1 if t1 < t2 else 2
+        endpoint_pairs = ((0, 1), (0, 1))
     else:
         raise ValueError("operation must be 'swap' or 'dist'")
 
-    left_node, right_node = endpoint_indices
-    left_channel = _memory_channel(
-        node_pauli_rates[left_node],
-        node_adc_rates[left_node],
-        dt,
-    )
-    right_channel = _memory_channel(
-        node_pauli_rates[right_node],
-        node_adc_rates[right_node],
-        dt,
-    )
-    if target == 1:
-        state1 = apply_local_channels(state1, left_channel, right_channel)
-    else:
-        state2 = apply_local_channels(state2, left_channel, right_channel)
-    return state1, state2
+    states = [state1, state2]
+    for index, (ready, endpoints) in enumerate(zip((t1, t2), endpoint_pairs)):
+        dt = max(t1, t2) - ready + communication_time
+        if dt == 0:
+            continue
+        left_node, right_node = endpoints
+        states[index] = apply_local_channels(
+            states[index],
+            _memory_channel(node_pauli_rates[left_node], node_adc_rates[left_node], dt),
+            _memory_channel(node_pauli_rates[right_node], node_adc_rates[right_node], dt),
+        )
+    return states[0], states[1]
 
 
 def _cutoff_event(t1, t2, cutoff, cut_type):
@@ -312,9 +302,12 @@ def real_x_attempt_join(
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
     werner_twirl=False,
+    communication_time=0,
 ):
     """Enumerate one preparation-and-operation attempt.
 
+    Communication ages both inputs before the quantum operation; returned
+    kernels are still indexed by readiness time (the evaluator delays them).
     Inputs are normalized state functions.  ``weighted_success`` is not
     normalized: its II column equals ``valid_success`` by construction.
     """
@@ -338,6 +331,8 @@ def real_x_attempt_join(
         node_pauli_rates=node_pauli_rates,
         node_adc_rates=node_adc_rates,
     )
+    if not isinstance(communication_time, (int, np.integer)) or communication_time < 0:
+        raise ValueError("communication_time must be a nonnegative integer")
     size = len(pmf1)
 
     cutoff_failure = np.zeros(size, dtype=float)
@@ -367,6 +362,7 @@ def real_x_attempt_join(
                 operation=operation,
                 node_pauli_rates=pauli_rates,
                 node_adc_rates=adc_rates,
+                communication_time=communication_time,
             )
             if operation == "swap":
                 quantum_output, _ = accepted_bell_swap(

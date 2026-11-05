@@ -681,7 +681,8 @@ def test_memory_cutoff_boundary_and_shifted_renewal_timing():
     pmf_right[2] = valid_probability
     pmf_right[2 + cutoff + 1] = 1.0 - valid_probability
     evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,  # These legacy oracles omit communication.
     )
     parameters = {
         "p_gen": 1.0,
@@ -751,7 +752,8 @@ def test_run_time_cutoff_boundary_and_renewal_timing():
     pmf_right[cutoff] = valid_probability
     pmf_right[cutoff + 1] = 1.0 - valid_probability
     evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,
     )
     parameters = {
         "p_gen": 1.0,
@@ -901,7 +903,8 @@ def test_stochastic_two_leaf_protocol_matches_dense_full_reset_renewal_oracle():
     )
 
     evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,
     )
     parameters = {
         "p_gen": [p_left, p_right],
@@ -966,7 +969,8 @@ def test_retry_pmf_for_phi_plus_postselection_has_geometric_golden_values():
     input_pmf[1] = 1.0
     state_func = np.tile(coordinates, (size, 1))
     evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False
+        state_type=RealXState, use_fft=False, efficient=False,
+        classical_communication=False,
     )
     parameters = {
         "p_gen": 1.0,
@@ -1011,6 +1015,7 @@ def test_small_nested_swap_then_distillation_matches_dense_circuit_and_retries()
         use_fft=False,
         efficient=False,
         w_twirling=False,
+        classical_communication=False,
     )
     parameters = {
         "protocol": (0, 1),
