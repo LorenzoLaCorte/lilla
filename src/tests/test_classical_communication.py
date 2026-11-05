@@ -87,8 +87,11 @@ def test_werner_table_one_noise_and_retry_timing(efficient, use_fft, operation):
     ("memory_time", 1, 2), ("run_time", 2, 2),
 ])
 @pytest.mark.parametrize("efficient", [False, True])
-def test_cutoff_rejections_do_not_pay_operation_communication(
-    state_type, cut_type, cutoff, failure_duration, efficient
+@pytest.mark.parametrize("use_fft", [False, True])
+@pytest.mark.parametrize("operation", ["swap", "dist"])
+@pytest.mark.parametrize("enabled", [False, True])
+def test_cutoff_rejections_pay_abort_heralding_before_restart(
+    state_type, cut_type, cutoff, failure_duration, efficient, use_fft, operation, enabled
 ):
     size = 30
     left, right = np.zeros(size), np.zeros(size)
@@ -97,15 +100,100 @@ def test_cutoff_rejections_do_not_pay_operation_communication(
         state_type(lambdas=[1.0, 0.0, 0.0, 0.0])
     )
     sf = state.get_generation_sf(size)
-    actual, _ = RepeaterChainEvaluation(
-        state_type=state_type, efficient=efficient, use_fft=False
-    ).compute_unit(
+    evaluator = RepeaterChainEvaluation(
+        state_type=state_type, efficient=efficient, use_fft=use_fft,
+        classical_communication=enabled,
+    )
+    evaluator.zero_padding_size = 1024
+    actual, states = evaluator.compute_unit(
         {"p_gen": 1.0, "p_swap": 1.0, "cutoff": cutoff, "cut_type": cut_type},
-        left, sf, right, sf, t_c=3,
+        left, sf, right, sf, t_c=3, unit_kind=operation,
     )
     expected = np.zeros(size)
     for retries in range(size):
-        completion = 4 + retries * failure_duration
+        t_c = 3 if enabled else 0
+        completion = 1 + t_c + retries * (failure_duration + t_c)
+        if completion >= size:
+            break
+        expected[completion] = 0.6 * 0.4 ** retries
+    assert_allclose(actual, expected, atol=1.0e-13)
+    assert_allclose(states[expected > 0], sf[expected > 0], atol=1.0e-12)
+
+
+@pytest.mark.parametrize("state_type", STATE_TYPES)
+@pytest.mark.parametrize("use_fft", [False, True])
+@pytest.mark.parametrize("t_c", [5, 6, 10])
+def test_cutoff_heralding_beyond_horizon_cannot_create_early_retries(state_type, use_fft, t_c):
+    size = 10
+    left, right = np.zeros(size), np.zeros(size)
+    left[1], right[1], right[6] = 1.0, 0.6, 0.4
+    state = state_type(1.0) if state_type == WernerState else state_type(lambdas=[1.0, 0.0, 0.0, 0.0])
+    sf = state.get_generation_sf(size)
+    actual, _ = RepeaterChainEvaluation(state_type=state_type, use_fft=use_fft).compute_unit(
+        {"p_gen": 1.0, "p_swap": 1.0, "mt_cut": 4}, left, sf, right, sf, t_c=t_c
+    )
+    expected = np.zeros(size)
+    if 1 + t_c < size:
+        expected[1 + t_c] = 0.6
+    assert_allclose(actual, expected, atol=1.0e-13)
+
+
+@pytest.mark.parametrize("state_type", STATE_TYPES)
+def test_asymmetric_cutoff_heralding_uses_longest_input_segment(state_type):
+    size = 20
+    parameters = {
+        "protocol": ("s0", "s1"), "p_gen": [1.0, 1.0, 0.5], "p_swap": 1.0,
+        "w0": [1.0] * 3, "lambdas": [[1.0, 0.0, 0.0, 0.0]] * 3,
+        "t_coh": [1.0e30] * 4, "depolarizing_rate": [0.0] * 4,
+        "dephasing_rate": [0.0] * 4, "pauli_mode_decay_rates": [[0.0] * 3] * 4,
+        "amplitude_damping_rate": [0.0] * 4, "mt_cut": 0, "t_trunc": size,
+    }
+    actual, _ = RepeaterChainEvaluation(state_type=state_type, use_fft=False).asymmetric_heterogeneous_protocol(
+        parameters, number_of_segments=3
+    )
+    # The length-2 left link is ready at t=2. The final swap accepts only a
+    # right link ready at t=2 and heralds success at t=4. Rejections consume
+    # min(2,t_right)+2, so their two possible durations are 3 and 4.
+    tail_mass = sum(0.5 ** t for t in range(3, size))
+    expected = np.zeros(size)
+    for t in range(size):
+        expected[t] = (0.25 if t == 4 else 0.0)
+        if t >= 3:
+            expected[t] += 0.5 * expected[t-3]
+        if t >= 4:
+            expected[t] += tail_mass * expected[t-4]
+    assert_allclose(actual, expected, atol=1.0e-13)
+
+
+@pytest.mark.parametrize("state_type", [WernerState, BellState, PauliFourierState])
+@pytest.mark.parametrize("operation", ["swap", "dist"])
+@pytest.mark.parametrize("enabled", [False, True])
+@pytest.mark.parametrize("use_fft", [False, True])
+def test_fidelity_rejections_herald_from_their_decision_time(state_type, operation, enabled, use_fft):
+    size = 24
+    left, right = np.zeros(size), np.zeros(size)
+    left[1], left[2], right[3] = 0.6, 0.4, 1.0
+    if state_type == WernerState:
+        good, bad = WernerState(1.0), WernerState(0.0)
+    else:
+        good = state_type(lambdas=[1.0, 0.0, 0.0, 0.0])
+        bad = state_type(lambdas=[0.0, 1.0, 0.0, 0.0])
+    sf_left, sf_right = good.get_generation_sf(size), good.get_generation_sf(size)
+    sf_left[2] = bad.get_generation_sf(size)[2]
+    evaluator = RepeaterChainEvaluation(
+        state_type=state_type, use_fft=use_fft, classical_communication=enabled
+    )
+    evaluator.zero_padding_size = 1024
+    actual, _ = evaluator.compute_unit(
+        {"p_gen": 1.0, "p_swap": 1.0, "t_coh": 1.0e15,
+         "cut_type": "fidelity", "cutoff": 0.1},
+        left, sf_left, right, sf_right, unit_kind=operation, t_c=2,
+    )
+    # Good inputs meet at t=3; a bad earlier input is rejected at t=2.
+    t_c = 2 if enabled else 0
+    expected = np.zeros(size)
+    for retries in range(size):
+        completion = 3 + t_c + retries * (2 + t_c)
         if completion >= size:
             break
         expected[completion] = 0.6 * 0.4 ** retries

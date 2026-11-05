@@ -234,7 +234,10 @@ class RepeaterChainEvaluation():
                 "RealXState is falling back to the direct O(T^2) join: the "
                 "efficient backend currently requires a memory_time cutoff."
             )
-        shift = cutoff if cut_type == "memory_time" else 0
+        # Memory-cutoff kernels are indexed at the earlier readiness time;
+        # other cutoff kernels already include their decision duration.
+        # Every rejection also pays for heralding the abort before restart.
+        shift = (int(cutoff) if cut_type == "memory_time" else 0) + int(t_c)
         if use_efficient_join:
             attempt_join = real_x_attempt_join_sequential_efficient
             renewal_weighted = renewal_sum_sequential_efficient_weighted
@@ -285,7 +288,7 @@ class RepeaterChainEvaluation():
             # A cutoff rejection and a destructive operation failure both
             # restart the complete attempt.  Collapsing the two nested
             # renewals gives S/(1-K-F) and W/(1-K-F), where the cutoff kernel
-            # K is shifted by the charged memory-cutoff duration.
+            # K includes the cutoff duration plus classical abort heralding.
             retry_failure = np.array(attempt.valid_failure, copy=True)
             if shift < len(retry_failure):
                 retry_failure[shift:] += attempt.cutoff_failure[
@@ -486,6 +489,9 @@ class RepeaterChainEvaluation():
         if shift <= trunc:
             zero_state = np.zeros(shift, dtype=func.dtype)
             func = np.concatenate([zero_state, func])[:trunc]
+        else:
+            # No failed attempt can finish inside the retained horizon.
+            func = np.zeros_like(func)
 
         # decide what convolution to use and prepare the data
         convolved = first_func
@@ -600,10 +606,7 @@ class RepeaterChainEvaluation():
             The Werner parameter as function of T of the entanglement swap.
         """
         t_c, sf1, sf2 = self._communication_inputs(parameters, sf1, sf2, t_c, t_coh)
-        if cut_type == "memory_time":
-            shift = cutoff
-        else:
-            shift = 0
+        shift = (int(cutoff) if cut_type == "memory_time" else 0) + int(t_c)
 
         if self.state_type == WernerState:
             if self.efficient and cut_type == "memory_time":
@@ -840,10 +843,7 @@ class RepeaterChainEvaluation():
             The Werner parameter as function of T of the distillation.
         """
         t_c, sf1, sf2 = self._communication_inputs(parameters, sf1, sf2, t_c, t_coh)
-        if cut_type == "memory_time":
-            shift = cutoff
-        else:
-            shift = 0
+        shift = (int(cutoff) if cut_type == "memory_time" else 0) + int(t_c)
 
         if self.state_type == WernerState:
             if self.efficient and cut_type == "memory_time":
