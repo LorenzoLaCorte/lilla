@@ -6,6 +6,8 @@ from src.core.werner.protocol_units import *
 from src.utils.logging_utilities import *
 from src.utils.utility_functions import *
 from src.optimization.optimize_cutoff import CutoffOptimizer
+from src.core.repeater_algorithm import RepeaterChainEvaluation
+from src.core.werner.state import WernerState
 
 def test_fidelity_cut_off_function():
     w_cut = 0.95
@@ -47,9 +49,12 @@ def test_cutoff_dict_generation():
     assert_allclose(cutoff_dict["fidelity"], np.array([0.5, 0.5]))
 
 
-def test_opt_adaptive_trunc():
+@pytest.mark.parametrize("communication,expected", [(False, (4,)), (True, (3,))])
+def test_opt_adaptive_trunc(communication, expected):
     """
-    t_trunc should be increased
+    Search adaptation preserves the optimum for the selected physical model.
+    The reference cutoff 4 assumes zero classical communication; with the
+    current communication model, an independent time-domain grid gives 3.
     """
     np.random.seed(1)
     parameters = {
@@ -62,12 +67,14 @@ def test_opt_adaptive_trunc():
         }
 
     logging.info("Full tau optimization\n")
-    opt = CutoffOptimizer(adaptive=True)
+    opt = CutoffOptimizer(adaptive=True, workers=1, simulator=RepeaterChainEvaluation(
+        state_type=WernerState, classical_communication=communication))
     best_cutoff_dict = opt.run(parameters)
-    assert(best_cutoff_dict["memory_time"] == (4,))
+    assert_allclose(best_cutoff_dict["memory_time"], expected)
 
 
-def test_opt_adaptive_search_range():
+@pytest.mark.parametrize("communication,expected", [(False, (3, 7)), (True, (1, 3))])
+def test_opt_adaptive_search_range(communication, expected):
     """
     The search range should be restricted
     """
@@ -81,9 +88,11 @@ def test_opt_adaptive_search_range():
         "t_trunc": 400
         }
 
-    opt = CutoffOptimizer(adaptive=True, popsize=5)
+    opt = CutoffOptimizer(adaptive=True, popsize=5, workers=1,
+                          simulator=RepeaterChainEvaluation(
+                              state_type=WernerState, classical_communication=communication))
     best_cutoff_dict = opt.run(parameters)
-    assert_allclose(best_cutoff_dict["memory_time"], (3, 7))
+    assert_allclose(best_cutoff_dict["memory_time"], expected)
 
 
 def test_opt_uniform():

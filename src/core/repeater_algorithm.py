@@ -3,6 +3,7 @@ from collections.abc import Iterable
 import logging
 
 import numpy as np
+from src.core.renewal import renewal_sum_fft
 
 from src.core.states import QuantumState
 from src.core.werner.state import WFunc, WernerState, polish_w_func
@@ -34,6 +35,7 @@ except (ImportError, ModuleNotFoundError):
 
 from src.core.werner.protocol_units import werner_join
 from src.core.werner.protocol_units_efficient import werner_join_efficient
+from src.core.werner.renewal import renew_werner
 from src.core.bell.protocol_units import bell_join
 from src.core.bell.protocol_units_efficient import bell_join_efficient
 from src.core.pauli_fourier.protocol_units import pauli_fourier_join
@@ -479,6 +481,20 @@ class RepeaterChainEvaluation():
 
     def iterative_convolution_helper(
             self, func, first_func, trunc, shift, p_swap, max_k):
+        if self.use_fft and (not self.use_gpu or not _cupy_exist) and self.state_type in (
+            WernerState, BellState, PauliFourierState, RealXState
+        ):
+            if self.use_gpu:
+                logging.warning("CuPy not found, using CPU.")
+                self.use_gpu = False
+            # A fixed-size Fourier quotient computes a circular renewal:
+            # probability beyond its window can wrap into retained early
+            # times. Padding by 2*T is insufficient for long retry tails.
+            # The causal series inverse retains exactly the requested prefix.
+            failure = func if p_swap is None else (1.0 - p_swap) * func
+            first = first_func if p_swap is None else p_swap * first_func
+            return renewal_sum_fft(failure, first, shift=shift)
+
         # initialize the result array
         sum_convolved = np.zeros(trunc, dtype=first_func.dtype)
         if p_swap is not None:
@@ -623,6 +639,15 @@ class RepeaterChainEvaluation():
             ps_cutoff = join_links(
                 pmf1, pmf2, sf1, sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type, evaluate_func="1", t_coh=t_coh)
+            if self.efficient and self.use_fft and not self.use_gpu and np.ndim(sf1) == np.ndim(sf2) == 1:
+                state_suc = join_links(
+                    pmf1, pmf2, w_func1=sf1, w_func2=sf2, ycut=True,
+                    cutoff=cutoff, cut_type=cut_type, t_coh=t_coh, evaluate_func="w1w2")
+                # S=p*A and F=(1-p)*A. Cutoff and swap failures both reset
+                # the complete attempt, so P and P*W share 1/(1-K-F).
+                return renew_werner(
+                    pf_cutoff, (1.0 - p_swap) * ps_cutoff,
+                    p_swap * ps_cutoff, p_swap * state_suc, shift=shift)
             # P_f or P_s (Differs only by a constant p_swap)
             pmf_cutoff = self.iterative_convolution(
                 pf_cutoff, shift=shift,
@@ -862,6 +887,19 @@ class RepeaterChainEvaluation():
                 pmf1, pmf2, sf1, sf2, ycut=True,
                 cutoff=cutoff, cut_type=cut_type,
                 evaluate_func="0.5+0.5w1w2", t_coh=t_coh)
+            if self.efficient and self.use_fft and not self.use_gpu and np.ndim(sf1) == np.ndim(sf2) == 1:
+                psf_cutoff = join_links(
+                    pmf1, pmf2, sf1, sf2, ycut=True,
+                    cutoff=cutoff, cut_type=cut_type,
+                    evaluate_func="0.5-0.5w1w2", t_coh=t_coh)
+                state_suc = join_links(
+                    pmf1, pmf2, sf1, sf2, ycut=True,
+                    cutoff=cutoff, cut_type=cut_type,
+                    evaluate_func="w1+w2+4w1w2", t_coh=t_coh)
+                # Distillation's state-dependent success kernels are already
+                # averaged over each fresh attempt; the same reset identity
+                # applies once those kernels have been constructed.
+                return renew_werner(pf_cutoff, psf_cutoff, pss_cutoff, state_suc, shift=shift)
             # P_s  dist attempt when dist succeeds
             ps_dist = self.iterative_convolution(
                 pf_cutoff, shift=shift,

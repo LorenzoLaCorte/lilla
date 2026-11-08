@@ -13,6 +13,8 @@ from src.core.pauli_adc import (
     real_x_attempt_join_sequential_efficient,
 )
 from src.core.pauli_adc import swap_join as direct_join_module
+from src.core.pauli_adc import swap_join_sequential_efficient as efficient_join_module
+from src.core.pauli_adc.state import _minimum_real_x_eigenvalue, normalize_weighted_x_func
 from src.core import repeater_algorithm as repeater_algorithm_module
 from src.core.repeater_algorithm import RepeaterChainEvaluation
 
@@ -255,6 +257,83 @@ def test_sequential_fft_retry_preserves_tiny_hardware_success():
         atol=1.0e-31,
         rtol=4.0e-13,
     )
+
+
+def test_fft_tail_repair_preserves_probability_and_weighted_accuracy(monkeypatch):
+    """Tiny absolute FFT errors must not become material rare-bin states."""
+    first = np.zeros((8, 6))
+    bell = np.array([1.0, 0.0, 0.0, 1.0, 1.0, -1.0])
+    first[2] = 0.2 * bell
+    first[6] = 1.0e-12 * bell
+    noisy = first.copy()
+    noisy[6, 4] += 5.0e-17
+    assert _minimum_real_x_eigenvalue(noisy[6] / noisy[6, 0]) < -1.0e-6
+    monkeypatch.setattr(efficient_join_module, "_convolve_with_resolvent",
+                        lambda *_: noisy.copy())
+    pmf, weighted = efficient_join_module.renewal_sum_sequential_efficient_weighted(
+        np.zeros(8), first
+    )
+    assert_allclose(pmf, first[:, 0], atol=0.0, rtol=0.0)
+    assert_allclose(weighted, first, atol=1.0e-16, rtol=0.0)
+    states = normalize_weighted_x_func(weighted, pmf)
+    assert np.min(_minimum_real_x_eigenvalue(states[pmf > 0])) >= -1.0e-12
+
+
+def test_fft_tail_repair_still_rejects_material_physical_errors(monkeypatch):
+    first = np.zeros((8, 6))
+    first[2] = 0.2 * np.array([1.0, 0.0, 0.0, 1.0, 1.0, -1.0])
+    broken = first.copy()
+    broken[2, 4] += 1.0e-4
+    monkeypatch.setattr(efficient_join_module, "_convolve_with_resolvent",
+                        lambda *_: broken.copy())
+    with pytest.raises(ValueError, match="materially nonphysical weighted state"):
+        efficient_join_module.renewal_sum_sequential_efficient_weighted(np.zeros(8), first)
+
+
+@pytest.mark.parametrize("horizon", [4096, 65536])
+def test_low_swap_probability_large_horizon_has_physical_rare_bins(horizon):
+    """Reduced reproduction of the p_swap=0.2 scaling-calibration crash."""
+    import warnings
+
+    parameters = {
+        "protocol": (0,) * 6,
+        "p_gen": 0.1,
+        "p_swap": 0.2,
+        "lambdas": [1.0, 0.0, 0.0, 0.0],
+        "pauli_mode_decay_rates": 3.2e-7,
+        "amplitude_damping_rate": 6.4e-7,
+        "mt_cut": 131249,
+        "t_trunc": horizon,
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        levels = RepeaterChainEvaluation(state_type=RealXState).nested_protocol(
+            parameters, all_level=True
+        )
+    for pmf, states in levels:
+        assert np.all(np.isfinite(states))
+        assert np.all(pmf >= 0.0)
+        assert np.min(_minimum_real_x_eigenvalue(states[pmf > 0])) >= -1.0e-9
+
+    # Compare the first swap against an independent causal renewal, including
+    # the rare bins where normalized FFT roundoff previously failed PSD checks.
+    pmf, states = levels[0]
+    # The efficient attempt is already checked against the direct pair oracle
+    # by other tests; use its kernels here to isolate the FFT renewal error.
+    terms = efficient_join_module.real_x_attempt_join_sequential_efficient(
+        pmf, pmf, states, states, cutoff=parameters["mt_cut"], hardware_success=0.2,
+        node_pauli_rates=parameters["pauli_mode_decay_rates"],
+        node_adc_rates=parameters["amplitude_damping_rate"], communication_time=1,
+    )
+    stop = 2100
+    retry = np.zeros(stop)
+    first = np.zeros((stop, 6))
+    retry[1:] = terms.valid_failure[:stop-1]
+    first[1:] = terms.weighted_success[:stop-1]
+    expected = direct_join_module.renewal_sum(retry, first)
+    actual_pmf, actual_states = levels[1]
+    assert_allclose(actual_pmf[:stop, None] * actual_states[:stop], expected,
+                    atol=1.0e-15, rtol=1.0e-10)
 
 
 def test_sequential_efficient_avoids_quadratic_pair_enumeration():

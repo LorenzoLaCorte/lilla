@@ -182,7 +182,13 @@ class CutoffOptimizer():
     adaptive: bool, optional
         If the found cut-off is not a local optimal because of
         the discrete search space, improve the optimization parameters
-        and restart the algorithm
+        and restart the algorithm. This adapts the search, not the physical
+        time horizon: coverage below 99% is reported as a warning. Choose
+        t_trunc large enough and check convergence before using an optimum.
+    simulator: RepeaterChainEvaluation, optional
+        Evaluator used for the objective and local optimality checks.
+        The default includes classical communication. Pass an evaluator with
+        classical_communication=False to reproduce zero-communication results.
     wokers:, optional
         Number of processes used for parallel computing
         (`multiprocessing.Pool`) for differential evolution.
