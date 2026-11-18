@@ -3,7 +3,7 @@
 These tests deliberately avoid copying the implementation's dense formulas.
 They instead check reductions to the independently implemented Pauli-Fourier
 backend, completeness of Bell branches, probability-mass conservation, and
-the operational meaning of the kept/auxiliary ordering in recurrence.
+the symmetry and Werner-input reduction of BBPSSW recurrence.
 """
 
 import numpy as np
@@ -95,7 +95,7 @@ def test_corrected_swap_reduces_to_pauli_fourier_multiplication():
             assert_allclose(conditioned, expected, atol=3.0e-16)
 
 
-def test_recurrence_reduces_to_pauli_fourier_rule_with_and_without_twirl():
+def test_bbpssw_reduces_to_pauli_fourier_rule_after_input_twirls():
     rng = np.random.default_rng(20260804)
 
     for _ in range(100):
@@ -106,38 +106,54 @@ def test_recurrence_reduces_to_pauli_fourier_rule_with_and_without_twirl():
         kept = bell_weights_to_coordinates(kept_weights)
         auxiliary = bell_weights_to_coordinates(auxiliary_weights)
 
-        for twirl in (False, True):
-            expected_mu = get_dist_mu_out(
-                1,
-                1,
-                kept_mu,
-                auxiliary_mu,
-                depolar_rate=0.0,
-                dephase_rate=0.0,
-                w_twirling=twirl,
-            )
-            output, probability = recurrence_distillation(
-                kept, auxiliary, werner_twirl=twirl
-            )
-            assert_allclose(output, _embed_weighted_mu(expected_mu), atol=3.0e-16)
-            assert_allclose(probability, expected_mu[0], atol=2.0e-16)
+        kept_mu[1:] = np.mean(kept_mu[1:])
+        auxiliary_mu[1:] = np.mean(auxiliary_mu[1:])
+        expected_mu = get_dist_mu_out(
+            1, 1, kept_mu, auxiliary_mu,
+            depolar_rate=0.0, dephase_rate=0.0, w_twirling=True,
+        )
+        output, probability = recurrence_distillation(kept, auxiliary)
+        assert_allclose(output, _embed_weighted_mu(expected_mu), atol=3.0e-16)
+        assert_allclose(probability, expected_mu[0], atol=2.0e-16)
 
 
-def test_recurrence_kept_and_auxiliary_roles_are_operationally_asymmetric():
+def test_bbpssw_discards_local_bias_and_is_symmetric_in_the_inputs():
     zero_zero = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 0.0])
     one_one = np.array([1.0, -1.0, -1.0, 1.0, 0.0, 0.0])
 
     keep_zero, probability_zero = recurrence_distillation(zero_zero, one_one)
     keep_one, probability_one = recurrence_distillation(one_one, zero_zero)
 
-    # Both target measurements agree with certainty, but recurrence keeps the
-    # first/control pair.  Reversing the inputs therefore keeps |11> instead
-    # of |00>; ADC-generated local Z biases make this distinction observable.
-    assert_allclose(keep_zero, zero_zero)
-    assert_allclose(keep_one, one_one)
-    assert_allclose([probability_zero, probability_one], [1.0, 1.0])
-    assert_allclose(keep_zero[[0, 3, 4, 5]], keep_one[[0, 3, 4, 5]])
-    assert not np.allclose(keep_zero[[1, 2]], keep_one[[1, 2]])
+    # Both inputs have Phi+ fidelity 1/2.  Twirling removes their opposite
+    # local biases before the CNOT, giving success 5/9 and fidelity 1/2.
+    assert_allclose(keep_zero, [5/9, 0.0, 0.0, 5/27, 5/27, -5/27])
+    assert_allclose(keep_one, keep_zero)
+    assert_allclose([probability_zero, probability_one], [5/9, 5/9])
+
+
+@pytest.mark.parametrize("fidelity", [0.25, 0.5, 0.6, 0.85, 0.9, 1.0])
+def test_bbpssw_reproduces_bennett_equation_7(fidelity):
+    weights = [fidelity] + [(1.0 - fidelity) / 3.0] * 3
+    state = bell_weights_to_coordinates(weights)
+    output, probability = recurrence_distillation(state, state, conditioned=True)
+    expected_probability = (fidelity**2 + 2*fidelity*(1-fidelity)/3
+                            + 5*(1-fidelity)**2/9)
+    expected_fidelity = (fidelity**2 + (1-fidelity)**2/9) / expected_probability
+    assert_allclose(probability, expected_probability, atol=3.0e-16)
+    assert_allclose((output[0] + output[3] + output[4] - output[5])/4,
+                    expected_fidelity, atol=3.0e-16)
+    assert_allclose(output[1:3], 0.0)
+    assert_allclose(output[3:], [output[3], output[3], -output[3]])
+
+
+def test_repeated_bbpssw_improves_werner_fidelity_without_noise():
+    state = bell_weights_to_coordinates([0.85, 0.05, 0.05, 0.05])
+    previous_fidelity = 0.85
+    for _ in range(10):
+        state, _ = recurrence_distillation(state, state, conditioned=True)
+        fidelity = (state[0] + state[3] + state[4] - state[5]) / 4.0
+        assert previous_fidelity < fidelity <= 1.0
+        previous_fidelity = fidelity
 
 
 def test_attempt_join_conserves_every_input_pair_mass():
@@ -269,13 +285,13 @@ def test_tiny_but_positive_hardware_efficiency_is_not_dropped():
 
 
 def test_end_to_end_pauli_fourier_reduction_through_cutoffs_and_retries():
-    """PF and real-X backends agree for swap, distill, and a mixed stack."""
+    """PF and real-X agree in the Werner-preserving physical submodel."""
     size = 28
     weights = (
-        np.array([0.72, 0.08, 0.07, 0.13]),
-        np.array([0.64, 0.11, 0.09, 0.16]),
-        np.array([0.68, 0.10, 0.08, 0.14]),
-        np.array([0.61, 0.13, 0.10, 0.16]),
+        np.array([0.73, 0.09, 0.09, 0.09]),
+        np.array([0.64, 0.12, 0.12, 0.12]),
+        np.array([0.70, 0.10, 0.10, 0.10]),
+        np.array([0.61, 0.13, 0.13, 0.13]),
     )
     pmfs = tuple(
         _geometric_pmf(probability, size)
@@ -296,17 +312,15 @@ def test_end_to_end_pauli_fourier_reduction_through_cutoffs_and_retries():
         "t_coh": np.inf,
         "cut_type": "memory_time",
         "mt_cut": 3,
-        # Per-node X/Y/Z mode rates.  ADC=0 leaves Bell-diagonal states in
-        # the PF subspace, while unequal generation times exercise decay.
-        "pauli_mode_decay_rates": [0.07, 0.07, 0.04],
+        # Isotropic noise preserves Werner inputs, so the newly required
+        # input twirl is the identity in this PF comparison.
+        "pauli_mode_decay_rates": [0.04, 0.04, 0.04],
         "amplitude_damping_rate": 0.0,
         "bell_outcomes": "all_corrected",
-        "real_x_werner_twirling": False,
     }
 
     def pf_parameters(node_count):
-        # The old PF backend takes node depolarizing/dephasing rates.  Their
-        # endpoint sums give Gamma_x=Gamma_y=0.07 and Gamma_z=0.04 per node.
+        # Match the isotropic per-node rates in the real-X backend.
         return {
             "p_gen": 0.2,
             "p_swap": 0.67,
@@ -314,17 +328,17 @@ def test_end_to_end_pauli_fourier_reduction_through_cutoffs_and_retries():
             "cut_type": "memory_time",
             "mt_cut": 3,
             "depolarizing_rate": [0.04] * node_count,
-            "dephasing_rate": [0.03] * node_count,
+            "dephasing_rate": [0.0] * node_count,
         }
 
     real_evaluator = RepeaterChainEvaluation(
-        state_type=RealXState, use_fft=False, efficient=False, w_twirling=False
+        state_type=RealXState, use_fft=False, efficient=False
     )
     pf_evaluator = RepeaterChainEvaluation(
         state_type=PauliFourierState,
         use_fft=False,
         efficient=False,
-        w_twirling=False,
+        w_twirling=True,
     )
 
     def assert_reduction(real_result, pf_result):

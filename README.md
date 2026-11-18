@@ -49,6 +49,214 @@ To reproduce simulations that omit communication, use
 For an individual `compute_unit`, `swapping`, or `distillation` call, pass `t_c`
 explicitly for longer links (default 1); the switch overrides it to zero.
 
+## Real-X distillation
+
+Select a strategy through the simulation parameters:
+
+```python
+parameters["distillation_strategy"] = "dejmps"
+simulator = RepeaterChainEvaluation(state_type=RealXState)
+pmf, states = simulator.nested_protocol(parameters)
+```
+
+All strategies target `Phi+`, use bilateral CNOT, and accept auxiliary outcomes
+`00` and `11`, summed without an outcome-dependent correction. Storage noise
+(waiting and communication) is applied before preprocessing. The selector
+applies to every distillation in the protocol, in both direct and efficient joins.
+
+| Strategy | Before CNOT, on both inputs | Accepted output |
+|---|---|---|
+| `bbpssw` (default) | Werner twirl | Werner twirl |
+| `bell_diagonal` | Bilateral Pauli twirl | Bilateral Pauli twirl |
+| `none` | No twirl or rotation | No twirl |
+| `dejmps` | Alice `Rx(+pi/2)`, Bob `Rx(-pi/2)` | No twirl |
+
+BBPSSW follows the input symmetrization and A1–A3 of
+[Bennett et al.](https://arxiv.org/abs/quant-ph/9511027), in the `Phi+` frame
+rather than the singlet frame. DEJMPS follows
+[Deutsch et al., Eqs. (2)–(8)](https://arxiv.org/abs/quant-ph/9604039).
+Neither strategy adaptively sorts Bell weights. `bell_diagonal` is the raw
+CNOT recurrence with Bell-diagonal symmetrization, rather than DEJMPS.
+
+For coordinates `(n,u,v,z,x,y)`, the twirl is
+`(n,0,0,omega,omega,-omega)`, with `omega=(z+x-y)/3`. It preserves trace and
+`Phi+` fidelity while discarding local biases and anisotropy. Bell twirling
+only zeros `(u,v)`, preserving every Bell weight and all three correlations.
+DEJMPS's complete rotated-CNOT map closes on real-X states even though the
+individually rotated inputs may leave this family. For real-X inputs, summing
+both accepted branches makes its output Bell-diagonal without an extra twirl.
+All maps support probability-weighted inputs; efficient joins retain their
+bilinear form. Hardware success scales the accepted mass afterward, and
+retries use each selected map's success and failure probabilities.
+
+The former `real_x_werner_twirling` flag has been replaced by this explicit
+protocol selector. Subsequent non-unital storage noise can produce a general
+real-X state again. Earlier raw-CNOT or output-only-twirl results must be
+identified by their actual circuit; they do not describe BBPSSW.
+
+## Compare distillation strategies
+
+The focused study is the practical starting point. Stop an existing extensive
+sweep with Ctrl+C, then run:
+
+```bash
+source venv/bin/activate
+python -m src.scripts.compare_distillation_strategies --preset focused \
+    --output-dir results/distillation_strategies/focused \
+    --reuse-from results/distillation_strategies --time-budget-hours 4
+```
+
+It contains **144 scenarios and 17,424 strategy/candidate evaluations**:
+
+- 72 main cases: five nodes, `p_gen=0.2`, `p_swap=0.9`, communication enabled,
+  all three source/noise families, both visibilities and all three noise strengths.
+- 24 chain-size controls at three/nine nodes, visibility `0.95` and strength `0.02`.
+- 24 communication-off controls at five nodes and strength `0.02`.
+- 24 hardware controls changing generation or swapping probability separately,
+  at five nodes, visibility `0.95` and strength `0.02`.
+
+All cases retain every placement of zero to two distillations and cutoff
+factors `2,8,None`. The factor `0.5` is excluded because tight cutoffs can cause
+extremely long retry tails. The `q=0.5` biased-X source is omitted because it
+equals the Werner source at the same white-noise visibility; `q=0.2,0.35` remain.
+Selection uses fixed physical/control settings, independently of observed wins.
+This is a restricted protocol/cutoff comparison; it does not find an optimum
+over every cutoff or hardware configuration.
+
+`--reuse-from` imports matching saved tasks only when the physics fingerprint,
+time grid, numerical tolerances and actual simulation parameters agree. The
+source checkpoint stays untouched; partial horizon results can also be reused
+and extended. Repeating the command skips completed tasks and can import new
+compatible source results. Reports are kept separately in the focused directory.
+`plan.json` records cached/remaining work and a heuristic cost estimate from
+previous timings. The four-hour limit stops between evaluations and is a work
+budget, rather than a guarantee of numerical convergence of every candidate.
+
+To prepare/import and inspect the plan without new simulations, add
+`--prepare-only`. To redraw focused results without evaluation:
+
+```bash
+python -m src.scripts.compare_distillation_strategies --plot-only \
+    --output-dir results/distillation_strategies/focused
+```
+
+The much larger extensive grid is still available:
+
+```bash
+source venv/bin/activate
+python -m src.scripts.compare_distillation_strategies --preset extensive --time-budget-hours 4
+```
+
+Repeat either command to continue its study. Extensive results are saved after every evaluation in
+`results/distillation_strategies/evaluations.jsonl`; numerical settings and
+a physics-code fingerprint prevent accidental reuse across changed models.
+Increase `--max-horizon` beyond its default `262144` to extend under-covered
+evaluations, retaining all previous horizon results. Completed evaluations
+are always reused. Errors remain recorded for inspection in the checkpoint.
+
+The extensive grid contains 2,160 physical scenarios and 357,120 requested
+strategy/candidate evaluations; a four-hour run may complete a subset,
+depending on the hardware and horizons. Scenario order is shuffled with a
+fixed seed. Each scenario compares exactly the same source, noise and hardware:
+
+- 1, 2 or 3 swap levels (3, 5 or 9 nodes); every placement of 0–2 distillations.
+- Werner sources, anisotropic Bell-diagonal sources, and biased X sources
+  `sqrt(1-q)|00> + sqrt(q)|11>`, with white-noise visibility `0.85` or `0.95`
+  and, for biased sources, `q=0.2,0.35,0.5`.
+- Isotropic Pauli, anisotropic Pauli, and matched anisotropic Pauli plus ADC;
+  three noise strengths relative to generation probability.
+- `p_gen=0.05,0.2`, `p_swap=0.5,0.9`, ideal distillation hardware, communication
+  enabled/disabled, and cutoffs `ceil(factor/p_gen)` for `factor=0.5,2,8`,
+  plus a genuine no-cutoff candidate.
+
+Integer horizons double until coverage is at least `0.999` and successive
+mean times, fidelities, X/Z errors and secret fractions converge. This is a
+numerical convergence check, not a rigorous tail bound. Horizon-limited and
+failed candidates are unresolved, never treated as zero physical rate.
+Key rates use pooled asymptotic BB84 errors from the actual XX/ZZ correlations.
+All gates/twirls are ideal and instantaneous; copies prepare independently
+in parallel, with generation, rejections and full-reset retries included.
+Memory cost and adaptive Bell-weight/basis optimization are not optimized.
+
+`evaluations.csv` contains all numerical outcomes; `best_policies.csv` gives
+each strategy's best key-rate policy **over candidate groups completed by all
+four strategies**. It includes `search_complete` and matched/requested counts
+to distinguish partial from complete finite searches. The PDF/PNG compare
+these best rates against BBPSSW, keeping zero-rate cases explicit;
+`summary.md` documents assumptions and numerical settings.
+
+To regenerate all reports and plots without evaluations:
+
+```bash
+python -m src.scripts.compare_distillation_strategies --plot-only
+```
+
+To snapshot partial plots while the sweep is running, save reports separately:
+
+```bash
+python -m src.scripts.compare_distillation_strategies --plot-only \
+    --report-dir results/distillation_strategies/partial
+```
+
+This reads completed checkpoint writes without modifying the live checkpoint.
+The scatter compares best key rates; `strategy_summary.pdf/png` counts scenarios
+with positive key rates and highlights those where BBPSSW gives zero.
+
+A validated short study is saved separately under `results/distillation_strategies/smoke`:
+
+```bash
+python -m src.scripts.compare_distillation_strategies --preset smoke --output-dir results/distillation_strategies/smoke
+```
+
+Use `--levels`, `--max-distillations`, `--max-evaluations`, and `--output-dir`
+for custom studies. A changed candidate grid requires a separate output directory.
+
+## Distillation source mechanisms
+
+The focused comparison already includes white-noise mixtures of partially
+entangled sources (`q=0.2,0.35`, visibility `0.85,0.95`), alongside Werner and
+anisotropic Bell-diagonal sources. These are not pure PE states. A separate
+small comparison includes the exact pure source at `q=1/4` and a perfect Bell
+control at `q=1/2`:
+
+```bash
+python -m src.scripts.compare_distillation_strategies --preset pure_pe \
+    --output-dir results/distillation_strategies/pure_pe
+```
+
+This has 32 scenarios and 2,048 strategy/candidate evaluations: three/five
+nodes, zero noise and three nonzero noise models, communication on/off, every
+placement of zero to two distillations, and cutoff factors `2,None`. It has
+already been run to numerical completion. Repeating the command reuses all
+saved evaluations. The existing focused/extensive checkpoints remain compatible.
+
+For an ideal state-level diagnostic, including the slides' dephased Bell example:
+
+```bash
+python -m src.scripts.distillation_source_mechanisms
+```
+
+PDF/PNG curves and CSV/JSON measurements are saved under
+`results/distillation_strategies/mechanisms`, including fidelity, density-matrix
+populations/coherence, purity, entanglement negativity and per-round acceptance.
+The slides' twirling example uses `0.95 Phi+ + 0.05 Phi-`, for which the raw
+CNOT recurrence lowers fidelity to `0.905`; Bell-diagonal twirling leaves that
+example unchanged. An input Werner twirl gives conditional fidelity `0.96496`.
+
+For a pure PE source, write `C=2 sqrt(q(1-q))`. Raw recurrence accepts both
+equal outcomes with probability one, keeps populations `1-q,q`, and replaces
+the coherence parameter `C` by `C^2`. At `q=1/4`, fidelity drops from `0.933013`
+to `0.875`, and negativity from `0.433013` to `0.375`. Repeated identical-copy
+rounds approach a separable diagonal mixture. The `11` branch alone produces
+a perfect Bell pair, but the `00` branch is less balanced; the implemented raw
+protocol accepts and averages both branches.
+
+These diagnostics use ideal instantaneous gates and no storage noise. They
+establish conditional state-quality loss, not a universal ranking of key rates;
+the network comparison additionally accounts for preparation, noise and retries.
+Regression tests check the analytic matrices, explicit CNOT circuit, repeated
+rounds, perfect-Bell control, and direct/FFT evaluator retry probabilities.
+
 ## Reproduce Results
 
 1) To reproduce (Li, Coopmans & Elkouss 2021) results, refer to the [original repository](https://github.com/BoxiLi/repeater-cut-off-optimization)

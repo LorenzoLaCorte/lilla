@@ -1,6 +1,8 @@
 """Reference real-X-state kernel for Pauli noise and amplitude damping."""
 
 from src.core.pauli_adc.protocol_units import (
+    DISTILLATION_STRATEGIES,
+    bell_diagonal_twirl,
     LocalAffineChannel,
     apply_local_channels,
     compose_channels,
@@ -9,6 +11,7 @@ from src.core.pauli_adc.protocol_units import (
     phi_plus_swap,
     psi_corrected_swap,
     recurrence_distillation,
+    phi_plus_werner_twirl,
     sequential_pauli_adc_channel,
 )
 from src.core.pauli_adc.state import (
@@ -36,6 +39,8 @@ from src.core.pauli_adc.swap_join_sequential_efficient import (
 )
 
 __all__ = [
+    "DISTILLATION_STRATEGIES",
+    "bell_diagonal_twirl",
     "COORDINATE_LABELS",
     "LocalAffineChannel",
     "RealXState",
@@ -52,6 +57,7 @@ __all__ = [
     "phi_plus_fidelity",
     "phi_plus_fidelity_func",
     "phi_plus_swap",
+    "phi_plus_werner_twirl",
     "polish_x_func",
     "psi_corrected_swap",
     "real_x_attempt_join",

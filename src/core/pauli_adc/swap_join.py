@@ -20,6 +20,7 @@ from src.core.pauli_adc.protocol_units import (
     recurrence_distillation,
     sequential_pauli_adc_channel,
     _validate_pauli_lindblad_rates,
+    _validate_distillation_strategy,
 )
 from src.core.pauli_adc.state import _minimum_real_x_eigenvalue
 
@@ -301,7 +302,7 @@ def real_x_attempt_join(
     bell_outcomes="all_corrected",
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
-    werner_twirl=False,
+    distillation_strategy="bbpssw",
     communication_time=0,
 ):
     """Enumerate one preparation-and-operation attempt.
@@ -311,6 +312,8 @@ def real_x_attempt_join(
     Inputs are normalized state functions.  ``weighted_success`` is not
     normalized: its II column equals ``valid_success`` by construction.
     """
+    if operation == "dist":
+        _validate_distillation_strategy(distillation_strategy)
     (
         pmf1,
         pmf2,
@@ -370,7 +373,7 @@ def real_x_attempt_join(
                 )
             else:
                 quantum_output, _ = recurrence_distillation(
-                    state1, state2, werner_twirl=werner_twirl
+                    state1, state2, strategy=distillation_strategy
                 )
 
             weighted_branch = hardware_success * quantum_output

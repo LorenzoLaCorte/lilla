@@ -12,6 +12,7 @@ translation is retained as a duration-dependent finite sum.
 
 import numpy as np
 from scipy.signal import lfilter
+from src.core.pauli_adc.protocol_units import _validate_distillation_strategy
 
 from src.core.pauli_adc.swap_join import (
     AttemptTerms,
@@ -232,7 +233,7 @@ def _bilinear_operation(
     *,
     operation,
     bell_outcomes,
-    werner_twirl,
+    distillation_strategy="bbpssw",
 ):
     """Apply vectorized unnormalized swap or recurrence-distillation maps."""
     left = np.asarray(left, dtype=float)
@@ -271,23 +272,31 @@ def _bilinear_operation(
 
     if operation != "dist":
         raise ValueError("operation must be 'swap' or 'dist'")
-    output = 0.5 * np.column_stack(
-        (
-            a0 * b0 + a3 * b3,
-            a1 * b0 + a2 * b3,
-            a2 * b0 + a1 * b3,
-            a3 * b0 + a0 * b3,
-            a4 * b4 + a5 * b5,
-            a5 * b4 + a4 * b5,
-        )
-    )
-    if werner_twirl:
-        omega = (output[:, 3] + output[:, 4] - output[:, 5]) / 3.0
-        output[:, 1:3] = 0.0
-        output[:, 3] = omega
-        output[:, 4] = omega
-        output[:, 5] = -omega
-    return output
+    _validate_distillation_strategy(distillation_strategy)
+    zeros = np.zeros_like(a0)
+    if distillation_strategy == "dejmps":
+        return 0.5 * np.column_stack((
+            a0*b0 + a5*b5, zeros, zeros,
+            -(a5*b0 + a0*b5), a4*b4 + a3*b3, -(a3*b4 + a4*b3),
+        ))
+    if distillation_strategy in ("none", "bell_diagonal"):
+        local_iz = a1*b0 + a2*b3
+        local_zi = a2*b0 + a1*b3
+        if distillation_strategy == "bell_diagonal":
+            local_iz = local_zi = zeros
+        return 0.5 * np.column_stack((
+            a0*b0 + a3*b3, local_iz, local_zi, a3*b0 + a0*b3,
+            a4*b4 + a5*b5, a5*b4 + a4*b5,
+        ))
+    # Fold both input twirls and the output twirl into the bilinear map.
+    # The inputs already include waiting/communication noise.  Linearity of
+    # the twirl lets us apply it to these probability-weighted time sums.
+    wa = (a3 + a4 - a5) / 3.0
+    wb = (b3 + b4 - b5) / 3.0
+    accepted_mass = (a0 * b0 + wa * wb) / 2.0
+    omega = (wa * b0 + a0 * wb + 4.0 * wa * wb) / 6.0
+    zeros = np.zeros_like(accepted_mass)
+    return np.column_stack((accepted_mass, zeros, zeros, omega, omega, -omega))
 
 
 def real_x_attempt_join_sequential_efficient(
@@ -303,13 +312,15 @@ def real_x_attempt_join_sequential_efficient(
     bell_outcomes="all_corrected",
     node_pauli_rates=0.0,
     node_adc_rates=0.0,
-    werner_twirl=False,
+    distillation_strategy="bbpssw",
     communication_time=0,
 ):
     """Evaluate one attempt, aging both inputs through communication.
 
     Returned kernels use readiness time; the evaluator adds the time delay.
     """
+    if operation == "dist":
+        _validate_distillation_strategy(distillation_strategy)
     if cut_type != "memory_time":
         raise NotImplementedError(
             "the sequential efficient real-X join currently supports "
@@ -389,13 +400,13 @@ def real_x_attempt_join_sequential_efficient(
         early2,
         operation=operation,
         bell_outcomes=bell_outcomes,
-        werner_twirl=werner_twirl,
+        distillation_strategy=distillation_strategy,
     ) + _bilinear_operation(
         left_early,
         weighted2,
         operation=operation,
         bell_outcomes=bell_outcomes,
-        werner_twirl=werner_twirl,
+        distillation_strategy=distillation_strategy,
     )
     weighted_success = hardware_success * quantum_weighted
     pair_mass = pmf1 * early2[:, 0] + pmf2 * np.maximum(

@@ -41,6 +41,7 @@ class SimParameters(TypedDict):
     amplitude_damping_rate: Union[float, list[float]]
     bell_outcomes: str
     p_distillation: float
+    distillation_strategy: Literal["bbpssw", "bell_diagonal", "none", "dejmps"]
 
 PMF = np.ndarray
 

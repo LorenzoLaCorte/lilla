@@ -215,7 +215,7 @@ class RepeaterChainEvaluation():
  # This boundary chooses efficient versus direct join, passes endpoint rates and
  # operation kind, collapses cutoff and destructive failures into one full-reset
  # renewal, then normalizes weighted output once.  For distillation it forwards
- # p_distillation and real_x_werner_twirling; swap uses bell_outcomes instead.
+ # p_distillation and distillation_strategy; swap uses bell_outcomes instead.
         self,
         parameters,
         pmf1,
@@ -255,6 +255,7 @@ class RepeaterChainEvaluation():
             cutoff=cutoff,
             cut_type=cut_type,
             hardware_success=hardware_success,
+            distillation_strategy=parameters.get("distillation_strategy", "bbpssw"),
             bell_outcomes=parameters.get("bell_outcomes", "all_corrected"),
             node_pauli_rates=parameters.get(
                 "_real_x_node_pauli_rates",
@@ -263,11 +264,6 @@ class RepeaterChainEvaluation():
             node_adc_rates=parameters.get(
                 "_real_x_node_adc_rates",
                 parameters.get("amplitude_damping_rate", 0.0),
-            ),
-            werner_twirl=(
-                parameters.get("real_x_werner_twirling", False)
-                if operation == "dist"
-                else False
             ),
             communication_time=t_c,
         )

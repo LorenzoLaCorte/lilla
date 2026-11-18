@@ -16,6 +16,15 @@ from src.core.pauli_adc.state import _as_coordinates
 
 
 _VALIDATION_ATOL = 1.0e-12
+DISTILLATION_STRATEGIES = ("bbpssw", "bell_diagonal", "none", "dejmps")
+
+
+def _validate_distillation_strategy(strategy):
+    if strategy not in DISTILLATION_STRATEGIES:
+        raise ValueError(
+            f"Unknown distillation_strategy {strategy!r}; choose one of "
+            + ", ".join(DISTILLATION_STRATEGIES)
+        )
 
 
 def _as_finite_real_array(values, *, name):
@@ -328,30 +337,78 @@ def accepted_bell_swap(
     return output, probability
 
 
+def phi_plus_werner_twirl(coordinates):
+    """Preserve trace and Phi+ overlap while averaging the other Bell states.
+
+    This linear map also accepts probability-weighted coordinates.  It is
+    the Phi+ convention of the singlet-preserving twirl in Bennett et al.,
+    https://arxiv.org/abs/quant-ph/9511027, Eq. (4).
+    """
+    n, _, _, z, x, y = _as_coordinates(coordinates)
+    omega = (z + x - y) / 3.0
+    return np.array([n, 0.0, 0.0, omega, omega, -omega], dtype=float)
+
+
+def bell_diagonal_twirl(coordinates):
+    """Bilateral Pauli twirl: remove local biases, preserve all Bell weights."""
+    output = np.array(_as_coordinates(coordinates), copy=True)
+    output[1:3] = 0.0
+    return output
+
+
 def recurrence_distillation(
- # PATCH GUIDE — recurrence map
- # First argument is kept/control, second is auxiliary/target.  For two identical
- # Werner-coordinate inputs x=(1,0,0,w,w,-w), the unnormalized output has
- # II=(1+w^2)/2 and (ZZ,XX,YY)=(w,w^2,-w^2).  At w=0.8667 (F=0.9), success is
- # 0.8756 and normalized Werner twirl gives w'=0.9020 (F'=0.9265).
- # If hardware p_distillation=0.8, attempt success becomes 0.7004 while
- # conditional output state is unchanged.  Twirling replaces (IZ,ZI,ZZ,XX,YY)
- # by (0,0,omega,omega,-omega), omega=(ZZ+XX-YY)/3, preserving phi+ fidelity.
     kept_coordinates,
     auxiliary_coordinates,
     *,
     conditioned=False,
-    werner_twirl=False,
+    strategy="bbpssw",
 ):
-    """Ideal bilateral-CNOT recurrence with equal target outcomes accepted.
+    """Distill toward Phi+ with the selected local preprocessing/circuit.
 
-    The first state is the kept/control pair and the second the measured
-    auxiliary/target pair.  The 00 and 11 branches are summed without an
-    outcome-dependent correction.  This role ordering matters when ADC has
-    produced nonzero local Z biases.
+    ``bbpssw`` twirls both inputs and the output to Werner states;
+    ``bell_diagonal`` applies bilateral Pauli twirls instead; ``none`` uses
+    the raw bilateral CNOT. ``dejmps`` applies Rx(+pi/2) on Alice and
+    Rx(-pi/2) on Bob, on both pairs, before CNOT, without Werner twirling.
+    Every strategy accepts auxiliary outcomes 00 and 11 and sums them
+    without outcome-dependent correction. Apply storage noise before this
+    map. The unnormalized II coordinate is success mass before hardware loss.
     """
+    _validate_distillation_strategy(strategy)
     kept = _as_coordinates(kept_coordinates)
     auxiliary = _as_coordinates(auxiliary_coordinates)
+    if strategy == "bbpssw":
+        kept = phi_plus_werner_twirl(kept)
+        auxiliary = phi_plus_werner_twirl(auxiliary)
+    elif strategy == "bell_diagonal":
+        kept = bell_diagonal_twirl(kept)
+        auxiliary = bell_diagonal_twirl(auxiliary)
+    if strategy == "dejmps":
+        # The complete rotated-CNOT map closes on real-X coordinates even
+        # though each rotated input need not be real-X. For this family,
+        # summing both accepted branches cancels the local output biases.
+        output = 0.5 * np.array([
+            kept[0]*auxiliary[0] + kept[5]*auxiliary[5],
+            0.0, 0.0,
+            -(kept[5]*auxiliary[0] + kept[0]*auxiliary[5]),
+            kept[4]*auxiliary[4] + kept[3]*auxiliary[3],
+            -(kept[3]*auxiliary[4] + kept[4]*auxiliary[3]),
+        ])
+    else:
+        output = _cnot_recurrence(kept, auxiliary)
+    if strategy == "bbpssw":
+        output = phi_plus_werner_twirl(output)
+    elif strategy == "bell_diagonal":
+        output = bell_diagonal_twirl(output)
+    probability = float(output[0])
+    if conditioned:
+        if probability <= 0.0:
+            raise ValueError("cannot condition on a zero-probability outcome")
+        output = output / probability
+    return output, probability
+
+
+def _cnot_recurrence(kept, auxiliary):
+    """Unnormalized bilateral CNOT with auxiliary 00/11 accepted."""
     output = np.array(
         [
             (kept[0] * auxiliary[0] + kept[3] * auxiliary[3]) / 2.0,
@@ -363,14 +420,4 @@ def recurrence_distillation(
         ],
         dtype=float,
     )
-    if werner_twirl:
-        omega = (output[3] + output[4] - output[5]) / 3.0
-        output = np.array(
-            [output[0], 0.0, 0.0, omega, omega, -omega], dtype=float
-        )
-    probability = float(output[0])
-    if conditioned:
-        if probability <= 0.0:
-            raise ValueError("cannot condition on a zero-probability outcome")
-        output = output / probability
-    return output, probability
+    return output

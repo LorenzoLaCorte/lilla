@@ -17,6 +17,7 @@ from src.core.pauli_adc import (
     polish_x_func,
     real_x_attempt_join,
     recurrence_distillation,
+    phi_plus_werner_twirl,
 )
 from src.core.repeater_algorithm import RepeaterChainEvaluation
 from src.core.pauli_adc.state import _minimum_real_x_eigenvalue
@@ -252,6 +253,50 @@ def _dense_recurrence(kept, auxiliary):
 def _phi_plus_density():
     phi_plus = np.array([1.0, 0.0, 0.0, 1.0], dtype=complex) / np.sqrt(2.0)
     return np.outer(phi_plus, phi_plus.conj())
+
+
+def _dense_werner_twirl(rho):
+    """Average U tensor U* over the 24 one-qubit Clifford rotations."""
+    hadamard = (X + Z) / np.sqrt(2.0)
+    phase = np.diag([1.0, 1.0j])
+    # Six images of the Z axis, each with four rotations around that axis.
+    representatives = (I2, X, hadamard, Z @ hadamard,
+                       phase @ hadamard, phase.conj().T @ hadamard)
+    output = np.zeros_like(rho, dtype=complex)
+    for representative in representatives:
+        for turn in range(4):
+            unitary = representative @ np.diag([1.0, 1.0j ** turn])
+            bilateral = np.kron(unitary, unitary.conj())
+            output += bilateral @ rho @ bilateral.conj().T / 24.0
+    return output
+
+
+def _dense_bbpssw(kept, auxiliary):
+    return _dense_werner_twirl(
+        _dense_recurrence(_dense_werner_twirl(kept), _dense_werner_twirl(auxiliary))
+    )
+
+
+def _dense_bell_twirl(rho):
+    return sum(
+        np.kron(pauli, pauli) @ rho @ np.kron(pauli, pauli).conj().T
+        for pauli in (I2, X, Y, Z)
+    ) / 4.0
+
+
+def _dense_distillation(kept, auxiliary, strategy):
+    if strategy == "bbpssw":
+        return _dense_bbpssw(kept, auxiliary)
+    if strategy == "bell_diagonal":
+        return _dense_bell_twirl(
+            _dense_recurrence(_dense_bell_twirl(kept), _dense_bell_twirl(auxiliary))
+        )
+    if strategy == "dejmps":
+        alice = (I2 - 1.0j * X) / np.sqrt(2.0)
+        rotation = np.kron(alice, alice.conj())
+        kept = rotation @ kept @ rotation.conj().T
+        auxiliary = rotation @ auxiliary @ rotation.conj().T
+    return _dense_recurrence(kept, auxiliary)
 
 
 def test_state_construction_and_weighted_normalization_match_dense_states():
@@ -536,7 +581,6 @@ def test_unequal_time_distillation_with_endpoint_sequential_noise_matches_dense_
         hardware_success=hardware_success,
         node_pauli_rates=endpoint_pauli_rates,
         node_adc_rates=endpoint_adc_rates,
-        werner_twirl=False,
     )
 
     waiting_time = abs(t_kept - t_auxiliary)
@@ -558,7 +602,7 @@ def test_unequal_time_distillation_with_endpoint_sequential_noise_matches_dense_
             endpoint_adc_rates[1],
             waiting_time,
         )
-    accepted = _dense_recurrence(rho_kept, rho_auxiliary)
+    accepted = _dense_bbpssw(rho_kept, rho_auxiliary)
     terminal_time = max(t_kept, t_auxiliary)
     success = hardware_success * np.trace(accepted).real
 
@@ -933,12 +977,13 @@ def test_stochastic_two_leaf_protocol_matches_dense_full_reset_renewal_oracle():
     assert_allclose(actual_weighted, expected_weighted, atol=5.0e-13)
 
 
-def test_random_recurrence_distillation_matches_explicit_four_qubit_circuit():
+def test_random_bbpssw_matches_clifford_twirls_and_explicit_four_qubit_circuit():
     rng = np.random.default_rng(20260802)
     for _ in range(100):
-        rho_kept = _random_real_x_density(rng)
-        rho_auxiliary = _random_real_x_density(rng)
-        expected_matrix = _dense_recurrence(rho_kept, rho_auxiliary)
+        # Unequal traces exercise probability-weighted inputs as well.
+        rho_kept = rng.uniform(0.01, 1.0) * _random_real_x_density(rng)
+        rho_auxiliary = rng.uniform(0.01, 1.0) * _random_real_x_density(rng)
+        expected_matrix = _dense_bbpssw(rho_kept, rho_auxiliary)
         expected = _dense_to_correlators(expected_matrix)
 
         actual, probability = recurrence_distillation(
@@ -959,6 +1004,20 @@ def test_random_recurrence_distillation_matches_explicit_four_qubit_circuit():
             expected_matrix / probability,
             atol=5.0e-15,
         )
+
+
+def test_phi_plus_twirl_matches_clifford_average_preserves_trace_and_fidelity():
+    rng = np.random.default_rng(20261114)
+    phi = _phi_plus_density()
+    for _ in range(50):
+        rho = rng.uniform(0.01, 1.0) * _random_real_x_density(rng)
+        coordinates = _dense_to_correlators(rho)
+        twirled = phi_plus_werner_twirl(coordinates)
+        actual = _correlators_to_dense(twirled)
+        assert_allclose(actual, _dense_werner_twirl(rho), atol=5.0e-15)
+        assert_allclose(np.trace(actual), np.trace(rho), atol=5.0e-15)
+        assert_allclose(np.trace(phi @ actual), np.trace(phi @ rho), atol=5.0e-15)
+        assert_allclose(phi_plus_werner_twirl(twirled), twirled, atol=5.0e-15)
 
 
 def test_retry_pmf_for_phi_plus_postselection_has_geometric_golden_values():
@@ -1014,7 +1073,6 @@ def test_small_nested_swap_then_distillation_matches_dense_circuit_and_retries()
         state_type=RealXState,
         use_fft=False,
         efficient=False,
-        w_twirling=False,
         classical_communication=False,
     )
     parameters = {
@@ -1028,7 +1086,6 @@ def test_small_nested_swap_then_distillation_matches_dense_circuit_and_retries()
         "bell_outcomes": "all_corrected",
         "pauli_mode_decay_rates": 0.0,
         "amplitude_damping_rate": 0.0,
-        "real_x_werner_twirling": False,
     }
     levels = evaluator.nested_protocol(parameters, all_level=True)
     assert len(levels) == 3
@@ -1042,7 +1099,7 @@ def test_small_nested_swap_then_distillation_matches_dense_circuit_and_retries()
     assert_allclose(swap_pmf, expected_swap_pmf, atol=2.0e-15)
     assert_allclose(swap_states[1], swap_coordinates, atol=2.0e-15)
 
-    distilled_matrix = _dense_recurrence(swap_matrix, swap_matrix)
+    distilled_matrix = _dense_bbpssw(swap_matrix, swap_matrix)
     distillation_success = np.trace(distilled_matrix).real
     conditioned_coordinates = _dense_to_correlators(
         distilled_matrix / distillation_success

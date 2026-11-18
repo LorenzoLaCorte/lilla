@@ -11,7 +11,7 @@ from src.core.repeater_algorithm import RepeaterChainEvaluation, repeater_sim
 from src.core.werner.state import WernerState
 from src.tests.pauli_adc.test_dense_oracle_integration import (
     _apply_independent_sequential_noise,
-    _dense_recurrence,
+    _dense_bbpssw,
     _dense_swap,
     _dense_to_correlators,
     _random_real_x_density,
@@ -224,7 +224,7 @@ def test_real_x_combined_waiting_and_communication_matches_dense_channels(
     )
     branch = 0.8 * (
         _dense_swap(noisy1, noisy2, "phi_plus") if operation == "swap"
-        else _dense_recurrence(noisy1, noisy2)
+        else _dense_bbpssw(noisy1, noisy2)
     )
     success = np.trace(branch).real
     output = _dense_to_correlators(branch / success)

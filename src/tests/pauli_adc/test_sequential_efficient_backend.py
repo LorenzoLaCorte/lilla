@@ -7,6 +7,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 from src.core.pauli_adc import (
+    DISTILLATION_STRATEGIES,
     RealXState,
     matrix_to_coordinates,
     real_x_attempt_join,
@@ -69,11 +70,13 @@ def _assert_terms_close(actual, expected):
 
 @pytest.mark.parametrize("operation", ["swap", "dist"])
 @pytest.mark.parametrize("cutoff", [0, 3, 1000])
+@pytest.mark.parametrize("hardware_success", [0.63, 1.0e-18])
+@pytest.mark.parametrize("strategy", DISTILLATION_STRATEGIES)
 @pytest.mark.parametrize(
     "bell_outcomes", ["all_corrected", "phi_plus", "phi_pair", "psi_pair"]
 )
 def test_sequential_efficient_attempt_matches_direct(
-    operation, cutoff, bell_outcomes
+    operation, cutoff, hardware_success, strategy, bell_outcomes
 ):
     pmf1, pmf2, states1, states2 = _inputs(
         7000 + cutoff + 100 * (operation == "dist"), 13
@@ -82,11 +85,11 @@ def test_sequential_efficient_attempt_matches_direct(
         operation=operation,
         cutoff=cutoff,
         cut_type="memory_time",
-        hardware_success=0.000000000000000001,
+        hardware_success=hardware_success,
         bell_outcomes=bell_outcomes,
         node_pauli_rates=_PAULI_RATES[: 3 if operation == "swap" else 2],
         node_adc_rates=_ADC_RATES[: 3 if operation == "swap" else 2],
-        werner_twirl=operation == "dist",
+        distillation_strategy=strategy,
     )
     expected = real_x_attempt_join(
         pmf1, pmf2, states1, states2, **kwargs
@@ -110,7 +113,6 @@ def test_sequential_dispatch_matches_direct_weighted_output(use_fft, operation):
         "bell_outcomes": "phi_pair",
         "pauli_mode_decay_rates": _PAULI_RATES[: 3 if operation == "swap" else 2],
         "amplitude_damping_rate": _ADC_RATES[: 3 if operation == "swap" else 2],
-        "real_x_werner_twirling": True,
     }
     direct = RepeaterChainEvaluation(
         state_type=RealXState, efficient=False, use_fft=False
